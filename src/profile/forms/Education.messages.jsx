@@ -51,6 +51,36 @@ const messages = defineMessages({
     defaultMessage: 'Other education',
     description: 'Selected by the user if they have a type of education not described by the other choices.',
   },
+  'education.option.MS.text': {
+    id: 'education.option.MS.text',
+    defaultMessage: 'Middle School',
+    description: 'Nafath Sign Up Form level of education option Middle School',
+  },
+  'education.option.HS.text': {
+    id: 'education.option.HS.text',
+    defaultMessage: 'High School',
+    description: 'Nafath Sign Up Form level of education option High School',
+  },
+  'education.option.DM.text': {
+    id: 'education.option.DM.text',
+    defaultMessage: 'Diploma',
+    description: 'Nafath Sign Up Form level of education option Diploma',
+  },
+  'education.option.BS.text': {
+    id: 'education.option.BS.text',
+    defaultMessage: 'Bachelor',
+    description: 'Nafath Sign Up Form level of education option Bachelor',
+  },
+  'education.option.MR.text': {
+    id: 'education.option.MR.text',
+    defaultMessage: 'Master',
+    description: 'Nafath Sign Up Form level of education option Master',
+  },
+  'education.option.PH.text': {
+    id: 'education.option.PH.text',
+    defaultMessage: 'Ph.D.',
+    description: 'Nafath Sign Up Form level of education option Ph.D.',
+  },
 });
 
 export default messages;
