@@ -13,9 +13,6 @@ import EditableItemHeader from './elements/EditableItemHeader';
 import EmptyContent from './elements/EmptyContent';
 import SwitchContent from './elements/SwitchContent';
 
-// Constants
-import { EDUCATION_LEVELS } from '../data/constants';
-
 // Selectors
 import { editableFormSelector } from '../data/selectors';
 
@@ -81,32 +78,32 @@ class Education extends React.Component {
                     <option value="">&nbsp;</option>
                     <option key="MS" value="MS">
                       {intl.formatMessage(
-                        messages["education.option.MS.text"]
+                        messages['education.option.MS.text'],
                       )}
                     </option>
                     <option key="HS" value="HS">
                       {intl.formatMessage(
-                        messages["education.option.HS.text"]
+                        messages['education.option.HS.text'],
                       )}
                     </option>
                     <option key="DM" value="DM">
                       {intl.formatMessage(
-                        messages["education.option.DM.text"]
+                        messages['education.option.DM.text'],
                       )}
                     </option>
                     <option key="BS" value="BS">
                       {intl.formatMessage(
-                        messages["education.option.BS.text"]
+                        messages['education.option.BS.text'],
                       )}
                     </option>
                     <option key="MR" value="MR">
                       {intl.formatMessage(
-                        messages["education.option.MR.text"]
+                        messages['education.option.MR.text'],
                       )}
                     </option>
                     <option key="PH" value="PH">
                       {intl.formatMessage(
-                        messages["education.option.PH.text"]
+                        messages['education.option.PH.text'],
                       )}
                     </option>
                   </select>
