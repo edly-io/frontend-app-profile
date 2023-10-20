@@ -13,9 +13,6 @@ import EditableItemHeader from './elements/EditableItemHeader';
 import EmptyContent from './elements/EmptyContent';
 import SwitchContent from './elements/SwitchContent';
 
-// Constants
-import { EDUCATION_LEVELS } from '../data/constants';
-
 // Selectors
 import { editableFormSelector } from '../data/selectors';
 
@@ -79,15 +76,36 @@ class Education extends React.Component {
                     onChange={this.handleChange}
                   >
                     <option value="">&nbsp;</option>
-                    {EDUCATION_LEVELS.map(level => (
-                      <option key={level} value={level}>
-                        {intl.formatMessage(get(
-                          messages,
-                          `profile.education.levels.${level}`,
-                          messages['profile.education.levels.o'],
-                        ))}
-                      </option>
-                    ))}
+                    <option key="MS" value="MS">
+                      {intl.formatMessage(
+                        messages['education.option.MS.text'],
+                      )}
+                    </option>
+                    <option key="HS" value="HS">
+                      {intl.formatMessage(
+                        messages['education.option.HS.text'],
+                      )}
+                    </option>
+                    <option key="DM" value="DM">
+                      {intl.formatMessage(
+                        messages['education.option.DM.text'],
+                      )}
+                    </option>
+                    <option key="BS" value="BS">
+                      {intl.formatMessage(
+                        messages['education.option.BS.text'],
+                      )}
+                    </option>
+                    <option key="MR" value="MR">
+                      {intl.formatMessage(
+                        messages['education.option.MR.text'],
+                      )}
+                    </option>
+                    <option key="PH" value="PH">
+                      {intl.formatMessage(
+                        messages['education.option.PH.text'],
+                      )}
+                    </option>
                   </select>
                   {error !== null && (
                     <Form.Control.Feedback hasIcon={false}>
@@ -117,7 +135,7 @@ class Education extends React.Component {
               <p data-hj-suppress className="h5">
                 {intl.formatMessage(get(
                   messages,
-                  `profile.education.levels.${levelOfEducation}`,
+                  `education.option.${levelOfEducation}.text`,
                   messages['profile.education.levels.o'],
                 ))}
               </p>
