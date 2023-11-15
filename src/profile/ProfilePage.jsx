@@ -28,6 +28,7 @@ import Education from './forms/Education';
 import SocialLinks from './forms/SocialLinks';
 import Bio from './forms/Bio';
 import Certificates from './forms/Certificates';
+import Badges from './forms/Badges';
 import AgeMessage from './AgeMessage';
 import DateJoined from './DateJoined';
 import UsernameDescription from './UsernameDescription';
@@ -177,10 +178,12 @@ class ProfilePage extends React.Component {
       languageProficiencies,
       visibilityLanguageProficiencies,
       visibilityCourseCertificates,
+      visibilityAccomplishmentsShared,
       bio,
       visibilityBio,
       requiresParentalConsent,
       isLoadingProfile,
+      badges,
     } = this.props;
 
     if (isLoadingProfile) {
@@ -279,6 +282,12 @@ class ProfilePage extends React.Component {
             <Certificates
               visibilityCourseCertificates={visibilityCourseCertificates}
               formId="certificates"
+              {...commonFormProps}
+            />
+            <Badges
+              visibilityAccomplishmentsShared={visibilityAccomplishmentsShared}
+              badges={badges}
+              formId="badges"
               {...commonFormProps}
             />
           </div>
@@ -397,6 +406,7 @@ ProfilePage.defaultProps = {
   courseCertificates: null,
   requiresParentalConsent: null,
   dateJoined: null,
+  badges: [],
 };
 
 export default connect(

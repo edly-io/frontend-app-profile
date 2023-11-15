@@ -15,6 +15,7 @@ export const profileDraftsSelector = state => state.profilePage.drafts;
 export const accountPrivacySelector = state => state.profilePage.preferences.accountPrivacy;
 export const profilePreferencesSelector = state => state.profilePage.preferences;
 export const profileCourseCertificatesSelector = state => state.profilePage.courseCertificates;
+export const profileCourseBadgesSelector = state => state.profilePage.badges;
 export const profileAccountDraftsSelector = state => state.profilePage.accountDrafts;
 export const profileVisibilityDraftsSelector = state => state.profilePage.visibilityDrafts;
 export const saveStateSelector = state => state.profilePage.saveState;
@@ -28,13 +29,15 @@ export const editableFormModeSelector = createSelector(
   profileAccountSelector,
   isAuthenticatedUserProfileSelector,
   profileCourseCertificatesSelector,
+  profileCourseBadgesSelector,
   formIdSelector,
   currentlyEditingFieldSelector,
-  (account, isAuthenticatedUserProfile, certificates, formId, currentlyEditingField) => {
+  (account, isAuthenticatedUserProfile, certificates, badges, formId, currentlyEditingField) => {
     // If the prop doesn't exist, that means it hasn't been set (for the current user's profile)
     // or is being hidden from us (for other users' profiles)
     let propExists = account[formId] != null && account[formId].length > 0;
     propExists = formId === 'certificates' ? certificates.length > 0 : propExists; // overwrite for certificates
+    propExists = formId === 'badges' ? badges.length > 0 : propExists; // overwrite for badges
     // If this isn't the current user's profile or if
     // the current user has no age set / under 13 ...
     if (!isAuthenticatedUserProfile || account.requiresParentalConsent) {
@@ -144,6 +147,16 @@ export const certificatesSelector = createSelector(
   }),
 );
 
+export const badgesSelector = createSelector(
+  editableFormSelector,
+  profileCourseBadgesSelector,
+  (editableForm, badges) => ({
+    ...editableForm,
+    badges,
+    value: badges,
+  }),
+);
+
 export const profileImageSelector = createSelector(
   profileAccountSelector,
   account => (account.profileImage != null
@@ -230,6 +243,7 @@ export const visibilitiesSelector = createSelector(
         return {
           visibilityBio: preferences.visibilityBio || 'private',
           visibilityCourseCertificates: preferences.visibilityCourseCertificates || 'private',
+          visibilityAccomplishmentsShared: preferences.visibilityAccomplishmentsShared || 'private',
           visibilityCountry: preferences.visibilityCountry || 'private',
           visibilityLevelOfEducation: preferences.visibilityLevelOfEducation || 'private',
           visibilityLanguageProficiencies: preferences.visibilityLanguageProficiencies || 'private',
@@ -240,6 +254,7 @@ export const visibilitiesSelector = createSelector(
         return {
           visibilityBio: 'private',
           visibilityCourseCertificates: 'private',
+          visibilityAccomplishmentsShared: 'private',
           visibilityCountry: 'private',
           visibilityLevelOfEducation: 'private',
           visibilityLanguageProficiencies: 'private',
@@ -255,6 +270,7 @@ export const visibilitiesSelector = createSelector(
         return {
           visibilityBio: 'all_users',
           visibilityCourseCertificates: 'all_users',
+          visibilityAccomplishmentsShared: 'all_users',
           visibilityCountry: 'all_users',
           visibilityLevelOfEducation: 'all_users',
           visibilityLanguageProficiencies: 'all_users',
@@ -278,13 +294,19 @@ export const formValuesSelector = createSelector(
   profileDraftsSelector,
   profileCourseCertificatesSelector,
   formSocialLinksSelector,
-  (account, visibilities, drafts, courseCertificates, socialLinks) => ({
+  profileCourseBadgesSelector,
+  (account, visibilities, drafts, courseCertificates, socialLinks, badges) => ({
     bio: chooseFormValue(drafts.bio, account.bio),
     visibilityBio: chooseFormValue(drafts.visibilityBio, visibilities.visibilityBio),
     courseCertificates,
     visibilityCourseCertificates: chooseFormValue(
       drafts.visibilityCourseCertificates,
       visibilities.visibilityCourseCertificates,
+    ),
+    badges,
+    visibilityAccomplishmentsShared: chooseFormValue(
+      drafts.visibilityAccomplishmentsShared,
+      visibilities.visibilityAccomplishmentsShared,
     ),
     country: chooseFormValue(drafts.country, account.country),
     visibilityCountry: chooseFormValue(drafts.visibilityCountry, visibilities.visibilityCountry),
@@ -343,7 +365,9 @@ export const profilePageSelector = createSelector(
 
     // Certificates form data
     courseCertificates: formValues.courseCertificates,
+    badges: formValues.badges,
     visibilityCourseCertificates: formValues.visibilityCourseCertificates,
+    visibilityAccomplishmentsShared: formValues.visibilityAccomplishmentsShared,
 
     // Country form data
     country: formValues.country,
