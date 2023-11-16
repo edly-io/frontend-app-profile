@@ -45,7 +45,7 @@ class Badges extends React.Component {
     this.props.openHandler(this.props.formId);
   }
 
-  renderBadge({ badge_class, created, assertion_url }) {
+  renderBadge({ badge_class, created, assertion_url, image_url }) {
     const { intl } = this.props;
 
     return (
@@ -66,24 +66,6 @@ class Badges extends React.Component {
                     style={{ fontSize: "large" }}
                   >
                     {badge_class.display_name}
-                  </p>
-                </>
-              )}
-              {badge_class && badge_class.course_id && (
-                <>
-                  <p className="small mb-0">
-                    <FormattedMessage
-                      id="profile.badge.organization.label"
-                      defaultMessage={intl.formatMessage(
-                        messages["profile.badge.organization.label"]
-                      )}
-                    />
-                  </p>
-                  <p className="h6 mb-4">
-                    {badge_class.course_id.substring(
-                      badge_class.course_id.indexOf(":") + 1,
-                      badge_class.course_id.indexOf("+")
-                    )}
                   </p>
                 </>
               )}
