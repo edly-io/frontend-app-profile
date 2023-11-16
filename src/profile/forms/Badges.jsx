@@ -114,7 +114,7 @@ class Badges extends React.Component {
             <div style={{ flex: "40%", padding: "2%" }}>
               <img
                 style={{ width: "100%" }}
-                src={`${badge_class.image_url}`}
+                src={`${image_url}`}
               ></img>
             </div>
           </div>
