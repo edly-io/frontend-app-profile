@@ -56,29 +56,37 @@ class Badges extends React.Component {
         <div className="card mb-4 certificate flex-grow-1">
           <div className="card-body d-flex flex-row" style={{ height: "90%" }}>
             <div style={{ width: "100%", flex: "60%" }}>
-              <p className="small mb-0">
-                {intl.formatMessage(messages["profile.badges.title"])}
-              </p>
-              <p
-                className="certificate-title small mb-3"
-                style={{ fontSize: "large" }}
-              >
-                {badge_class.display_name}
-              </p>
-              <p className="small mb-0">
-                <FormattedMessage
-                  id="profile.badge.organization.label"
-                  defaultMessage={intl.formatMessage(
-                    messages["profile.badge.organization.label"]
-                  )}
-                />
-              </p>
-              <p className="h6 mb-4">
-                {badge_class.course_id.substring(
-                  badge_class.course_id.indexOf(":") + 1,
-                  badge_class.course_id.indexOf("+")
-                )}
-              </p>
+              {badge_class && badge_class.display_name && (
+                <>
+                  <p className="small mb-0">
+                    {intl.formatMessage(messages["profile.badges.title"])}
+                  </p>
+                  <p
+                    className="certificate-title small mb-3"
+                    style={{ fontSize: "large" }}
+                  >
+                    {badge_class.display_name}
+                  </p>
+                </>
+              )}
+              {badge_class && badge_class.course_id && (
+                <>
+                  <p className="small mb-0">
+                    <FormattedMessage
+                      id="profile.badge.organization.label"
+                      defaultMessage={intl.formatMessage(
+                        messages["profile.badge.organization.label"]
+                      )}
+                    />
+                  </p>
+                  <p className="h6 mb-4">
+                    {badge_class.course_id.substring(
+                      badge_class.course_id.indexOf(":") + 1,
+                      badge_class.course_id.indexOf("+")
+                    )}
+                  </p>
+                </>
+              )}
               <p className="small mb-2">
                 <FormattedMessage
                   id="profile.badge.completion.date.label"
