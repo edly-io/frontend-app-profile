@@ -1,21 +1,21 @@
-import React from "react";
+import React from 'react';
 import {
   FormattedDate,
   FormattedMessage,
   injectIntl,
-} from "@edx/frontend-platform/i18n";
-import { Hyperlink } from "@edx/paragon";
-import { connect } from "react-redux";
+} from '@edx/frontend-platform/i18n';
+import { Hyperlink } from '@edx/paragon';
+import { connect } from 'react-redux';
 
-import messages from "./Badges.messages";
+import messages from './Badges.messages';
 
 // Components
-import FormControls from "./elements/FormControls";
-import EditableItemHeader from "./elements/EditableItemHeader";
-import SwitchContent from "./elements/SwitchContent";
+import FormControls from './elements/FormControls';
+import EditableItemHeader from './elements/EditableItemHeader';
+import SwitchContent from './elements/SwitchContent';
 
 // Selectors
-import { badgesSelector } from "../data/selectors";
+import { badgesSelector } from '../data/selectors';
 
 class Badges extends React.Component {
   constructor(props) {
