@@ -42,6 +42,7 @@ export function* handleFetchProfile(action) {
   let preferences = {};
   let account = userAccount;
   let courseCertificates = null;
+  let badges = [];
 
   try {
     yield put(fetchProfileBegin());
@@ -50,6 +51,7 @@ export function* handleFetchProfile(action) {
     const calls = [
       call(ProfileApiService.getAccount, username),
       call(ProfileApiService.getCourseCertificates, username),
+      call(ProfileApiService.getBadges, username),
     ];
 
     if (isAuthenticatedUserProfile) {
@@ -62,15 +64,16 @@ export function* handleFetchProfile(action) {
     const result = yield all(calls);
 
     if (isAuthenticatedUserProfile) {
-      [account, courseCertificates, preferences] = result;
+      [account, courseCertificates, badges, preferences] = result;
     } else {
-      [account, courseCertificates] = result;
+      [account, courseCertificates, badges] = result;
     }
     yield put(fetchProfileSuccess(
       account,
       preferences,
       courseCertificates,
       isAuthenticatedUserProfile,
+      badges,
     ));
 
     yield put(fetchProfileReset());
@@ -100,6 +103,7 @@ export function* handleSaveProfile(action) {
     const preferencesDrafts = pick(drafts, [
       'visibilityBio',
       'visibilityCourseCertificates',
+      'visibilityAccomplishmentsShared',
       'visibilityCountry',
       'visibilityLevelOfEducation',
       'visibilityLanguageProficiencies',

@@ -28,6 +28,7 @@ import Education from './forms/Education';
 import SocialLinks from './forms/SocialLinks';
 import Bio from './forms/Bio';
 import Certificates from './forms/Certificates';
+import Badges from './forms/Badges';
 import AgeMessage from './AgeMessage';
 import DateJoined from './DateJoined';
 import UsernameDescription from './UsernameDescription';
@@ -177,10 +178,12 @@ class ProfilePage extends React.Component {
       languageProficiencies,
       visibilityLanguageProficiencies,
       visibilityCourseCertificates,
+      visibilityAccomplishmentsShared,
       bio,
       visibilityBio,
       requiresParentalConsent,
       isLoadingProfile,
+      badges,
     } = this.props;
 
     if (isLoadingProfile) {
@@ -281,6 +284,12 @@ class ProfilePage extends React.Component {
               formId="certificates"
               {...commonFormProps}
             />
+            <Badges
+              visibilityAccomplishmentsShared={visibilityAccomplishmentsShared}
+              badges={badges}
+              formId="badges"
+              {...commonFormProps}
+            />
           </div>
         </div>
       </div>
@@ -314,6 +323,7 @@ ProfilePage.propTypes = {
     title: PropTypes.string,
   })),
   visibilityCourseCertificates: PropTypes.string.isRequired,
+  visibilityAccomplishmentsShared: PropTypes.string,
 
   // Country form data
   country: PropTypes.string,
@@ -333,6 +343,25 @@ ProfilePage.propTypes = {
   name: PropTypes.string,
   visibilityName: PropTypes.string.isRequired,
 
+  badges: PropTypes.arrayOf(
+    PropTypes.shape({
+      badge_class: PropTypes.objectOf(
+        PropTypes.shape({
+          slug: PropTypes.string,
+          issuing_component: PropTypes.string,
+          display_name: PropTypes.string,
+          course_id: PropTypes.string,
+          description: PropTypes.string,
+          criteria: PropTypes.string,
+          image_url: PropTypes.string,
+        })
+      ),
+      image_url: PropTypes.string,
+      assertion_url: PropTypes.string,
+      created: PropTypes.string,
+    })
+  ),
+  
   // Social links form data
   socialLinks: PropTypes.arrayOf(PropTypes.shape({
     platform: PropTypes.string,
@@ -390,6 +419,7 @@ ProfilePage.defaultProps = {
   levelOfEducation: null,
   country: null,
   socialLinks: [],
+  badges: [],
   draftSocialLinksByPlatform: {},
   bio: null,
   learningGoal: null,
@@ -397,6 +427,7 @@ ProfilePage.defaultProps = {
   courseCertificates: null,
   requiresParentalConsent: null,
   dateJoined: null,
+  badges: [],
 };
 
 export default connect(

@@ -87,9 +87,9 @@ export async function deleteProfilePhoto(username) {
 
 // GET PREFERENCES
 export async function getPreferences(username) {
-  const { data } = await getHttpClient().get(`${getConfig().LMS_BASE_URL}/api/user/v1/preferences/${username}`);
-
-  return camelCaseObject(data);
+  let { data } = await getHttpClient().get(`${getConfig().LMS_BASE_URL}/api/user/v1/preferences/${username}`);
+  data = camelCaseObject(data);
+  return data;
 }
 
 // PATCH PREFERENCES
@@ -98,6 +98,7 @@ export async function patchPreferences(username, params) {
   processedParams = convertKeyNames(processedParams, {
     visibility_bio: 'visibility.bio',
     visibility_course_certificates: 'visibility.course_certificates',
+    visibility_accomplishments_shared: 'visibility.accomplishments_shared',
     visibility_country: 'visibility.country',
     visibility_date_joined: 'visibility.date_joined',
     visibility_level_of_education: 'visibility.level_of_education',
@@ -142,6 +143,17 @@ export async function getCourseCertificates(username) {
   try {
     const { data } = await getHttpClient().get(url);
     return transformCertificateData(data);
+  } catch (e) {
+    logError(e);
+    return [];
+  }
+}
+
+export async function getBadges(username) {
+  const url = `${getConfig().LMS_BASE_URL}/api/badges/v1/assertions/user/${username}/?current_page=1&page_size=100000`;
+  try {
+    const { data } = await getHttpClient().get(url);
+    return data.results;
   } catch (e) {
     logError(e);
     return [];
