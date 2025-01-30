@@ -3,7 +3,8 @@
 }
 
 // TODO: Update edx-bootstrap theme to incorporate these edits.
-.btn, a.btn {
+.btn,
+a.btn {
   text-decoration: none;
   &:hover {
     text-decoration: none;
@@ -18,7 +19,7 @@
 
 .profile-page-bg-banner {
   height: 12rem;
-  background-image: url('./assets/dot-pattern-light.png');
+  background-image: url("./assets/dot-pattern-light.png");
   background-repeat: repeat-x;
   background-size: auto 85%;
 }
@@ -55,7 +56,7 @@
   }
 
   label.edit-section-header {
-    margin-bottom: $spacer * .5;
+    margin-bottom: $spacer * 0.5;
   }
 
   .profile-avatar-wrap {
@@ -68,7 +69,7 @@
   }
 
   .profile-avatar-menu-container {
-    background: rgba(0,0,0,.65);
+    background: rgba(0, 0, 0, 0.65);
     position: absolute;
     width: 100%;
     height: 100%;
@@ -78,7 +79,11 @@
     border-radius: 50%;
 
     @include media-breakpoint-up(md) {
-      background: linear-gradient(to top, rgba(0,0,0,.65) 4rem, rgba(0,0,0,0) 4rem);
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.65) 4rem,
+        rgba(0, 0, 0, 0) 4rem
+      );
       align-items: flex-end;
     }
 
@@ -122,17 +127,20 @@
       bottom: 0;
       display: flex;
       justify-content: center;
-      padding-top: .1rem;
+      padding-top: 0.1rem;
       font-weight: 600;
-      background: rgba(0,0,0,.5);
-      border-radius:0;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 0;
       transition: opacity 200ms ease;
 
       @include media-breakpoint-up(md) {
         height: 4rem;
       }
 
-      &:focus, &:hover, &:active, &.active {
+      &:focus,
+      &:hover,
+      &:active,
+      &.active {
         opacity: 1;
       }
     }
@@ -152,7 +160,7 @@
       right: 1rem;
       bottom: 0;
       width: 12rem;
-      opacity: .06;
+      opacity: 0.06;
       background-size: 90%;
       background-repeat: no-repeat;
       background-position: right top;
@@ -160,6 +168,61 @@
 
     .card-body {
       position: relative;
+    }
+  }
+}
+
+.profile-page {
+  &.profileWrapper {
+    .profile-page-bg-banner {
+      background-color: #f3f3f3 !important;
+      &::after {
+        box-shadow: unset !important;
+        -webkit-box-shadow: unset !important;
+      }
+    }
+    .dropdown-toggle {
+      &::after {
+        margin-left: 13px;
+      }
+    }
+    .pgn {
+      &-transition {
+        &-replace {
+          &-group {
+            border: 1px solid #f3f3f3 !important;
+            border-left: 8px solid #f3f3f3 !important;
+            small {
+              &.form-text {
+                background: #f3f3f3 !important;
+              }
+            }
+            .editable-item-header {
+              button {
+                border: 1px solid #4600c7 !important;
+                background-color: #4600c7 !important;
+                padding: 8px 14px !important;
+              }
+              + .list-unstyled {
+                .form-group {
+                  a {
+                    color: #111827 !important;
+                    text-decoration: none !important;
+                    &:hover {
+                      text-decoration: underline !important;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      &__stateful-btn {
+        border: 1px solid #4600c7 !important;
+        background-color: #4600c7 !important;
+        padding: 8px 14px !important;
+      }
     }
   }
 }
