@@ -316,7 +316,7 @@ class ProfilePage extends React.Component {
 
   render() {
     return (
-      <div className="profile-page profileWrapper">
+      <div className="profile-page">
         <Banner />
         {this.renderContent()}
       </div>
