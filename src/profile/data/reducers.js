@@ -17,6 +17,7 @@ export const initialState = {
   account: {
     socialLinks: [],
     languageProficiencies: [],
+    extendedProfile: [],
     name: '',
     bio: '',
     country: '',
