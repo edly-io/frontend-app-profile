@@ -15,26 +15,26 @@ const YES_NO_OPTIONS = [
 
 const TITLE_OPTIONS = [
   { value: '', label: 'Select title' },
-  { value: 'Mr', label: 'Mr' },
-  { value: 'Mrs', label: 'Mrs' },
-  { value: 'Ms', label: 'Ms' },
-  { value: 'Miss', label: 'Miss' },
+  { value: 'mr', label: 'Mr' },
+  { value: 'mrs', label: 'Mrs' },
+  { value: 'ms', label: 'Ms' },
+  { value: 'miss', label: 'Miss' },
 ];
 
 const MARITAL_STATUS_OPTIONS = [
   { value: '', label: 'Select marital status' },
-  { value: 'Single', label: 'Single' },
-  { value: 'Married', label: 'Married' },
-  { value: 'Widowed', label: 'Widowed' },
-  { value: 'Divorced', label: 'Divorced' },
+  { value: 'single', label: 'Single' },
+  { value: 'married', label: 'Married' },
+  { value: 'widowed', label: 'Widowed' },
+  { value: 'divorced', label: 'Divorced' },
 ];
 
 const PROFICIENCY_OPTIONS = [
   { value: '', label: 'Select proficiency' },
-  { value: 'Basic', label: 'Basic' },
-  { value: 'Intermediate', label: 'Intermediate' },
-  { value: 'Advanced', label: 'Advanced' },
-  { value: 'Native', label: 'Native' },
+  { value: 'basic', label: 'Basic' },
+  { value: 'intermediate', label: 'Intermediate' },
+  { value: 'advanced', label: 'Advanced' },
+  { value: 'native', label: 'Native' },
 ];
 
 export const BIODATA_SECTIONS = [
@@ -369,7 +369,7 @@ export const BIODATA_SECTIONS = [
           name: '',
           education: '',
           occupation: '',
-          address_phone_number: '',
+          address: '',
         },
         columns: [
           { key: 'relationship', label: 'Relationship', placeholder: 'Enter brother or sister' },
@@ -377,7 +377,7 @@ export const BIODATA_SECTIONS = [
           { key: 'education', label: 'Education', placeholder: 'Enter education' },
           { key: 'occupation', label: 'Occupation', placeholder: 'Enter occupation' },
           {
-            key: 'address_phone_number', label: 'Address & Phone Number', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter address and phone number',
+            key: 'address', label: 'Address', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter address',
           },
         ],
       },
@@ -395,13 +395,13 @@ export const BIODATA_SECTIONS = [
         addButtonLabel: 'Add relative',
         itemLabel: 'Relative',
         emptyRow: {
-          relative_name: '',
+          name: '',
           designation: '',
           relationship: '',
           address: '',
         },
         columns: [
-          { key: 'relative_name', label: 'Relative Name', placeholder: 'Enter relative name' },
+          { key: 'name', label: 'Relative Name', placeholder: 'Enter relative name' },
           { key: 'designation', label: 'Designation', placeholder: 'Enter designation' },
           { key: 'relationship', label: 'Relationship', placeholder: 'Enter relationship' },
           {

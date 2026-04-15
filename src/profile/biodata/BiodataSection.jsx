@@ -4,7 +4,6 @@ import {
   Alert, Button, Form, StatefulButton,
 } from '@openedx/paragon';
 
-import EditableItemHeader from '../forms/elements/EditableItemHeader';
 import SwitchContent from '../forms/elements/SwitchContent';
 
 import { PROFILE_FIELD_TYPES } from './config';
@@ -14,7 +13,6 @@ import {
   getSectionError,
   getSectionInitialData,
   getSanitizedSectionData,
-  getSectionSummary,
   isSingleMaritalStatus,
   readFileAsDataUrl,
   sectionHasValue,
@@ -78,6 +76,30 @@ function renderFieldControl(field, value, onChange, error, disabled = false) {
   );
 }
 
+function renderReadonlyFile(field, fileValue) {
+  if (!fileValue) {
+    return (
+      <div className="border rounded p-3 mb-3 bg-light-200">
+        <p className="h6 font-weight-bold mb-2">{field.label}</p>
+        <p className="small text-muted mb-0">No file uploaded</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border rounded p-3 mb-3 bg-light-200">
+      <p className="h6 font-weight-bold mb-2">{field.label}</p>
+      <img
+        src={fileValue.dataUrl || fileValue.url}
+        alt={`${field.label} preview`}
+        className="border rounded p-2 bg-white"
+        style={{ maxWidth: '14rem', maxHeight: '5rem', objectFit: 'contain' }}
+      />
+      <p className="small text-muted mt-2 mb-0">{fileValue.name}</p>
+    </div>
+  );
+}
+
 const BiodataSection = ({
   section,
   extendedProfile,
@@ -86,7 +108,6 @@ const BiodataSection = ({
   saveState,
   isAuthenticatedUserProfile,
   isEditing,
-  onOpen,
   onClose,
   onSubmit,
   onDraftChange,
@@ -98,7 +119,10 @@ const BiodataSection = ({
     () => getSectionInitialData(section, extendedProfile),
     [section, extendedProfile],
   );
-  const formData = draftValue || committedData;
+  const formData = useMemo(
+    () => getSanitizedSectionData(section, draftValue || committedData),
+    [section, draftValue, committedData],
+  );
   const hasContent = sectionHasValue(section, committedData);
   const sectionError = getSectionError(section, errors);
 
@@ -112,7 +136,7 @@ const BiodataSection = ({
   } else if (isEditing) {
     editMode = 'editing';
   } else if (hasContent) {
-    editMode = 'editable';
+    editMode = 'readonly';
   } else if (forceEditingWhenEmpty) {
     editMode = 'editing';
   }
@@ -124,9 +148,9 @@ const BiodataSection = ({
     };
 
     if (section.id === 'basicInformation' && fieldName === 'marital_status' && isSingleMaritalStatus(value)) {
-      nextFormData.number_of_children = '';
-      nextFormData.sons = '';
-      nextFormData.daughters = '';
+      nextFormData.number_of_children = '0';
+      nextFormData.sons = '0';
+      nextFormData.daughters = '0';
     }
 
     onDraftChange(section.id, getSanitizedSectionData(section, nextFormData));
@@ -190,6 +214,134 @@ const BiodataSection = ({
     || !['number_of_children', 'sons', 'daughters'].includes(field.fieldName)
     || !isSingleMaritalStatus(formData.marital_status)
   ));
+  const renderFormFields = (disabled = false) => (
+    <>
+      {section.naFieldName && (
+        <Form.Group className="mb-3">
+          <Form.Checkbox
+            checked={Boolean(formData[section.naFieldName])}
+            onChange={(event) => handleSectionNaChange(event.target.checked)}
+            disabled={disabled}
+          >
+            {section.naLabel || 'N/A'}
+          </Form.Checkbox>
+        </Form.Group>
+      )}
+      <div className="row">
+        {visibleFields.map((field) => {
+          const error = errors[field.fieldName];
+          return (
+            <Form.Group
+              key={field.fieldName}
+              className={field.type === PROFILE_FIELD_TYPES.TEXTAREA || field.type === PROFILE_FIELD_TYPES.CHECKBOX ? 'col-12 mb-3' : 'col-md-6 mb-3'}
+            >
+              {field.type !== PROFILE_FIELD_TYPES.CHECKBOX && (
+                <Form.Label>{field.label}</Form.Label>
+              )}
+              {renderFieldControl(
+                field,
+                formData[field.fieldName],
+                (value) => handleFieldChange(field.fieldName, value),
+                error,
+                disabled || isSectionDisabled,
+              )}
+              {!disabled && error && error.userMessage && (
+                <Form.Control.Feedback hasIcon={false}>
+                  {error.userMessage}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+          );
+        })}
+      </div>
+      {(section.repeatables || []).map((repeatable) => (
+        <div key={repeatable.storageFieldName} className="mb-3">
+          {repeatable.naFieldName && (
+            <Form.Group className="mb-2">
+              <Form.Checkbox
+                checked={Boolean(formData[repeatable.naFieldName])}
+                onChange={(event) => handleRepeatableNaChange(repeatable, event.target.checked)}
+                disabled={disabled}
+              >
+                {repeatable.naLabel || 'N/A'}
+              </Form.Checkbox>
+            </Form.Group>
+          )}
+          <p className="h6 font-weight-bold mb-2">{repeatable.itemLabel}s</p>
+          <RepeatableFieldGroup
+            repeatable={repeatable}
+            rows={formData[repeatable.storageFieldName] || [createEmptyRepeatableRow(repeatable)]}
+            onChange={(action, payload) => handleRepeatableChange(repeatable, action, payload)}
+            disabled={
+              disabled
+              || isSectionDisabled
+              || Boolean(repeatable.naFieldName && formData[repeatable.naFieldName])
+            }
+          />
+        </div>
+      ))}
+      {(section.fileFields || []).map((field) => {
+        const fileValue = formData[field.fieldName];
+        if (disabled) {
+          return <div key={field.fieldName}>{renderReadonlyFile(field, fileValue)}</div>;
+        }
+
+        return (
+          <div key={field.fieldName} className="border rounded p-3 mb-3 bg-light-200">
+            <p className="h6 font-weight-bold mb-2">{field.label}</p>
+            <div className="d-flex flex-wrap align-items-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline-primary"
+                onClick={() => {
+                  const input = document.getElementById(`${section.id}-${field.fieldName}`);
+                  if (input) {
+                    input.click();
+                  }
+                }}
+              >
+                {fileValue ? `Replace ${field.label.toLowerCase()}` : `Upload ${field.label.toLowerCase()}`}
+              </Button>
+              {fileValue && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="link"
+                  className="text-danger"
+                  onClick={() => handleFieldChange(field.fieldName, null)}
+                >
+                  Remove
+                </Button>
+              )}
+            </div>
+            <input
+              id={`${section.id}-${field.fieldName}`}
+              type="file"
+              accept={field.accept}
+              className="d-none"
+              onChange={(event) => {
+                const input = event.currentTarget;
+                handleFileChange(field.fieldName, event.target.files && event.target.files[0]);
+                input.value = '';
+              }}
+            />
+            {fileValue && (
+              <div className="mt-3">
+                <img
+                  src={fileValue.dataUrl || fileValue.url}
+                  alt={`${field.label} preview`}
+                  className="border rounded p-2 bg-white"
+                  style={{ maxWidth: '14rem', maxHeight: '5rem', objectFit: 'contain' }}
+                />
+                <p className="small text-muted mt-2 mb-0">{fileValue.name}</p>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
 
   return (
     <SwitchContent
@@ -218,120 +370,7 @@ const BiodataSection = ({
                   {sectionError.userMessage}
                 </Alert>
               )}
-              {section.naFieldName && (
-                <Form.Group className="mb-3">
-                  <Form.Checkbox
-                    checked={Boolean(formData[section.naFieldName])}
-                    onChange={(event) => handleSectionNaChange(event.target.checked)}
-                  >
-                    {section.naLabel || 'N/A'}
-                  </Form.Checkbox>
-                </Form.Group>
-              )}
-              <div className="row">
-                {visibleFields.map((field) => {
-                  const error = errors[field.fieldName];
-                  return (
-                    <Form.Group
-                      key={field.fieldName}
-                      className={field.type === PROFILE_FIELD_TYPES.TEXTAREA || field.type === PROFILE_FIELD_TYPES.CHECKBOX ? 'col-12 mb-3' : 'col-md-6 mb-3'}
-                    >
-                      {field.type !== PROFILE_FIELD_TYPES.CHECKBOX && (
-                        <Form.Label>{field.label}</Form.Label>
-                      )}
-                      {renderFieldControl(
-                        field,
-                        formData[field.fieldName],
-                        (value) => handleFieldChange(field.fieldName, value),
-                        error,
-                        isSectionDisabled,
-                      )}
-                      {error && error.userMessage && (
-                        <Form.Control.Feedback hasIcon={false}>
-                          {error.userMessage}
-                        </Form.Control.Feedback>
-                      )}
-                    </Form.Group>
-                  );
-                })}
-              </div>
-              {(section.repeatables || []).map((repeatable) => (
-                <div key={repeatable.storageFieldName} className="mb-3">
-                  {repeatable.naFieldName && (
-                    <Form.Group className="mb-2">
-                      <Form.Checkbox
-                        checked={Boolean(formData[repeatable.naFieldName])}
-                        onChange={(event) => handleRepeatableNaChange(repeatable, event.target.checked)}
-                      >
-                        {repeatable.naLabel || 'N/A'}
-                      </Form.Checkbox>
-                    </Form.Group>
-                  )}
-                  <p className="h6 font-weight-bold mb-2">{repeatable.itemLabel}s</p>
-                  <RepeatableFieldGroup
-                    repeatable={repeatable}
-                    rows={formData[repeatable.storageFieldName] || [createEmptyRepeatableRow(repeatable)]}
-                    onChange={(action, payload) => handleRepeatableChange(repeatable, action, payload)}
-                    disabled={isSectionDisabled || Boolean(repeatable.naFieldName && formData[repeatable.naFieldName])}
-                  />
-                </div>
-              ))}
-              {(section.fileFields || []).map((field) => {
-                const fileValue = formData[field.fieldName];
-                return (
-                  <div key={field.fieldName} className="border rounded p-3 mb-3 bg-light-200">
-                    <p className="h6 font-weight-bold mb-2">{field.label}</p>
-                    <div className="d-flex flex-wrap align-items-center">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline-primary"
-                        onClick={() => {
-                          const input = document.getElementById(`${section.id}-${field.fieldName}`);
-                          if (input) {
-                            input.click();
-                          }
-                        }}
-                      >
-                        {fileValue ? `Replace ${field.label.toLowerCase()}` : `Upload ${field.label.toLowerCase()}`}
-                      </Button>
-                      {fileValue && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="link"
-                          className="text-danger"
-                          onClick={() => handleFieldChange(field.fieldName, null)}
-                        >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                    <input
-                      id={`${section.id}-${field.fieldName}`}
-                      type="file"
-                      accept={field.accept}
-                      className="d-none"
-                      onChange={(event) => {
-                        const input = event.currentTarget;
-                        handleFileChange(field.fieldName, event.target.files && event.target.files[0]);
-                        input.value = '';
-                      }}
-                    />
-                    {fileValue && (
-                      <div className="mt-3">
-                        <img
-                          src={fileValue.dataUrl}
-                          alt={`${field.label} preview`}
-                          className="border rounded p-2 bg-white"
-                          style={{ maxWidth: '14rem', maxHeight: '5rem', objectFit: 'contain' }}
-                        />
-                        <p className="small text-muted mt-2 mb-0">{fileValue.name}</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {renderFormFields()}
               <div className="d-flex flex-row-reverse flex-wrap justify-content-end align-items-center">
                 <div className="row form-group flex-shrink-0 flex-grow-1 m-0 p-0">
                   <div className="pr-2 pl-0 m-0">
@@ -356,35 +395,15 @@ const BiodataSection = ({
             </form>
           </div>
         ),
-        editable: (
-          <>
-            {showInlineTitle && (
-              <p id={`${section.id}-label`} className="h5 font-weight-bold m-0 pb-1.5">
-                {section.title}
-              </p>
-            )}
-            {showInlineTitle && section.helperText && (
-              <p className="text-muted small mb-2">{section.helperText}</p>
-            )}
-            <EditableItemHeader
-              content={getSectionSummary(section, committedData)}
-              showEditButton
-              onClickEdit={() => onOpen(section.id)}
-            />
-          </>
+        readonly: (
+          <div className="pt-2">
+            {renderFormFields(true)}
+          </div>
         ),
         static: (
-          <>
-            {showInlineTitle && (
-              <p id={`${section.id}-label`} className="h5 font-weight-bold m-0 pb-1.5">
-                {section.title}
-              </p>
-            )}
-            {showInlineTitle && section.helperText && (
-              <p className="text-muted small mb-2">{section.helperText}</p>
-            )}
-            <EditableItemHeader content={getSectionSummary(section, committedData)} />
-          </>
+          <div className="pt-2">
+            {renderFormFields(true)}
+          </div>
         ),
       }}
     />
@@ -442,7 +461,6 @@ BiodataSection.propTypes = {
   saveState: PropTypes.string,
   isAuthenticatedUserProfile: PropTypes.bool.isRequired,
   isEditing: PropTypes.bool.isRequired,
-  onOpen: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onDraftChange: PropTypes.func.isRequired,

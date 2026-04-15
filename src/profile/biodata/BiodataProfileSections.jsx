@@ -9,12 +9,13 @@ import classNames from 'classnames';
 
 import { BIODATA_SECTIONS } from './config';
 import BiodataSection from './BiodataSection';
+import EditButton from '../forms/elements/EditButton';
 import {
   openForm, closeForm, saveProfile, updateDraft,
 } from '../data/actions';
 import {
+  getSanitizedSectionData,
   getSectionInitialData,
-  getSectionSummary,
   isSingleMaritalStatus,
   sectionHasValue,
 } from './utils';
@@ -41,8 +42,10 @@ const BiodataProfileSections = () => {
   const extendedProfile = useMemo(() => account?.extendedProfile || [], [account?.extendedProfile]);
   const accountUsername = account?.username;
   const [pendingScrollSection, setPendingScrollSection] = useState(null);
-  const basicInformationData = drafts.basicInformation
-    || getSectionInitialData(BIODATA_SECTIONS[0], extendedProfile);
+  const basicInformationData = useMemo(() => getSanitizedSectionData(
+    BIODATA_SECTIONS[0],
+    drafts.basicInformation || getSectionInitialData(BIODATA_SECTIONS[0], extendedProfile),
+  ), [drafts.basicInformation, extendedProfile]);
   const visibleSections = useMemo(
     () => BIODATA_SECTIONS.filter((section) => (
       section.id !== 'spouseInformation' || !isSingleMaritalStatus(basicInformationData.marital_status)
@@ -54,15 +57,6 @@ const BiodataProfileSections = () => {
   const [expandedSections, setExpandedSections] = useState(() => (
     buildExpandedSectionsState(BIODATA_SECTIONS, BIODATA_SECTIONS[0].id)
   ));
-
-  const sectionSummaries = useMemo(
-    () => BIODATA_SECTIONS.reduce((accumulator, section) => {
-      const savedData = getSectionInitialData(section, extendedProfile);
-      accumulator[section.id] = getSectionSummary(section, savedData);
-      return accumulator;
-    }, {}),
-    [extendedProfile],
-  );
 
   useEffect(() => {
     if (visibleSections.some((section) => section.id === activeSection)) {
@@ -143,7 +137,6 @@ const BiodataProfileSections = () => {
                       onClick={() => openSectionFromSidebar(section.id)}
                     >
                       <div className="font-weight-bold">{section.title}</div>
-                      <div className="small text-muted">{sectionSummaries[section.id]}</div>
                     </Nav.Link>
                   </Nav.Item>
                 ))}
@@ -168,6 +161,15 @@ const BiodataProfileSections = () => {
                           <div className="font-weight-bold text-gray-900">{section.title}</div>
                           <div className="small text-muted">{section.helperText}</div>
                         </div>
+                        {isAuthenticatedUserProfile && currentlyEditingField !== section.id && (
+                          <EditButton
+                            className="p-1.5"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              dispatch(openForm(section.id));
+                            }}
+                          />
+                        )}
                       </div>
                     )}
                     styling="card"
@@ -183,7 +185,6 @@ const BiodataProfileSections = () => {
                         isAuthenticatedUserProfile={isAuthenticatedUserProfile}
                         isEditing={currentlyEditingField === section.id}
                         forceEditingWhenEmpty={expandedSections[section.id] && !hasSavedContent}
-                        onOpen={(formId) => dispatch(openForm(formId))}
                         onClose={handleCloseSection}
                         onSubmit={(formId) => dispatch(saveProfile(formId, accountUsername))}
                         onDraftChange={(formId, value) => dispatch(updateDraft(formId, value))}

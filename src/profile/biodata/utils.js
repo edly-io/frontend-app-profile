@@ -19,6 +19,8 @@ function buildRepeatableRow(row, repeatableConfig) {
 
   return {
     ...normalizedRow,
+    ...(row?.backendId != null ? { backendId: row.backendId } : {}),
+    ...(row?.id != null ? { backendId: row.id } : {}),
     rowId: `row-${repeatableRowCounter}`,
   };
 }
@@ -29,7 +31,7 @@ export function getExtendedProfileValue(extendedProfile, fieldName) {
 }
 
 export function isSingleMaritalStatus(value) {
-  return String(value || '').trim() === 'Single';
+  return String(value || '').trim().toLowerCase() === 'single';
 }
 
 export function normalizeFieldValue(field, storedValue) {
@@ -42,6 +44,13 @@ export function normalizeFieldValue(field, storedValue) {
 
 export function parseRepeatableRows(storedValue, repeatableConfig) {
   if (!storedValue) {
+    return [buildRepeatableRow(repeatableConfig.emptyRow, repeatableConfig)];
+  }
+
+  if (Array.isArray(storedValue)) {
+    if (storedValue.length > 0) {
+      return storedValue.map((row) => buildRepeatableRow(row, repeatableConfig));
+    }
     return [buildRepeatableRow(repeatableConfig.emptyRow, repeatableConfig)];
   }
 
@@ -58,14 +67,21 @@ export function parseRepeatableRows(storedValue, repeatableConfig) {
 }
 
 export function serializeRepeatableRows(rows, repeatableConfig) {
-  return JSON.stringify(
-    (rows || [])
-      .map((row) => repeatableConfig.columns.reduce((accumulator, column) => {
+  return JSON.stringify((rows || [])
+    .map((row) => {
+      const normalizedRow = repeatableConfig.columns.reduce((accumulator, column) => {
         accumulator[column.key] = String((row && row[column.key]) || '').trim();
         return accumulator;
-      }, {}))
-      .filter((row) => Object.values(row).some((value) => value.length > 0)),
-  );
+      }, {});
+
+      if (row?.backendId != null) {
+        normalizedRow.backendId = row.backendId;
+      }
+
+      return normalizedRow;
+    })
+    .filter((row) => Object.entries(row)
+      .some(([key, value]) => key === 'backendId' || value.length > 0)));
 }
 
 export function parseFileFieldValue(storedValue) {
@@ -73,27 +89,46 @@ export function parseFileFieldValue(storedValue) {
     return null;
   }
 
+  if (typeof storedValue === 'object') {
+    if (storedValue.name && (storedValue.dataUrl || storedValue.url)) {
+      return {
+        name: String(storedValue.name),
+        ...(storedValue.dataUrl ? { dataUrl: String(storedValue.dataUrl) } : {}),
+        ...(storedValue.url ? { url: String(storedValue.url) } : {}),
+      };
+    }
+    return null;
+  }
+
   try {
     const parsed = JSON.parse(storedValue);
-    if (parsed && parsed.name && parsed.dataUrl) {
+    if (parsed && parsed.name && (parsed.dataUrl || parsed.url)) {
       return {
         name: String(parsed.name),
-        dataUrl: String(parsed.dataUrl),
+        ...(parsed.dataUrl ? { dataUrl: String(parsed.dataUrl) } : {}),
+        ...(parsed.url ? { url: String(parsed.url) } : {}),
       };
     }
   } catch (error) {
-    return null;
+    return {
+      name: String(storedValue).split('/').pop() || 'file',
+      url: String(storedValue),
+    };
   }
 
   return null;
 }
 
 export function serializeFileFieldValue(fileValue) {
-  if (!fileValue || !fileValue.name || !fileValue.dataUrl) {
+  if (!fileValue || !fileValue.name || (!fileValue.dataUrl && !fileValue.url)) {
     return '';
   }
 
-  return JSON.stringify(fileValue);
+  return JSON.stringify({
+    name: fileValue.name,
+    ...(fileValue.dataUrl ? { dataUrl: fileValue.dataUrl } : {}),
+    ...(fileValue.url ? { url: fileValue.url } : {}),
+  });
 }
 
 export function readFileAsDataUrl(file) {
@@ -176,7 +211,7 @@ export function getSanitizedSectionData(section, sectionData) {
 
   if (section.id === 'basicInformation' && isSingleMaritalStatus(sanitizedData.marital_status)) {
     BASIC_INFORMATION_CHILD_FIELD_NAMES.forEach((fieldName) => {
-      sanitizedData[fieldName] = '';
+      sanitizedData[fieldName] = '0';
     });
   }
 
