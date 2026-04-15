@@ -32,6 +32,7 @@ import {
 } from './actions';
 import { handleSaveProfileSelector, userAccountSelector } from './selectors';
 import * as ProfileApiService from './services';
+import { getSectionById, getSectionInitialData, getSectionPayload } from '../biodata/utils';
 
 export function* handleFetchProfile(action) {
   const { username } = action.payload;
@@ -98,9 +99,10 @@ export function* handleFetchProfile(action) {
 
 export function* handleSaveProfile(action) {
   try {
-    const { drafts, preferences } = yield select(handleSaveProfileSelector);
+    const { drafts, preferences, account } = yield select(handleSaveProfileSelector);
+    const biodataSection = getSectionById(action.payload.formId);
 
-    const accountDrafts = pick(drafts, [
+    let accountDrafts = pick(drafts, [
       'bio',
       'country',
       'levelOfEducation',
@@ -109,7 +111,7 @@ export function* handleSaveProfile(action) {
       'socialLinks',
     ]);
 
-    const preferencesDrafts = pick(drafts, [
+    let preferencesDrafts = pick(drafts, [
       'visibilityBio',
       'visibilityCountry',
       'visibilityLevelOfEducation',
@@ -117,6 +119,16 @@ export function* handleSaveProfile(action) {
       'visibilityName',
       'visibilitySocialLinks',
     ]);
+
+    if (biodataSection) {
+      const sectionDraft = drafts[action.payload.formId]
+        || getSectionInitialData(biodataSection, account.extendedProfile || []);
+
+      accountDrafts = {
+        extendedProfile: getSectionPayload(biodataSection, sectionDraft),
+      };
+      preferencesDrafts = {};
+    }
 
     if (Object.keys(preferencesDrafts).length > 0) {
       preferencesDrafts.accountPrivacy = 'custom';
