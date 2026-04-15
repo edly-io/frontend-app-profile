@@ -18,6 +18,9 @@ jest.mock('./services', () => ({
   deleteProfilePhoto: jest.fn(),
   getPreferences: jest.fn(),
   getAccount: jest.fn(),
+  getBiodataProfile: jest.fn(),
+  saveBiodataSection: jest.fn(),
+  validateBiodataSection: jest.fn(),
   getCourseCertificates: jest.fn(),
   getCountryList: jest.fn(),
 }));
@@ -68,7 +71,8 @@ describe('RootSaga', () => {
       const action = profileActions.fetchProfile('gonzo');
       const gen = handleFetchProfile(action);
 
-      const result = [userAccount, [1, 2, 3], [], { preferences: 'stuff' }];
+      const biodata = [{ fieldName: 'profile_full_name', fieldValue: 'Gonzo' }];
+      const result = [userAccount, [1, 2, 3], [], { preferences: 'stuff' }, biodata];
 
       expect(gen.next().value).toEqual(select(userAccountSelector));
       expect(gen.next(selectorData).value).toEqual(put(profileActions.fetchProfileBegin()));
@@ -77,9 +81,13 @@ describe('RootSaga', () => {
         call(ProfileApiService.getCourseCertificates, 'gonzo'),
         call(ProfileApiService.getCountryList),
         call(ProfileApiService.getPreferences, 'gonzo'),
+        call(ProfileApiService.getBiodataProfile),
       ]));
       expect(gen.next(result).value)
-        .toEqual(put(profileActions.fetchProfileSuccess(userAccount, result[3], result[1], true, [])));
+        .toEqual(put(profileActions.fetchProfileSuccess({
+          ...userAccount,
+          extendedProfile: biodata,
+        }, result[3], result[1], true, [])));
       expect(gen.next().value).toEqual(put(profileActions.fetchProfileReset()));
       expect(gen.next().value).toBeUndefined();
     });
@@ -121,6 +129,9 @@ describe('RootSaga', () => {
         name: 'Full Name',
       },
       preferences: {},
+      account: {
+        extendedProfile: [],
+      },
     };
 
     it('should successfully process a saveProfile request if there are no exceptions', () => {
@@ -142,6 +153,49 @@ describe('RootSaga', () => {
       expect(gen.next().value).toEqual(put(profileActions.saveProfileReset()));
       expect(gen.next().value).toEqual(put(profileActions.resetDrafts()));
       expect(gen.next().value).toBeUndefined();
+    });
+
+    it('should save a biodata section through the biodata service flow', () => {
+      const action = profileActions.saveProfile('basicInformation', 'my username');
+      const gen = handleSaveProfile(action);
+      const selectorPayload = {
+        ...selectorData,
+        drafts: {
+          basicInformation: {
+            profile_full_name: 'Full Name',
+          },
+        },
+        account: {
+          extendedProfile: [],
+        },
+      };
+      const savedAccount = {
+        extendedProfile: [{ fieldName: 'profile_full_name', fieldValue: 'Full Name' }],
+      };
+
+      expect(gen.next().value).toEqual(select(handleSaveProfileSelector));
+      expect(gen.next(selectorPayload).value).toEqual(put(profileActions.saveProfileBegin()));
+      expect(gen.next().value).toEqual(call(
+        ProfileApiService.saveBiodataSection,
+        'basicInformation',
+        selectorPayload.drafts.basicInformation,
+        {
+          daughters: '',
+          date_of_birth: '',
+          district_of_domicile: '',
+          identity_card_number: '',
+          marital_status: '',
+          number_of_children: '',
+          place_of_birth: '',
+          preferred_calling_name: '',
+          profile_full_name: '',
+          profile_title: '',
+          religion: '',
+          sons: '',
+        },
+        [],
+      ));
+      expect(gen.next(savedAccount).value).toEqual(put(profileActions.saveProfileSuccess(savedAccount, {})));
     });
 
     it('should successfully publish a failure action on exception', () => {

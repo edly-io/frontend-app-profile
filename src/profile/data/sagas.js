@@ -32,6 +32,8 @@ import {
 } from './actions';
 import { handleSaveProfileSelector, userAccountSelector } from './selectors';
 import * as ProfileApiService from './services';
+import { getSectionById } from '../biodata/utils';
+import { buildSectionDraftFromExtendedProfile } from '../biodata/apiTransforms';
 
 export function* handleFetchProfile(action) {
   const { username } = action.payload;
@@ -41,6 +43,7 @@ export function* handleFetchProfile(action) {
   let account = userAccount;
   let courseCertificates = null;
   let countriesCodesList = [];
+  let biodataExtendedProfile = [];
 
   try {
     yield put(fetchProfileBegin());
@@ -53,12 +56,17 @@ export function* handleFetchProfile(action) {
 
     if (isAuthenticatedUserProfile) {
       calls.push(call(ProfileApiService.getPreferences, username));
+      calls.push(call(ProfileApiService.getBiodataProfile));
     }
 
     const result = yield all(calls);
 
     if (isAuthenticatedUserProfile) {
-      [account, courseCertificates, countriesCodesList, preferences] = result;
+      [account, courseCertificates, countriesCodesList, preferences, biodataExtendedProfile] = result;
+      account = {
+        ...account,
+        extendedProfile: biodataExtendedProfile,
+      };
     } else {
       [account, courseCertificates, countriesCodesList] = result;
     }
@@ -98,9 +106,10 @@ export function* handleFetchProfile(action) {
 
 export function* handleSaveProfile(action) {
   try {
-    const { drafts, preferences } = yield select(handleSaveProfileSelector);
+    const { drafts, preferences, account } = yield select(handleSaveProfileSelector);
+    const biodataSection = getSectionById(action.payload.formId);
 
-    const accountDrafts = pick(drafts, [
+    let accountDrafts = pick(drafts, [
       'bio',
       'country',
       'levelOfEducation',
@@ -109,7 +118,7 @@ export function* handleSaveProfile(action) {
       'socialLinks',
     ]);
 
-    const preferencesDrafts = pick(drafts, [
+    let preferencesDrafts = pick(drafts, [
       'visibilityBio',
       'visibilityCountry',
       'visibilityLevelOfEducation',
@@ -118,19 +127,39 @@ export function* handleSaveProfile(action) {
       'visibilitySocialLinks',
     ]);
 
+    yield put(saveProfileBegin());
+
+    if (biodataSection) {
+      const sectionDraft = drafts[action.payload.formId]
+        || buildSectionDraftFromExtendedProfile(action.payload.formId, account.extendedProfile || []);
+      const committedSectionData = buildSectionDraftFromExtendedProfile(
+        action.payload.formId,
+        account.extendedProfile || [],
+      );
+
+      accountDrafts = yield call(
+        ProfileApiService.saveBiodataSection,
+        action.payload.formId,
+        sectionDraft,
+        committedSectionData,
+        account.extendedProfile || [],
+      );
+      preferencesDrafts = {};
+    }
+
     if (Object.keys(preferencesDrafts).length > 0) {
       preferencesDrafts.accountPrivacy = 'custom';
     }
-
-    yield put(saveProfileBegin());
     let accountResult = null;
 
-    if (Object.keys(accountDrafts).length > 0) {
+    if (Object.keys(accountDrafts).length > 0 && !biodataSection) {
       accountResult = yield call(
         ProfileApiService.patchProfile,
         action.payload.username,
         accountDrafts,
       );
+    } else if (Object.keys(accountDrafts).length > 0) {
+      accountResult = accountDrafts;
     }
 
     let preferencesResult = preferences;

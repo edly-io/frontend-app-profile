@@ -2,6 +2,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { logError } from '@edx/frontend-platform/logging';
 import {
   getAccount,
+  getBiodataProfile,
   patchProfile,
   postProfilePhoto,
   deleteProfilePhoto,
@@ -9,6 +10,8 @@ import {
   patchPreferences,
   getCourseCertificates,
   getCountryList,
+  saveBiodataSection,
+  validateBiodataSection,
 } from './services';
 
 import { FIELD_LABELS } from './constants';
@@ -18,7 +21,9 @@ import { camelCaseObject, snakeCaseObject, convertKeyNames } from '../utils';
 // --- Mocks ---
 jest.mock('@edx/frontend-platform', () => ({
   ensureConfig: jest.fn(),
-  getConfig: jest.fn(() => ({ LMS_BASE_URL: 'http://fake-lms' })),
+  getConfig: jest.fn(() => ({
+    LMS_BASE_URL: 'http://fake-lms',
+  })),
 }));
 
 jest.mock('@edx/frontend-platform/auth', () => ({
@@ -59,6 +64,88 @@ describe('services', () => {
       expect(mockHttpClient.get).toHaveBeenCalledWith(
         'http://fake-lms/api/user/v1/accounts/john',
       );
+    });
+  });
+
+  describe('getBiodataProfile', () => {
+    it('should load configured flat and repeatable biodata endpoints into extendedProfile shape', async () => {
+      mockHttpClient.get.mockImplementation((url) => {
+        if (url.endsWith('/basic-information/')) {
+          return Promise.resolve({
+            data: {
+              full_name: 'John Doe',
+              marital_status: 'single',
+            },
+          });
+        }
+
+        if (url.endsWith('/education/')) {
+          return Promise.resolve({
+            data: { results: [{ id: 10, institute: 'NDU' }] },
+          });
+        }
+
+        if (url.endsWith('/languages/')) {
+          return Promise.resolve({
+            data: [{
+              id: 11,
+              language: 'English',
+              speaking: 'Basic',
+              reading: 'Advanced',
+              writing: 'Native',
+            }],
+          });
+        }
+
+        return Promise.resolve({ data: {} });
+      });
+
+      const result = await getBiodataProfile();
+
+      expect(result).toEqual(expect.arrayContaining([
+        expect.objectContaining({ fieldName: 'profile_full_name', fieldValue: 'John Doe' }),
+        expect.objectContaining({ fieldName: 'marital_status', fieldValue: 'single' }),
+        expect.objectContaining({
+          fieldName: 'education_records',
+          fieldValue: [expect.objectContaining({ educational_institute: 'NDU', backendId: 10 })],
+        }),
+        expect.objectContaining({
+          fieldName: 'language_proficiencies',
+          fieldValue: [expect.objectContaining({
+            language_name: 'English',
+            speaking_proficiency: 'Basic',
+            reading_proficiency: 'Advanced',
+            writing_proficiency: 'Native',
+            backendId: 11,
+          })],
+        }),
+      ]));
+    });
+
+    it('should return empty biodata state instead of failing when biodata endpoints are missing', async () => {
+      mockHttpClient.get.mockImplementation((url) => {
+        if (url.endsWith('/basic-information/')) {
+          const error = new Error('missing basic information endpoint');
+          error.response = { status: 404 };
+          return Promise.reject(error);
+        }
+
+        if (url.endsWith('/education/')) {
+          const error = new Error('missing education endpoint');
+          error.response = { status: 404 };
+          return Promise.reject(error);
+        }
+
+        return Promise.resolve({ data: {} });
+      });
+
+      const result = await getBiodataProfile();
+
+      expect(Array.isArray(result)).toBe(true);
+      expect(result).toEqual(expect.arrayContaining([
+        expect.objectContaining({ fieldName: 'profile_full_name', fieldValue: '' }),
+        expect.objectContaining({ fieldName: 'education_records', fieldValue: [] }),
+      ]));
     });
   });
 
@@ -169,6 +256,176 @@ describe('services', () => {
       const result = await getCountryList();
       expect(result).toEqual([]);
       expect(logError).toHaveBeenCalled();
+    });
+  });
+
+  describe('validateBiodataSection', () => {
+    it('should post validation payload to the biodata validation endpoint', async () => {
+      mockHttpClient.post.mockResolvedValue({});
+
+      await validateBiodataSection('basicInformation', {
+        profile_full_name: 'John Doe',
+      });
+
+      expect(mockHttpClient.post).toHaveBeenCalledWith(
+        expect.stringMatching(/\/validate\/$/),
+        expect.objectContaining({
+          section: 'basicInformation',
+          flat: expect.objectContaining({
+            full_name: 'John Doe',
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('saveBiodataSection', () => {
+    it('should patch flat biodata sections and return refreshed extendedProfile', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.get.mockResolvedValue({ data: {} });
+
+      const result = await saveBiodataSection(
+        'basicInformation',
+        { profile_full_name: 'John Doe' },
+        { profile_full_name: '' },
+      );
+
+      expect(mockHttpClient.patch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/basic-information\/$/),
+        expect.objectContaining({
+          full_name: 'John Doe',
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      expect(result).toHaveProperty('extendedProfile');
+    });
+
+    it('should map backend validation errors to UI field names', async () => {
+      const error = new Error('validation failed');
+      error.response = {
+        data: {
+          cnic: ['Enter a valid CNIC in the format XXXXX-XXXXXXX-X.'],
+        },
+      };
+      mockHttpClient.patch.mockRejectedValue(error);
+
+      await expect(saveBiodataSection(
+        'basicInformation',
+        { identity_card_number: 'bad' },
+        { identity_card_number: '' },
+      )).rejects.toMatchObject({
+        processedData: {
+          fieldErrors: {
+            identity_card_number: {
+              userMessage: 'Enter a valid CNIC in the format XXXXX-XXXXXXX-X.',
+            },
+          },
+        },
+      });
+    });
+
+    it('should map language repeatable row payload fields to backend keys', async () => {
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.get.mockResolvedValue({ data: { results: [] } });
+
+      await saveBiodataSection(
+        'languages',
+        {
+          language_proficiencies: [{
+            rowId: 'row-1',
+            language_name: 'English',
+            speaking_proficiency: 'Native',
+            reading_proficiency: 'Native',
+            writing_proficiency: 'Advanced',
+          }],
+        },
+        {
+          language_proficiencies: [],
+        },
+      );
+
+      expect(mockHttpClient.post).toHaveBeenCalledWith(
+        expect.stringMatching(/\/languages\/$/),
+        expect.objectContaining({
+          language: 'English',
+          speaking: 'Native',
+          reading: 'Native',
+          writing: 'Advanced',
+        }),
+      );
+    });
+
+    it('should map education repeatable row payload fields to backend keys', async () => {
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.get.mockResolvedValue({ data: { results: [] } });
+
+      await saveBiodataSection(
+        'education',
+        {
+          education_records: [{
+            rowId: 'row-1',
+            educational_institute: 'UOS',
+            attended_from: '2005-06-21',
+            attended_to: '2009-09-25',
+            examination: 'Bachelors',
+            year_of_passing: '2009',
+            grade_division: '',
+            subjects_studied: 'computer science',
+          }],
+        },
+        {
+          education_records: [],
+        },
+      );
+
+      expect(mockHttpClient.post).toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/$/),
+        expect.objectContaining({
+          institute: 'UOS',
+          attended_from: '2005-06-21',
+          attended_to: '2009-09-25',
+          examination: 'Bachelors',
+          year_of_passing: '2009',
+          grade: '',
+          subjects: 'computer science',
+        }),
+      );
+    });
+
+    it('should map repeatable backend validation errors to UI field names', async () => {
+      const error = new Error('validation failed');
+      error.response = {
+        data: {
+          language: ['This field is required.'],
+        },
+      };
+      mockHttpClient.post.mockRejectedValue(error);
+
+      await expect(saveBiodataSection(
+        'languages',
+        {
+          language_proficiencies: [{
+            rowId: 'row-1',
+            language_name: '',
+            speaking_proficiency: 'Native',
+            reading_proficiency: 'Native',
+            writing_proficiency: 'Advanced',
+          }],
+        },
+        {
+          language_proficiencies: [],
+        },
+      )).rejects.toMatchObject({
+        processedData: {
+          fieldErrors: {
+            language_name: {
+              userMessage: 'This field is required.',
+            },
+          },
+        },
+      });
     });
   });
 });

@@ -151,9 +151,11 @@ export const profileImageSelector = createSelector(
 export const handleSaveProfileSelector = createSelector(
   profileDraftsSelector,
   profilePreferencesSelector,
-  (drafts, preferences) => ({
+  profileAccountSelector,
+  (drafts, preferences, account) => ({
     drafts,
     preferences,
+    account,
   }),
 );
 

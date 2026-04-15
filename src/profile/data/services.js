@@ -3,6 +3,23 @@ import { getAuthenticatedHttpClient as getHttpClient } from '@edx/frontend-platf
 import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject, convertKeyNames, snakeCaseObject } from '../utils';
 import { FIELD_LABELS } from './constants';
+import {
+  BIODATA_API_DEFAULT_BASE_PATH,
+  BIODATA_VALIDATE_PATH,
+  getConfiguredBiodataSections,
+  getSectionEndpointConfig,
+  getSectionRepeatableConfigs,
+} from '../biodata/apiConfig';
+import {
+  buildBiodataExtendedProfile,
+  buildSectionExtendedProfile,
+  buildValidationPayload,
+  mapSectionDataToFlatPayload,
+  mapSectionDataToRepeatablePayloads,
+  mergeSectionIntoExtendedProfile,
+  normalizeBiodataErrorForSection,
+} from '../biodata/apiTransforms';
+import { getSectionById } from '../biodata/utils';
 
 ensureConfig(['LMS_BASE_URL'], 'Profile API service');
 
@@ -30,6 +47,136 @@ function processAndThrowError(error, errorDataProcessor) {
   } else {
     throw error;
   }
+}
+
+function normalizeBiodataPath(path) {
+  return path.replace(/^\//, '');
+}
+
+function getBiodataApiBaseUrl() {
+  const { LMS_BASE_URL, BIODATA_API_BASE_URL } = getConfig();
+
+  if (BIODATA_API_BASE_URL) {
+    return BIODATA_API_BASE_URL.replace(/\/$/, '');
+  }
+
+  return `${LMS_BASE_URL}${BIODATA_API_DEFAULT_BASE_PATH}`;
+}
+
+function getBiodataEndpointUrl(path) {
+  return `${getBiodataApiBaseUrl()}/${normalizeBiodataPath(path)}`;
+}
+
+function normalizeBiodataPayload(payload) {
+  return snakeCaseObject(payload);
+}
+
+function isMissingBiodataResponse(error) {
+  const status = error?.response?.status;
+  return status === 404 || status === 403;
+}
+
+async function getFlatBiodataSection(section) {
+  const sectionEndpointConfig = getSectionEndpointConfig(section.id);
+
+  if (!sectionEndpointConfig?.flat?.path) {
+    return null;
+  }
+
+  try {
+    const { data } = await getHttpClient().get(getBiodataEndpointUrl(sectionEndpointConfig.flat.path));
+    return data && typeof data === 'object' ? snakeCaseObject(data) : {};
+  } catch (error) {
+    if (isMissingBiodataResponse(error)) {
+      return {};
+    }
+
+    logError(error);
+    return {};
+  }
+}
+
+async function getRepeatableBiodataSection(section, repeatable, endpoint) {
+  try {
+    const { data } = await getHttpClient().get(getBiodataEndpointUrl(endpoint.path));
+    const rows = Array.isArray(data) ? data : data?.results || [];
+
+    return {
+      storageFieldName: repeatable.storageFieldName,
+      rows: rows.map(row => snakeCaseObject(row)),
+    };
+  } catch (error) {
+    if (!isMissingBiodataResponse(error)) {
+      logError(error);
+    }
+
+    return {
+      storageFieldName: repeatable.storageFieldName,
+      rows: [],
+    };
+  }
+}
+
+async function getBiodataSectionProfile(sectionId) {
+  const section = getSectionById(sectionId);
+
+  if (!section) {
+    return [];
+  }
+
+  const [flatResponse, ...repeatableResponses] = await Promise.all([
+    getFlatBiodataSection(section),
+    ...getSectionRepeatableConfigs(section)
+      .map(({ repeatable, endpoint }) => getRepeatableBiodataSection(section, repeatable, endpoint)),
+  ]);
+
+  const repeatableResponsesByKey = repeatableResponses.reduce((accumulator, { storageFieldName, rows }) => {
+    accumulator[storageFieldName] = rows;
+    return accumulator;
+  }, {});
+
+  return buildSectionExtendedProfile(sectionId, flatResponse || {}, repeatableResponsesByKey);
+}
+
+async function updateRepeatableRows(endpointPath, committedRows, draftRows) {
+  const committedRowMap = committedRows.reduce((accumulator, row) => {
+    if (row.backendId != null) {
+      accumulator[String(row.backendId)] = row;
+    }
+    return accumulator;
+  }, {});
+
+  const draftRowMap = draftRows.reduce((accumulator, row) => {
+    if (row.backendId != null) {
+      accumulator[String(row.backendId)] = row;
+    }
+    return accumulator;
+  }, {});
+
+  const operations = [];
+
+  draftRows.forEach((row) => {
+    const payload = normalizeBiodataPayload(row.values);
+    if (row.backendId != null) {
+      operations.push(getHttpClient().patch(
+        getBiodataEndpointUrl(`${endpointPath}${row.backendId}/`),
+        payload,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ));
+    } else {
+      operations.push(getHttpClient().post(getBiodataEndpointUrl(endpointPath), payload));
+    }
+  });
+
+  Object.keys(committedRowMap).forEach((backendId) => {
+    if (!draftRowMap[backendId]) {
+      operations.push(getHttpClient().delete(getBiodataEndpointUrl(`${endpointPath}${backendId}/`)));
+    }
+  });
+
+  await Promise.all(operations);
 }
 
 export async function getAccount(username) {
@@ -164,5 +311,103 @@ export async function getCountryList() {
   } catch (e) {
     logError(e);
     return [];
+  }
+}
+
+export async function getBiodataProfile() {
+  const sections = getConfiguredBiodataSections();
+  const flatResponsesBySection = {};
+  const repeatableResponsesByKey = {};
+
+  await Promise.all(sections.map(async (section) => {
+    const [flatResponse, ...repeatableResponses] = await Promise.all([
+      getFlatBiodataSection(section),
+      ...getSectionRepeatableConfigs(section)
+        .map(({ repeatable, endpoint }) => getRepeatableBiodataSection(section, repeatable, endpoint)),
+    ]);
+
+    if (flatResponse) {
+      flatResponsesBySection[section.id] = flatResponse;
+    }
+
+    repeatableResponses.forEach(({ storageFieldName, rows }) => {
+      repeatableResponsesByKey[storageFieldName] = rows;
+    });
+  }));
+
+  return buildBiodataExtendedProfile(flatResponsesBySection, repeatableResponsesByKey);
+}
+
+export async function validateBiodataSection(sectionId, sectionData) {
+  const section = getSectionById(sectionId);
+
+  if (!section) {
+    return null;
+  }
+
+  const payload = normalizeBiodataPayload(buildValidationPayload(section, sectionData));
+  try {
+    await getHttpClient().post(getBiodataEndpointUrl(BIODATA_VALIDATE_PATH), payload);
+    return null;
+  } catch (error) {
+    throw normalizeBiodataErrorForSection(error, sectionId);
+  }
+}
+
+export async function saveBiodataSection(sectionId, sectionData, committedData, currentExtendedProfile = []) {
+  const section = getSectionById(sectionId);
+  const sectionEndpointConfig = getSectionEndpointConfig(sectionId);
+
+  if (!section || !sectionEndpointConfig) {
+    return { extendedProfile: [] };
+  }
+
+  try {
+    if (sectionEndpointConfig.flat?.path) {
+      const flatPayload = normalizeBiodataPayload(mapSectionDataToFlatPayload(section, sectionData));
+      await getHttpClient().patch(
+        getBiodataEndpointUrl(sectionEndpointConfig.flat.path),
+        flatPayload,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
+    const repeatablePayloads = mapSectionDataToRepeatablePayloads(section, sectionData);
+    const committedRepeatablePayloads = mapSectionDataToRepeatablePayloads(section, committedData || {});
+
+    await Promise.all(repeatablePayloads.map(async (payload) => {
+      if (Object.keys(payload.extraFields).length > 0 && sectionEndpointConfig.flat?.path) {
+        await getHttpClient().patch(
+          getBiodataEndpointUrl(sectionEndpointConfig.flat.path),
+          normalizeBiodataPayload(payload.extraFields),
+          {
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+      }
+
+      const committedRepeatable = committedRepeatablePayloads.find(
+        item => item.repeatable.storageFieldName === payload.repeatable.storageFieldName,
+      );
+
+      await updateRepeatableRows(
+        payload.endpoint.path,
+        committedRepeatable?.rows || [],
+        payload.rows,
+      );
+    }));
+
+    const savedSectionProfile = await getBiodataSectionProfile(sectionId);
+    return {
+      extendedProfile: mergeSectionIntoExtendedProfile(
+        sectionId,
+        currentExtendedProfile,
+        savedSectionProfile,
+      ),
+    };
+  } catch (error) {
+    throw normalizeBiodataErrorForSection(error, sectionId);
   }
 }
