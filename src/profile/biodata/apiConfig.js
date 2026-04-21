@@ -389,9 +389,11 @@ export function getRepeatableExtraFieldNames(sectionId, storageFieldName) {
 }
 
 export function getRepeatableExtraUiToApiFieldMap(sectionId, storageFieldName) {
-  const extraFieldMap =
+  const extraFieldMap = (
     getSectionRepeatableEndpointConfig(sectionId, storageFieldName)
-      ?.extraFieldMap || {};
+      ?.extraFieldMap
+    || {}
+  );
 
   return Object.entries(extraFieldMap).reduce(
     (accumulator, [apiFieldName, uiFieldName]) => {
@@ -415,9 +417,10 @@ export function getSectionRepeatableConfigs(section) {
 }
 
 export function getRepeatableUiToApiFieldMap(sectionId, storageFieldName) {
-  const fieldMap =
-    getSectionRepeatableEndpointConfig(sectionId, storageFieldName)?.fieldMap ||
-    {};
+  const fieldMap = (
+    getSectionRepeatableEndpointConfig(sectionId, storageFieldName)?.fieldMap
+    || {}
+  );
 
   return Object.entries(fieldMap).reduce(
     (accumulator, [apiFieldName, uiFieldName]) => {
@@ -430,8 +433,8 @@ export function getRepeatableUiToApiFieldMap(sectionId, storageFieldName) {
 
 export function getRepeatableApiToUiFieldMap(sectionId, storageFieldName) {
   return (
-    getSectionRepeatableEndpointConfig(sectionId, storageFieldName)?.fieldMap ||
-    {}
+    getSectionRepeatableEndpointConfig(sectionId, storageFieldName)?.fieldMap
+    || {}
   );
 }
 

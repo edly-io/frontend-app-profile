@@ -271,7 +271,9 @@ export const BIODATA_SECTIONS = [
         columns: [
           { key: 'examination_name', label: 'Examination name', placeholder: 'Enter examination name' },
           { key: 'agency_holding_examination', label: 'Agency holding examination', placeholder: 'Enter agency name' },
-          { key: 'year', label: 'Year', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter year' },
+          {
+            key: 'year', label: 'Year', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter year',
+          },
           {
             key: 'result_details', label: 'Result details', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter result details',
           },
@@ -338,7 +340,9 @@ export const BIODATA_SECTIONS = [
         },
         columns: [
           { key: 'subject', label: 'Subject', placeholder: 'Enter subject' },
-          { key: 'total_marks', label: 'Total Marks', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter total marks' },
+          {
+            key: 'total_marks', label: 'Total Marks', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter total marks',
+          },
           {
             key: 'marks_obtained',
             label: 'Marks Obtained',
