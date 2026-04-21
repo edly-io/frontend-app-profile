@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Alert, Button, Form, StatefulButton,
@@ -7,15 +7,24 @@ import {
 import SwitchContent from '../forms/elements/SwitchContent';
 
 import { PROFILE_FIELD_TYPES } from './config';
+import { BiodataFileActions, BiodataFilePreview } from './BiodataFilePreview';
 import RepeatableFieldGroup from './RepeatableFieldGroup';
 import {
+  createFileUploadValue,
   createEmptyRepeatableRow,
   getSectionError,
+  getSectionErrorFields,
+  getSectionErrorSummary,
   getSectionInitialData,
   getSanitizedSectionData,
-  isSingleMaritalStatus,
-  readFileAsDataUrl,
+  getVisibleSectionFields,
+  getVisibleSectionRepeatables,
+  isProtectedRepeatableColumn,
+  isProtectedRepeatableRow,
+  normalizeRepeatableRows,
+  revokeFilePreviewUrl,
   sectionHasValue,
+  shouldShowSpouseInformation,
 } from './utils';
 
 function renderFieldControl(field, value, onChange, error, disabled = false) {
@@ -89,15 +98,40 @@ function renderReadonlyFile(field, fileValue) {
   return (
     <div className="border rounded p-3 mb-3 bg-light-200">
       <p className="h6 font-weight-bold mb-2">{field.label}</p>
-      <img
-        src={fileValue.dataUrl || fileValue.url}
-        alt={`${field.label} preview`}
-        className="border rounded p-2 bg-white"
-        style={{ maxWidth: '14rem', maxHeight: '5rem', objectFit: 'contain' }}
+      <BiodataFileActions
+        field={field}
+        fileValue={fileValue}
+        disabled
+        onReplace={() => {}}
+        onRemove={() => {}}
       />
-      <p className="small text-muted mt-2 mb-0">{fileValue.name}</p>
+      <BiodataFilePreview field={field} fileValue={fileValue} />
     </div>
   );
+}
+
+function revokeSectionFilePreviews(section, data) {
+  (section.fileFields || []).forEach((field) => {
+    revokeFilePreviewUrl(data?.[field.fieldName]);
+  });
+
+  (section.repeatables || []).forEach((repeatable) => {
+    (data?.[repeatable.storageFieldName] || []).forEach((row) => {
+      (repeatable.columns || []).forEach((column) => {
+        if (column.type === PROFILE_FIELD_TYPES.FILE) {
+          revokeFilePreviewUrl(row?.[column.key]);
+        }
+      });
+    });
+  });
+}
+
+function revokeRepeatableRowFilePreviews(row, repeatable) {
+  (repeatable.columns || []).forEach((column) => {
+    if (column.type === PROFILE_FIELD_TYPES.FILE) {
+      revokeFilePreviewUrl(row?.[column.key]);
+    }
+  });
 }
 
 const BiodataSection = ({
@@ -114,6 +148,10 @@ const BiodataSection = ({
   spacingClassName,
   showInlineTitle,
   forceEditingWhenEmpty,
+  showCancelButton,
+  showSubmitButton,
+  submitLabels,
+  isLocked,
 }) => {
   const committedData = useMemo(
     () => getSectionInitialData(section, extendedProfile),
@@ -123,8 +161,21 @@ const BiodataSection = ({
     () => getSanitizedSectionData(section, draftValue || committedData),
     [section, draftValue, committedData],
   );
+  const formDataRef = useRef(formData);
+  const sectionRef = useRef(section);
   const hasContent = sectionHasValue(section, committedData);
   const sectionError = getSectionError(section, errors);
+  const sectionErrorSummary = getSectionErrorSummary(section, errors, formData);
+  const sectionErrorFields = getSectionErrorFields(section, errors, formData);
+
+  useEffect(() => {
+    formDataRef.current = formData;
+    sectionRef.current = section;
+  }, [formData, section]);
+
+  useEffect(() => () => {
+    revokeSectionFilePreviews(sectionRef.current, formDataRef.current);
+  }, []);
 
   if (!isAuthenticatedUserProfile && !hasContent) {
     return null;
@@ -133,6 +184,8 @@ const BiodataSection = ({
   let editMode = 'editing';
   if (!isAuthenticatedUserProfile) {
     editMode = 'static';
+  } else if (isLocked) {
+    editMode = 'readonly';
   } else if (isEditing) {
     editMode = 'editing';
   } else if (hasContent) {
@@ -147,7 +200,7 @@ const BiodataSection = ({
       [fieldName]: value,
     };
 
-    if (section.id === 'basicInformation' && fieldName === 'marital_status' && isSingleMaritalStatus(value)) {
+    if (section.id === 'basicInformation' && fieldName === 'marital_status' && !shouldShowSpouseInformation(value)) {
       nextFormData.number_of_children = '0';
       nextFormData.sons = '0';
       nextFormData.daughters = '0';
@@ -161,17 +214,30 @@ const BiodataSection = ({
     let nextRows = currentRows;
 
     if (action === 'addRow') {
-      nextRows = [...currentRows, createEmptyRepeatableRow(repeatable)];
+      const nextRow = createEmptyRepeatableRow(repeatable);
+      nextRows = [...currentRows, nextRow];
     } else if (action === 'removeRow') {
+      if (isProtectedRepeatableRow(currentRows[payload.rowIndex], repeatable)) {
+        return;
+      }
+      revokeRepeatableRowFilePreviews(currentRows[payload.rowIndex], repeatable);
       nextRows = currentRows.filter((_, index) => index !== payload.rowIndex);
       if (nextRows.length === 0) {
         nextRows = [createEmptyRepeatableRow(repeatable)];
       }
     } else if (action === 'updateCell') {
+      if (
+        payload.columnKey === repeatable.autoPriorityKey
+        || isProtectedRepeatableColumn(currentRows[payload.rowIndex], repeatable, payload.columnKey)
+      ) {
+        return;
+      }
       nextRows = currentRows.map((row, index) => (
         index === payload.rowIndex ? { ...row, [payload.columnKey]: payload.value } : row
       ));
     }
+
+    nextRows = normalizeRepeatableRows(nextRows, repeatable);
 
     onDraftChange(section.id, {
       ...formData,
@@ -184,14 +250,19 @@ const BiodataSection = ({
       return;
     }
 
-    const dataUrl = await readFileAsDataUrl(file);
+    revokeFilePreviewUrl(formData[fieldName]);
+
     onDraftChange(section.id, {
       ...formData,
       [fieldName]: {
-        name: file.name,
-        dataUrl,
+        ...createFileUploadValue(file),
       },
     });
+  };
+
+  const handleFileRemove = (fieldName) => {
+    revokeFilePreviewUrl(formData[fieldName]);
+    handleFieldChange(fieldName, null);
   };
 
   const handleSectionNaChange = (value) => {
@@ -209,11 +280,8 @@ const BiodataSection = ({
   };
 
   const isSectionDisabled = Boolean(section.naFieldName && formData[section.naFieldName]);
-  const visibleFields = (section.fields || []).filter((field) => (
-    section.id !== 'basicInformation'
-    || !['number_of_children', 'sons', 'daughters'].includes(field.fieldName)
-    || !isSingleMaritalStatus(formData.marital_status)
-  ));
+  const visibleFields = getVisibleSectionFields(section, formData);
+  const visibleRepeatables = getVisibleSectionRepeatables(section, formData);
   const renderFormFields = (disabled = false) => (
     <>
       {section.naFieldName && (
@@ -246,7 +314,7 @@ const BiodataSection = ({
                 disabled || isSectionDisabled,
               )}
               {!disabled && error && error.userMessage && (
-                <Form.Control.Feedback hasIcon={false}>
+                <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-1">
                   {error.userMessage}
                 </Form.Control.Feedback>
               )}
@@ -254,7 +322,7 @@ const BiodataSection = ({
           );
         })}
       </div>
-      {(section.repeatables || []).map((repeatable) => (
+      {visibleRepeatables.map((repeatable) => (
         <div key={repeatable.storageFieldName} className="mb-3">
           {repeatable.naFieldName && (
             <Form.Group className="mb-2">
@@ -271,6 +339,7 @@ const BiodataSection = ({
           <RepeatableFieldGroup
             repeatable={repeatable}
             rows={formData[repeatable.storageFieldName] || [createEmptyRepeatableRow(repeatable)]}
+            errors={errors}
             onChange={(action, payload) => handleRepeatableChange(repeatable, action, payload)}
             disabled={
               disabled
@@ -282,60 +351,48 @@ const BiodataSection = ({
       ))}
       {(section.fileFields || []).map((field) => {
         const fileValue = formData[field.fieldName];
-        if (disabled) {
+        const error = errors[field.fieldName];
+        if (disabled || isSectionDisabled) {
           return <div key={field.fieldName}>{renderReadonlyFile(field, fileValue)}</div>;
         }
 
         return (
-          <div key={field.fieldName} className="border rounded p-3 mb-3 bg-light-200">
+          <div
+            key={field.fieldName}
+            className={`border rounded p-3 mb-3 bg-light-200${error ? ' border-danger' : ''}`}
+          >
             <p className="h6 font-weight-bold mb-2">{field.label}</p>
-            <div className="d-flex flex-wrap align-items-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline-primary"
-                onClick={() => {
-                  const input = document.getElementById(`${section.id}-${field.fieldName}`);
-                  if (input) {
-                    input.click();
-                  }
-                }}
-              >
-                {fileValue ? `Replace ${field.label.toLowerCase()}` : `Upload ${field.label.toLowerCase()}`}
-              </Button>
-              {fileValue && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="link"
-                  className="text-danger"
-                  onClick={() => handleFieldChange(field.fieldName, null)}
-                >
-                  Remove
-                </Button>
-              )}
-            </div>
+            <BiodataFileActions
+              field={field}
+              fileValue={fileValue}
+              disabled={disabled || isSectionDisabled}
+              onReplace={() => {
+                const input = document.getElementById(`${section.id}-${field.fieldName}`);
+                if (input) {
+                  input.click();
+                }
+              }}
+              onRemove={() => handleFileRemove(field.fieldName)}
+            />
             <input
               id={`${section.id}-${field.fieldName}`}
               type="file"
               accept={field.accept}
               className="d-none"
+              disabled={disabled || isSectionDisabled}
               onChange={(event) => {
                 const input = event.currentTarget;
                 handleFileChange(field.fieldName, event.target.files && event.target.files[0]);
                 input.value = '';
               }}
             />
+            {error && error.userMessage && (
+              <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-2">
+                {error.userMessage}
+              </Form.Control.Feedback>
+            )}
             {fileValue && (
-              <div className="mt-3">
-                <img
-                  src={fileValue.dataUrl || fileValue.url}
-                  alt={`${field.label} preview`}
-                  className="border rounded p-2 bg-white"
-                  style={{ maxWidth: '14rem', maxHeight: '5rem', objectFit: 'contain' }}
-                />
-                <p className="small text-muted mt-2 mb-0">{fileValue.name}</p>
-              </div>
+              <BiodataFilePreview field={field} fileValue={fileValue} />
             )}
           </div>
         );
@@ -366,30 +423,45 @@ const BiodataSection = ({
                 <p className="text-muted small mb-3">{section.helperText}</p>
               )}
               {sectionError && sectionError.userMessage && (
-                <Alert variant="danger" dismissible={false} show className="mb-3">
-                  {sectionError.userMessage}
+                <Alert variant="danger" dismissible={false} show className="mb-3 border-danger">
+                  <p className="font-weight-bold mb-1">
+                    {sectionErrorSummary || 'Please review this section.'}
+                  </p>
+                  {sectionErrorFields.length > 0 && (
+                    <p className="small mb-0">
+                      Highlighted field{sectionErrorFields.length === 1 ? '' : 's'}: {sectionErrorFields.map(({ label }) => label).join(', ')}
+                    </p>
+                  )}
+                  {sectionErrorFields.length === 0 && (
+                    <p className="small mb-0">{sectionError.userMessage}</p>
+                  )}
                 </Alert>
               )}
               {renderFormFields()}
               <div className="d-flex flex-row-reverse flex-wrap justify-content-end align-items-center">
                 <div className="row form-group flex-shrink-0 flex-grow-1 m-0 p-0">
-                  <div className="pr-2 pl-0 m-0">
-                    <Button variant="outline-primary" type="button" onClick={() => onClose(section.id)}>
-                      Cancel
-                    </Button>
-                  </div>
-                  <div className="p-0 m-0">
-                    <StatefulButton
-                      type="submit"
-                      state={saveState === 'error' ? null : saveState}
-                      labels={{
-                        default: 'Save',
-                        pending: 'Saving',
-                        complete: 'Saved',
-                      }}
-                      disabledStates={[]}
-                    />
-                  </div>
+                  {showCancelButton && (
+                    <div className="pr-2 pl-0 m-0">
+                      <Button variant="outline-primary" type="button" onClick={() => onClose(section.id)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                  {showSubmitButton && (
+                    <div className="p-0 m-0">
+                      <StatefulButton
+                        type="submit"
+                        state={saveState === 'error' ? null : saveState}
+                        labels={{
+                          default: 'Save',
+                          pending: 'Saving',
+                          complete: 'Saved',
+                          ...submitLabels,
+                        }}
+                        disabledStates={[]}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </form>
@@ -427,14 +499,19 @@ BiodataSection.propTypes = {
       storageFieldName: PropTypes.string.isRequired,
       itemLabel: PropTypes.string.isRequired,
       addButtonLabel: PropTypes.string.isRequired,
+      autoPriorityKey: PropTypes.string,
       naFieldName: PropTypes.string,
       naLabel: PropTypes.string,
+      protectedRowKey: PropTypes.string,
+      protectedRows: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
+      protectedColumns: PropTypes.arrayOf(PropTypes.string),
       emptyRow: PropTypes.objectOf(PropTypes.string).isRequired,
       columns: PropTypes.arrayOf(PropTypes.shape({
         key: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
         type: PropTypes.string,
         placeholder: PropTypes.string,
+        displayOnly: PropTypes.bool,
       })).isRequired,
     })),
     fileFields: PropTypes.arrayOf(PropTypes.shape({
@@ -467,6 +544,14 @@ BiodataSection.propTypes = {
   spacingClassName: PropTypes.string,
   showInlineTitle: PropTypes.bool,
   forceEditingWhenEmpty: PropTypes.bool,
+  showCancelButton: PropTypes.bool,
+  showSubmitButton: PropTypes.bool,
+  isLocked: PropTypes.bool,
+  submitLabels: PropTypes.shape({
+    default: PropTypes.string,
+    pending: PropTypes.string,
+    complete: PropTypes.string,
+  }),
 };
 
 BiodataSection.defaultProps = {
@@ -477,6 +562,10 @@ BiodataSection.defaultProps = {
   spacingClassName: 'pt-40px',
   showInlineTitle: true,
   forceEditingWhenEmpty: false,
+  showCancelButton: true,
+  showSubmitButton: true,
+  isLocked: false,
+  submitLabels: {},
 };
 
 export default BiodataSection;

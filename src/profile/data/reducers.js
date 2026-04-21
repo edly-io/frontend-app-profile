@@ -153,6 +153,8 @@ const profilePage = (state = initialState, action = {}) => {
       return {
         ...state,
         drafts: { ...state.drafts, [action.payload.name]: action.payload.value },
+        errors: {},
+        saveState: null,
       };
     case RESET_DRAFTS:
       return {

@@ -44,6 +44,7 @@ export function* handleFetchProfile(action) {
   let courseCertificates = null;
   let countriesCodesList = [];
   let biodataExtendedProfile = [];
+  let profileCompletionStatus = null;
 
   try {
     yield put(fetchProfileBegin());
@@ -57,15 +58,24 @@ export function* handleFetchProfile(action) {
     if (isAuthenticatedUserProfile) {
       calls.push(call(ProfileApiService.getPreferences, username));
       calls.push(call(ProfileApiService.getBiodataProfile));
+      calls.push(call(ProfileApiService.getProfileCompletionStatus, username));
     }
 
     const result = yield all(calls);
 
     if (isAuthenticatedUserProfile) {
-      [account, courseCertificates, countriesCodesList, preferences, biodataExtendedProfile] = result;
+      [
+        account,
+        courseCertificates,
+        countriesCodesList,
+        preferences,
+        biodataExtendedProfile,
+        profileCompletionStatus,
+      ] = result;
       account = {
         ...account,
         extendedProfile: biodataExtendedProfile,
+        profileCompletionStatus,
       };
     } else {
       [account, courseCertificates, countriesCodesList] = result;

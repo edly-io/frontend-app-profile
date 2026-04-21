@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext, useCallback,
+  useEffect, useState, useContext, useCallback, useRef,
 } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +23,7 @@ import DateJoined from './DateJoined';
 import UserCertificateSummary from './UserCertificateSummary';
 import PageLoading from './PageLoading';
 import Certificates from './Certificates';
+import OutsideHrmsInstructorForm from './forms/outside-hrms/OutsideHrmsInstructorForm';
 
 import { profilePageSelector } from './data/selectors';
 import messages from './ProfilePage.messages';
@@ -32,6 +33,22 @@ import { useIsOnMobileScreen, useIsOnTabletScreen } from './data/hooks';
 import BiodataProfileSections from './biodata/BiodataProfileSections';
 
 ensureConfig(['CREDENTIALS_BASE_URL', 'LMS_BASE_URL', 'ACCOUNT_SETTINGS_URL'], 'ProfilePage');
+
+const IGNORED_LINK_PROTOCOLS = ['mailto:', 'tel:', 'java'.concat('script:')];
+const LOGOUT_PATH_PATTERN = /(^|\/)(logout|signout|sign-out)(\/|$)/i;
+
+function isLogoutNavigation(targetUrl, config = {}) {
+  const configuredLogoutUrl = config.LOGOUT_URL;
+
+  if (configuredLogoutUrl) {
+    const logoutUrl = new URL(configuredLogoutUrl, window.location.href);
+    if (targetUrl.origin === logoutUrl.origin && targetUrl.pathname === logoutUrl.pathname) {
+      return true;
+    }
+  }
+
+  return LOGOUT_PATH_PATTERN.test(targetUrl.pathname);
+}
 
 const ProfilePage = ({ params }) => {
   const dispatch = useDispatch();
@@ -46,10 +63,14 @@ const ProfilePage = ({ params }) => {
     photoUploadError,
     saveState,
     username,
+    profileCompletionStatus,
   } = useSelector(profilePageSelector);
 
   const navigate = useNavigate();
   const [viewMyRecordsUrl, setViewMyRecordsUrl] = useState(null);
+  const [completionOverride, setCompletionOverride] = useState(false);
+  const [navigationBlocked, setNavigationBlocked] = useState(false);
+  const allowRequiredProfileLogoutRef = useRef(false);
   const isMobileView = useIsOnMobileScreen();
   const isTabletView = useIsOnTabletScreen();
 
@@ -82,6 +103,77 @@ const ProfilePage = ({ params }) => {
   }, [dispatch, authenticatedUserName]);
 
   const isAuthenticatedUserProfile = () => params.username === authenticatedUserName;
+  const isOutsideHrmsLearner = isAuthenticatedUserProfile()
+    && !context.authenticatedUser.administrator;
+  const hasCompletedRequiredProfile = completionOverride
+    || Boolean(profileCompletionStatus?.complete);
+  const shouldBlockNavigation = isAuthenticatedUserProfile()
+    && Boolean(profileCompletionStatus?.required)
+    && !hasCompletedRequiredProfile;
+
+  useEffect(() => {
+    if (!shouldBlockNavigation) {
+      return undefined;
+    }
+
+    const handleClick = (event) => {
+      const link = event.target.closest?.('a[href]');
+      if (!link) {
+        return;
+      }
+
+      const href = link.getAttribute('href');
+      if (!href) {
+        return;
+      }
+
+      const normalizedHref = href.toLowerCase();
+      if (href.startsWith('#') || IGNORED_LINK_PROTOCOLS.some(protocol => normalizedHref.startsWith(protocol))) {
+        return;
+      }
+
+      const targetUrl = new URL(href, window.location.href);
+      if (isLogoutNavigation(targetUrl, context.config)) {
+        allowRequiredProfileLogoutRef.current = true;
+        return;
+      }
+
+      const allowedProfileUrl = new URL(
+        profileCompletionStatus?.profileUrl || window.location.href,
+        window.location.href,
+      );
+      const isCurrentProfileRoute = targetUrl.origin === window.location.origin
+        && targetUrl.pathname === window.location.pathname;
+      const isRequiredProfileRoute = targetUrl.href === allowedProfileUrl.href
+        || targetUrl.pathname === allowedProfileUrl.pathname;
+
+      if (!isCurrentProfileRoute && !isRequiredProfileRoute) {
+        event.preventDefault();
+        event.stopPropagation();
+        setNavigationBlocked(true);
+      }
+    };
+
+    const handleBeforeUnload = (event) => {
+      if (allowRequiredProfileLogoutRef.current) {
+        return undefined;
+      }
+
+      event.preventDefault();
+      // Browser beforeunload prompts still require assigning returnValue.
+      // eslint-disable-next-line no-param-reassign
+      event.returnValue = '';
+      return '';
+    };
+
+    document.addEventListener('click', handleClick, true);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('click', handleClick, true);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [context.config, profileCompletionStatus, shouldBlockNavigation]);
 
   const isBlockVisible = (blockInfo) => isAuthenticatedUserProfile()
       || (!isAuthenticatedUserProfile() && Boolean(blockInfo));
@@ -200,6 +292,13 @@ const ProfilePage = ({ params }) => {
               </div>
             </div>
           </div>
+          {navigationBlocked && (
+            <div className={classNames(isMobileView ? 'px-3 pt-4' : 'px-120px pt-4')}>
+              <Alert variant="warning" dismissible onClose={() => setNavigationBlocked(false)} show>
+                Complete and save your required profile form before opening another page.
+              </Alert>
+            </div>
+          )}
           <div
             className={classNames([
               'col d-inline-flex h-100 w-100 align-items-start justify-content-start g-3rem',
@@ -207,7 +306,15 @@ const ProfilePage = ({ params }) => {
             ])}
           >
             <div className="w-100 p-0">
-              <BiodataProfileSections />
+              {isOutsideHrmsLearner ? (
+                <OutsideHrmsInstructorForm
+                  username={authenticatedUserName}
+                  onComplete={() => {
+                    setCompletionOverride(true);
+                    setNavigationBlocked(false);
+                  }}
+                />
+              ) : <BiodataProfileSections />}
             </div>
           </div>
           <div

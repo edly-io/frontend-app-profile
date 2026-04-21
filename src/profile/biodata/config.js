@@ -5,6 +5,7 @@ export const PROFILE_FIELD_TYPES = {
   TEXTAREA: 'textarea',
   SELECT: 'select',
   CHECKBOX: 'checkbox',
+  FILE: 'file',
 };
 
 const YES_NO_OPTIONS = [
@@ -37,6 +38,16 @@ const PROFICIENCY_OPTIONS = [
   { value: 'native', label: 'Native' },
 ];
 
+export const CSS_COMPULSORY_SUBJECT_MARKS = [
+  { subject: 'English Essay', total_marks: '100', marks_obtained: '' },
+  { subject: 'English Precise & Composition', total_marks: '100', marks_obtained: '' },
+  { subject: 'General Science & Ability', total_marks: '100', marks_obtained: '' },
+  { subject: 'Current Affairs', total_marks: '100', marks_obtained: '' },
+  { subject: 'Pakistan Affairs', total_marks: '100', marks_obtained: '' },
+  { subject: 'Islamic Studies', total_marks: '100', marks_obtained: '' },
+  { subject: 'Viva Voce', total_marks: '300', marks_obtained: '' },
+];
+
 export const BIODATA_SECTIONS = [
   {
     id: 'basicInformation',
@@ -66,6 +77,23 @@ export const BIODATA_SECTIONS = [
         fieldName: 'daughters', label: 'Daughters', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: '0',
       },
     ],
+    fileFields: [
+      {
+        fieldName: 'cnic_front',
+        label: 'CNIC Front',
+        accept: '.jpg,.jpeg,.png,.webp,.pdf',
+      },
+      {
+        fieldName: 'cnic_back',
+        label: 'CNIC Back',
+        accept: '.jpg,.jpeg,.png,.webp,.pdf',
+      },
+      {
+        fieldName: 'domicile_file',
+        label: 'Domicile Attachment',
+        accept: '.jpg,.jpeg,.png,.webp,.pdf',
+      },
+    ],
   },
   {
     id: 'physicalMedicalInformation',
@@ -73,8 +101,12 @@ export const BIODATA_SECTIONS = [
     helperText: 'Medical checkup date and physical details.',
     fields: [
       { fieldName: 'last_annual_medical_checkup', label: 'Date of last annual medical checkup', type: PROFILE_FIELD_TYPES.DATE },
-      { fieldName: 'height', label: 'Height', placeholder: 'Enter height' },
-      { fieldName: 'weight', label: 'Weight', placeholder: 'Enter weight' },
+      {
+        fieldName: 'height', label: 'Height (Inches)', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter height in inches',
+      },
+      {
+        fieldName: 'weight', label: 'Weight (kg)', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter weight in kg',
+      },
     ],
   },
   {
@@ -101,12 +133,13 @@ export const BIODATA_SECTIONS = [
   {
     id: 'education',
     title: 'Education',
-    helperText: 'Academic record in repeatable rows.',
+    helperText: 'Academic records are shown in reverse order.',
     repeatables: [
       {
         storageFieldName: 'education_records',
         addButtonLabel: 'Add education record',
         itemLabel: 'Education record',
+        showRowNumber: false,
         emptyRow: {
           educational_institute: '',
           attended_from: '',
@@ -115,6 +148,7 @@ export const BIODATA_SECTIONS = [
           year_of_passing: '',
           grade_division: '',
           subjects_studied: '',
+          education_degree_attachment: null,
         },
         columns: [
           { key: 'educational_institute', label: 'Educational Institute', placeholder: 'Enter educational institute' },
@@ -125,6 +159,12 @@ export const BIODATA_SECTIONS = [
           { key: 'grade_division', label: 'Grade / Division', placeholder: 'Enter grade or division' },
           {
             key: 'subjects_studied', label: 'Subjects Studied', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter subjects studied',
+          },
+          {
+            key: 'education_degree_attachment',
+            label: 'Education Degree Attachment',
+            type: PROFILE_FIELD_TYPES.FILE,
+            accept: '.jpg,.jpeg,.png,.webp,.pdf',
           },
         ],
       },
@@ -181,10 +221,11 @@ export const BIODATA_SECTIONS = [
   {
     id: 'employment',
     title: 'Employment',
-    helperText: 'Employment gap details and record.',
-    naFieldName: 'employment_not_applicable',
-    naLabel: 'N/A',
+    helperText: 'First-job status, employment gap details, and employment record.',
     fields: [
+      {
+        fieldName: 'is_first_job', label: 'Is this your first job?', type: PROFILE_FIELD_TYPES.SELECT, options: YES_NO_OPTIONS,
+      },
       {
         fieldName: 'first_employment_gap_details_after_education', label: 'First employment gap details after education', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter employment gap details',
       },
@@ -230,7 +271,9 @@ export const BIODATA_SECTIONS = [
         columns: [
           { key: 'examination_name', label: 'Examination name', placeholder: 'Enter examination name' },
           { key: 'agency_holding_examination', label: 'Agency holding examination', placeholder: 'Enter agency name' },
-          { key: 'year', label: 'Year', placeholder: 'Enter year' },
+          {
+            key: 'year', label: 'Year', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter year',
+          },
           {
             key: 'result_details', label: 'Result details', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter result details',
           },
@@ -247,9 +290,6 @@ export const BIODATA_SECTIONS = [
       { fieldName: 'css_roll_number', label: 'CSS Roll Number', placeholder: 'Enter CSS roll number' },
       { fieldName: 'css_merit_position', label: 'CSS Merit Position', placeholder: 'Enter CSS merit position' },
       {
-        fieldName: 'occupational_service_group_preferences', label: 'Occupational / Service Group Preferences', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter occupational or service group preferences',
-      },
-      {
         fieldName: 'css_chances_availed', label: 'CSS chances availed', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: '0',
       },
       {
@@ -262,9 +302,37 @@ export const BIODATA_SECTIONS = [
     ],
     repeatables: [
       {
+        storageFieldName: 'occupational_service_group_preferences',
+        addButtonLabel: 'Add service group preference',
+        itemLabel: 'Service group preference',
+        autoPriorityKey: 'priority',
+        emptyRow: {
+          service_group: '',
+          priority: '',
+        },
+        columns: [
+          {
+            key: 'service_group',
+            label: 'Service group preference',
+            placeholder: 'Enter service group preference',
+          },
+          {
+            key: 'priority',
+            label: 'Priority',
+            type: PROFILE_FIELD_TYPES.NUMBER,
+            placeholder: '1',
+            displayOnly: true,
+          },
+        ],
+      },
+      {
         storageFieldName: 'css_subject_marks',
         addButtonLabel: 'Add subject mark',
         itemLabel: 'Subject mark',
+        defaultRows: CSS_COMPULSORY_SUBJECT_MARKS,
+        protectedRows: CSS_COMPULSORY_SUBJECT_MARKS,
+        protectedRowKey: 'subject',
+        protectedColumns: ['subject', 'total_marks'],
         emptyRow: {
           subject: '',
           total_marks: '',
@@ -272,9 +340,29 @@ export const BIODATA_SECTIONS = [
         },
         columns: [
           { key: 'subject', label: 'Subject', placeholder: 'Enter subject' },
-          { key: 'total_marks', label: 'Total Marks', placeholder: 'Enter total marks' },
-          { key: 'marks_obtained', label: 'Marks Obtained', placeholder: 'Enter marks obtained' },
+          {
+            key: 'total_marks', label: 'Total Marks', type: PROFILE_FIELD_TYPES.NUMBER, placeholder: 'Enter total marks',
+          },
+          {
+            key: 'marks_obtained',
+            label: 'Marks Obtained',
+            type: PROFILE_FIELD_TYPES.NUMBER,
+            placeholder: 'Enter marks obtained',
+            validate: (value, row) => {
+              if (row.total_marks !== '' && Number(value) > Number(row.total_marks)) {
+                return 'Marks obtained cannot exceed total marks.';
+              }
+              return '';
+            },
+          },
         ],
+      },
+    ],
+    fileFields: [
+      {
+        fieldName: 'css_marksheet_attachment',
+        label: 'CSS Mark Sheet Attachment',
+        accept: '.jpg,.jpeg,.png,.webp,.pdf',
       },
     ],
   },
@@ -342,28 +430,35 @@ export const BIODATA_SECTIONS = [
   {
     id: 'familyInformation',
     title: 'Family Information',
-    helperText: 'Parents and siblings details.',
+    helperText: 'Parents details.',
     fields: [
       { fieldName: 'father_name', label: 'Father Name', placeholder: 'Enter father name' },
       { fieldName: 'father_education', label: 'Father Education', placeholder: 'Enter father education' },
       { fieldName: 'father_occupation', label: 'Father Occupation', placeholder: 'Enter father occupation' },
       {
-        fieldName: 'father_address_phone_number', label: 'Father Address & Phone Number', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter father address and phone number',
+        fieldName: 'father_address', label: 'Father Address', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter father address',
       },
+      { fieldName: 'father_phone_number', label: 'Father Phone Number', placeholder: 'Enter father phone number' },
       { fieldName: 'mother_name', label: 'Mother Name', placeholder: 'Enter mother name' },
       { fieldName: 'mother_education', label: 'Mother Education', placeholder: 'Enter mother education' },
       { fieldName: 'mother_occupation', label: 'Mother Occupation', placeholder: 'Enter mother occupation' },
       {
-        fieldName: 'mother_address_phone_number', label: 'Mother Address & Phone Number', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter mother address and phone number',
+        fieldName: 'mother_address', label: 'Mother Address', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter mother address',
       },
+      { fieldName: 'mother_phone_number', label: 'Mother Phone Number', placeholder: 'Enter mother phone number' },
     ],
+  },
+  {
+    id: 'siblings',
+    title: 'Siblings',
+    helperText: 'Brother and sister details.',
+    naFieldName: 'siblings_not_applicable',
+    naLabel: 'N/A',
     repeatables: [
       {
         storageFieldName: 'siblings_family_information',
         addButtonLabel: 'Add family member',
         itemLabel: 'Brother / Sister',
-        naFieldName: 'siblings_not_applicable',
-        naLabel: 'N/A',
         emptyRow: {
           relationship: '',
           name: '',
@@ -372,7 +467,16 @@ export const BIODATA_SECTIONS = [
           address: '',
         },
         columns: [
-          { key: 'relationship', label: 'Relationship', placeholder: 'Enter brother or sister' },
+          {
+            key: 'relationship',
+            label: 'Relationship',
+            type: PROFILE_FIELD_TYPES.SELECT,
+            options: [
+              { value: '', label: 'Select relationship' },
+              { value: 'brother', label: 'Brother' },
+              { value: 'sister', label: 'Sister' },
+            ],
+          },
           { key: 'name', label: 'Name', placeholder: 'Enter name' },
           { key: 'education', label: 'Education', placeholder: 'Enter education' },
           { key: 'occupation', label: 'Occupation', placeholder: 'Enter occupation' },
@@ -420,24 +524,17 @@ export const BIODATA_SECTIONS = [
       { fieldName: 'spouse_education', label: 'Spouse Education', placeholder: 'Enter spouse education' },
       { fieldName: 'spouse_occupation', label: 'Spouse Occupation', placeholder: 'Enter spouse occupation' },
       {
-        fieldName: 'spouse_address_phone_number', label: 'Spouse Address & Phone Number', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter spouse address and phone number',
+        fieldName: 'spouse_address', label: 'Spouse Address', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter spouse address',
       },
+      { fieldName: 'spouse_phone', label: 'Spouse Phone', placeholder: 'Enter spouse phone' },
     ],
   },
   {
     id: 'declaration',
     title: 'Declaration',
-    helperText: 'Confirm the information and add a signature image if needed.',
+    helperText: 'Confirm the information before submitting.',
     fields: [
       { fieldName: 'declaration_confirmed', label: 'I confirm that the information provided is correct.', type: PROFILE_FIELD_TYPES.CHECKBOX },
-      { fieldName: 'declaration_date', label: 'Date', type: PROFILE_FIELD_TYPES.DATE },
-    ],
-    fileFields: [
-      {
-        fieldName: 'declaration_signature',
-        label: 'Signature',
-        accept: '.jpg,.jpeg,.png,.webp',
-      },
     ],
   },
 ];
