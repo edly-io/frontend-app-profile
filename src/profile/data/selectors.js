@@ -305,6 +305,8 @@ export const profilePageSelector = createSelector(
     isAuthenticatedUserProfile,
   ) => ({
     username: account.username,
+    extendedProfile: account.extendedProfile || [],
+    profileCompletionStatus: account.profileCompletionStatus || null,
     profileImage,
     requiresParentalConsent: account.requiresParentalConsent,
     dateJoined: account.dateJoined,
