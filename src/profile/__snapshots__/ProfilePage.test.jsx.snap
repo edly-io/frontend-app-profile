@@ -221,10 +221,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-primary text-white"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-primary"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          1
+                          <span
+                            class="d-inline-block rounded-circle bg-primary"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -266,10 +269,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          2
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -311,10 +317,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          3
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -356,10 +365,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          4
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -401,10 +413,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          5
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -446,10 +461,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          6
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -491,10 +509,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          7
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -536,10 +557,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          8
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -581,10 +605,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          9
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -626,10 +653,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          10
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -671,10 +701,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          11
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -716,10 +749,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          12
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -761,10 +797,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          13
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -797,6 +836,54 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                   >
                     <a
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="siblings"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
+                        </span>
+                        <span
+                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
+                          style="min-height: 1.25rem;"
+                        />
+                      </span>
+                      <span
+                        class="pb-2"
+                      >
+                        <span
+                          class="font-weight-bold d-block"
+                        >
+                          Siblings
+                        </span>
+                        <span
+                          class="small d-block text-muted"
+                        >
+                          Not started
+                        </span>
+                        <span
+                          class="small text-muted d-block"
+                        >
+                          No information added
+                        </span>
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
                       href="#"
                       role="button"
@@ -806,10 +893,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          14
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                         <span
                           class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
@@ -851,10 +941,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                         class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
                       >
                         <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 text-gray-700"
+                          style="width: 1.25rem; min-height: 1.75rem; z-index: 1;"
                         >
-                          15
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-700"
+                            style="width: 0.5rem; height: 0.5rem;"
+                          />
                         </span>
                       </span>
                       <span
@@ -1067,1053 +1160,238 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
         class="w-100 p-0"
       >
         <div
-          class="row"
+          class="shadow-sm pgn__card pgn__card-light card"
+          tabindex="-1"
         >
           <div
-            class="col-lg-3 mb-4 mb-lg-0"
+            class="pgn__card-section bg-primary text-white"
           >
             <div
-              class="position-lg-sticky pgn__card pgn__card-light card"
-              style="top: 0px;"
-              tabindex="-1"
+              class="d-flex flex-wrap align-items-center justify-content-between mb-0"
             >
-              <div
-                class="pgn__card-section"
+              <h2
+                class="h4 mb-0 text-white"
               >
-                <div
-                  class="flex-column nav nav-pills"
-                >
-                  <div
-                    class="nav-item"
+                Instructor
+              </h2>
+              <div
+                class="pgn__form-checkbox mb-0 text-white"
+              >
+                <input
+                  checked=""
+                  class="pgn__form-checkbox-input"
+                  id="form-field1"
+                  readonly=""
+                  type="checkbox"
+                />
+                <div>
+                  <label
+                    class="pgn__form-label"
+                    for="form-field1"
                   >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
-                      data-biodata-nav="basicInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-primary text-white"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          1
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Basic Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Current
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="physicalMedicalInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          2
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Physical / Medical Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="contactInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          3
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Contact Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="education"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          4
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Education
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="achievements"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          5
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Achievements
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="languages"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          6
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Languages
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="employment"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          7
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Employment
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="competitiveExaminations"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          8
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Competitive Examinations
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="cssExamDetails"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          9
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          CSS Exam Details
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="governmentServiceDetails"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          10
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Government Service Details
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="personalInterests"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          11
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Personal Interests
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="foreignVisits"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          12
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Foreign Visits
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="familyInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          13
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Family Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="closeRelativesInGovernmentService"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          14
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Close Relatives in Government Service
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="declaration"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          15
-                        </span>
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Declaration
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
+                    New Instructor outside FBR
+                  </label>
                 </div>
               </div>
             </div>
           </div>
           <div
-            class="col-lg-9"
+            class="pgn__card-section"
           >
-            <div
-              class="shadow-sm pgn__card pgn__card-light card"
-              id="biodata-section-basicInformation"
-              tabindex="-1"
+            <form
+              class=""
             >
               <div
-                class="pgn__card-section"
+                class="row"
               >
                 <div
-                  class="mb-3"
+                  class="pgn__form-group col-md-6 mb-3"
                 >
-                  <div
-                    class="font-weight-bold text-gray-900 h5 mb-1"
+                  <label
+                    class="pgn__form-label"
+                    for="form-field2"
                   >
-                    Basic Information
-                  </div>
+                    Name
+                  </label>
                   <div
-                    class="small text-muted"
+                    class="pgn__form-control-decorator-group"
                   >
-                    Core personal biodata details.
+                    <input
+                      class="form-control"
+                      id="form-field2"
+                      type="text"
+                      value=""
+                    />
                   </div>
                 </div>
                 <div
-                  class="pgn-transition-replace-group position-relative pt-0"
+                  class="pgn__form-group col-md-6 mb-3"
                 >
-                  <div
-                    style="padding: 0.1px 0px;"
+                  <label
+                    class="pgn__form-label"
+                    for="form-field3"
                   >
-                    <div
-                      aria-labelledby="basicInformation-label"
-                      role="dialog"
-                    >
-                      <form>
-                        <div
-                          class="row"
-                        >
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field1"
-                            >
-                              Title
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <select
-                                class="form-control"
-                                id="form-field1"
-                              >
-                                <option
-                                  value=""
-                                >
-                                  Select title
-                                </option>
-                                <option
-                                  value="mr"
-                                >
-                                  Mr
-                                </option>
-                                <option
-                                  value="mrs"
-                                >
-                                  Mrs
-                                </option>
-                                <option
-                                  value="ms"
-                                >
-                                  Ms
-                                </option>
-                                <option
-                                  value="miss"
-                                >
-                                  Miss
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field2"
-                            >
-                              Full Name
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field2"
-                                placeholder="Enter full name"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field3"
-                            >
-                              Preferred / calling name
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field3"
-                                placeholder="Enter preferred name"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field4"
-                            >
-                              Identity Card Number
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field4"
-                                placeholder="Enter identity card number"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field5"
-                            >
-                              Date of Birth
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field5"
-                                type="date"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field6"
-                            >
-                              Place of Birth
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field6"
-                                placeholder="Enter place of birth"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field7"
-                            >
-                              District of Domicile
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field7"
-                                placeholder="Enter district of domicile"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field8"
-                            >
-                              Religion
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field8"
-                                placeholder="Enter religion"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field9"
-                            >
-                              Marital Status
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <select
-                                class="form-control"
-                                id="form-field9"
-                              >
-                                <option
-                                  value=""
-                                >
-                                  Select marital status
-                                </option>
-                                <option
-                                  value="single"
-                                >
-                                  Single
-                                </option>
-                                <option
-                                  value="married"
-                                >
-                                  Married
-                                </option>
-                                <option
-                                  value="widowed"
-                                >
-                                  Widowed
-                                </option>
-                                <option
-                                  value="divorced"
-                                >
-                                  Divorced
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="border rounded p-3 mb-3 bg-light-200"
-                        >
-                          <p
-                            class="h6 font-weight-bold mb-2"
-                          >
-                            CNIC Attachment
-                          </p>
-                          <div
-                            class="d-flex flex-wrap align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-primary btn-sm"
-                              type="button"
-                            >
-                              Upload cnic attachment
-                            </button>
-                          </div>
-                          <input
-                            accept=".jpg,.jpeg,.png,.webp,.pdf"
-                            class="d-none"
-                            id="basicInformation-cnic_attachment"
-                            type="file"
-                          />
-                        </div>
-                        <div
-                          class="border rounded p-3 mb-3 bg-light-200"
-                        >
-                          <p
-                            class="h6 font-weight-bold mb-2"
-                          >
-                            Domicile Attachment
-                          </p>
-                          <div
-                            class="d-flex flex-wrap align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-primary btn-sm"
-                              type="button"
-                            >
-                              Upload domicile attachment
-                            </button>
-                          </div>
-                          <input
-                            accept=".jpg,.jpeg,.png,.webp,.pdf"
-                            class="d-none"
-                            id="basicInformation-domicile_attachment"
-                            type="file"
-                          />
-                        </div>
-                        <div
-                          class="d-flex flex-row-reverse flex-wrap justify-content-end align-items-center"
-                        >
-                          <div
-                            class="row form-group flex-shrink-0 flex-grow-1 m-0 p-0"
-                          >
-                            <div
-                              class="p-0 m-0"
-                            >
-                              <button
-                                aria-disabled="false"
-                                aria-live="assertive"
-                                class="pgn__stateful-btn pgn__stateful-btn-state-null btn btn-primary"
-                                type="submit"
-                              >
-                                <span
-                                  class="d-flex align-items-center justify-content-center"
-                                >
-                                  <span>
-                                    Save and Next
-                                  </span>
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
+                    Short Name
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field3"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field4"
+                  >
+                    Designation
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field4"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field5"
+                  >
+                    Phone
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field5"
+                      type="tel"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field6"
+                  >
+                    Mobile
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field6"
+                      type="tel"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field7"
+                  >
+                    Address
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field7"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field8"
+                  >
+                    Expertise
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field8"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field9"
+                  >
+                    Organization
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field9"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field10"
+                  >
+                    Email
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field10"
+                      type="email"
+                      value=""
+                    />
                   </div>
                 </div>
               </div>
-            </div>
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >
+                Save
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -2359,1053 +1637,238 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
         class="w-100 p-0"
       >
         <div
-          class="row"
+          class="shadow-sm pgn__card pgn__card-light card"
+          tabindex="-1"
         >
           <div
-            class="col-lg-3 mb-4 mb-lg-0"
+            class="pgn__card-section bg-primary text-white"
           >
             <div
-              class="position-lg-sticky pgn__card pgn__card-light card"
-              style="top: 0px;"
-              tabindex="-1"
+              class="d-flex flex-wrap align-items-center justify-content-between mb-0"
             >
-              <div
-                class="pgn__card-section"
+              <h2
+                class="h4 mb-0 text-white"
               >
-                <div
-                  class="flex-column nav nav-pills"
-                >
-                  <div
-                    class="nav-item"
+                Instructor
+              </h2>
+              <div
+                class="pgn__form-checkbox mb-0 text-white"
+              >
+                <input
+                  checked=""
+                  class="pgn__form-checkbox-input"
+                  id="form-field21"
+                  readonly=""
+                  type="checkbox"
+                />
+                <div>
+                  <label
+                    class="pgn__form-label"
+                    for="form-field21"
                   >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
-                      data-biodata-nav="basicInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-primary text-white"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          1
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Basic Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Current
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="physicalMedicalInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          2
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Physical / Medical Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="contactInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          3
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Contact Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="education"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          4
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Education
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="achievements"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          5
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Achievements
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="languages"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          6
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Languages
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="employment"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          7
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Employment
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="competitiveExaminations"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          8
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Competitive Examinations
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="cssExamDetails"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          9
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          CSS Exam Details
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="governmentServiceDetails"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          10
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Government Service Details
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="personalInterests"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          11
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Personal Interests
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="foreignVisits"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          12
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Foreign Visits
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="familyInformation"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          13
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Family Information
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="closeRelativesInGovernmentService"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          14
-                        </span>
-                        <span
-                          class="border-left flex-grow-1 mt-1 mb-n2 border-light-500"
-                          style="min-height: 1.25rem;"
-                        />
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Close Relatives in Government Service
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
-                  <div
-                    class="nav-item"
-                  >
-                    <a
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
-                      data-biodata-nav="declaration"
-                      href="#"
-                      role="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2"
-                      >
-                        <span
-                          class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-light-400 text-gray-700"
-                          style="width: 1.75rem; height: 1.75rem; z-index: 1;"
-                        >
-                          15
-                        </span>
-                      </span>
-                      <span
-                        class="pb-2"
-                      >
-                        <span
-                          class="font-weight-bold d-block"
-                        >
-                          Declaration
-                        </span>
-                        <span
-                          class="small d-block text-muted"
-                        >
-                          Not started
-                        </span>
-                        <span
-                          class="small text-muted d-block"
-                        >
-                          No information added
-                        </span>
-                      </span>
-                    </a>
-                  </div>
+                    New Instructor outside FBR
+                  </label>
                 </div>
               </div>
             </div>
           </div>
           <div
-            class="col-lg-9"
+            class="pgn__card-section"
           >
-            <div
-              class="shadow-sm pgn__card pgn__card-light card"
-              id="biodata-section-basicInformation"
-              tabindex="-1"
+            <form
+              class=""
             >
               <div
-                class="pgn__card-section"
+                class="row"
               >
                 <div
-                  class="mb-3"
+                  class="pgn__form-group col-md-6 mb-3"
                 >
-                  <div
-                    class="font-weight-bold text-gray-900 h5 mb-1"
+                  <label
+                    class="pgn__form-label"
+                    for="form-field22"
                   >
-                    Basic Information
-                  </div>
+                    Name
+                  </label>
                   <div
-                    class="small text-muted"
+                    class="pgn__form-control-decorator-group"
                   >
-                    Core personal biodata details.
+                    <input
+                      class="form-control"
+                      id="form-field22"
+                      type="text"
+                      value=""
+                    />
                   </div>
                 </div>
                 <div
-                  class="pgn-transition-replace-group position-relative pt-0"
+                  class="pgn__form-group col-md-6 mb-3"
                 >
-                  <div
-                    style="padding: 0.1px 0px;"
+                  <label
+                    class="pgn__form-label"
+                    for="form-field23"
                   >
-                    <div
-                      aria-labelledby="basicInformation-label"
-                      role="dialog"
-                    >
-                      <form>
-                        <div
-                          class="row"
-                        >
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field19"
-                            >
-                              Title
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <select
-                                class="form-control"
-                                id="form-field19"
-                              >
-                                <option
-                                  value=""
-                                >
-                                  Select title
-                                </option>
-                                <option
-                                  value="mr"
-                                >
-                                  Mr
-                                </option>
-                                <option
-                                  value="mrs"
-                                >
-                                  Mrs
-                                </option>
-                                <option
-                                  value="ms"
-                                >
-                                  Ms
-                                </option>
-                                <option
-                                  value="miss"
-                                >
-                                  Miss
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field20"
-                            >
-                              Full Name
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field20"
-                                placeholder="Enter full name"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field21"
-                            >
-                              Preferred / calling name
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field21"
-                                placeholder="Enter preferred name"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field22"
-                            >
-                              Identity Card Number
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field22"
-                                placeholder="Enter identity card number"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field23"
-                            >
-                              Date of Birth
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field23"
-                                type="date"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field24"
-                            >
-                              Place of Birth
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field24"
-                                placeholder="Enter place of birth"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field25"
-                            >
-                              District of Domicile
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field25"
-                                placeholder="Enter district of domicile"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field26"
-                            >
-                              Religion
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <input
-                                class="form-control"
-                                id="form-field26"
-                                placeholder="Enter religion"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                          </div>
-                          <div
-                            class="pgn__form-group col-md-6 mb-3"
-                          >
-                            <label
-                              class="pgn__form-label"
-                              for="form-field27"
-                            >
-                              Marital Status
-                            </label>
-                            <div
-                              class="pgn__form-control-decorator-group"
-                            >
-                              <select
-                                class="form-control"
-                                id="form-field27"
-                              >
-                                <option
-                                  value=""
-                                >
-                                  Select marital status
-                                </option>
-                                <option
-                                  value="single"
-                                >
-                                  Single
-                                </option>
-                                <option
-                                  value="married"
-                                >
-                                  Married
-                                </option>
-                                <option
-                                  value="widowed"
-                                >
-                                  Widowed
-                                </option>
-                                <option
-                                  value="divorced"
-                                >
-                                  Divorced
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="border rounded p-3 mb-3 bg-light-200"
-                        >
-                          <p
-                            class="h6 font-weight-bold mb-2"
-                          >
-                            CNIC Attachment
-                          </p>
-                          <div
-                            class="d-flex flex-wrap align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-primary btn-sm"
-                              type="button"
-                            >
-                              Upload cnic attachment
-                            </button>
-                          </div>
-                          <input
-                            accept=".jpg,.jpeg,.png,.webp,.pdf"
-                            class="d-none"
-                            id="basicInformation-cnic_attachment"
-                            type="file"
-                          />
-                        </div>
-                        <div
-                          class="border rounded p-3 mb-3 bg-light-200"
-                        >
-                          <p
-                            class="h6 font-weight-bold mb-2"
-                          >
-                            Domicile Attachment
-                          </p>
-                          <div
-                            class="d-flex flex-wrap align-items-center"
-                          >
-                            <button
-                              class="btn btn-outline-primary btn-sm"
-                              type="button"
-                            >
-                              Upload domicile attachment
-                            </button>
-                          </div>
-                          <input
-                            accept=".jpg,.jpeg,.png,.webp,.pdf"
-                            class="d-none"
-                            id="basicInformation-domicile_attachment"
-                            type="file"
-                          />
-                        </div>
-                        <div
-                          class="d-flex flex-row-reverse flex-wrap justify-content-end align-items-center"
-                        >
-                          <div
-                            class="row form-group flex-shrink-0 flex-grow-1 m-0 p-0"
-                          >
-                            <div
-                              class="p-0 m-0"
-                            >
-                              <button
-                                aria-disabled="false"
-                                aria-live="assertive"
-                                class="pgn__stateful-btn pgn__stateful-btn-state-null btn btn-primary"
-                                type="submit"
-                              >
-                                <span
-                                  class="d-flex align-items-center justify-content-center"
-                                >
-                                  <span>
-                                    Save and Next
-                                  </span>
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
+                    Short Name
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field23"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field24"
+                  >
+                    Designation
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field24"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field25"
+                  >
+                    Phone
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field25"
+                      type="tel"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field26"
+                  >
+                    Mobile
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field26"
+                      type="tel"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field27"
+                  >
+                    Address
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field27"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field28"
+                  >
+                    Expertise
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field28"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field29"
+                  >
+                    Organization
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field29"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="pgn__form-group col-md-6 mb-3"
+                >
+                  <label
+                    class="pgn__form-label"
+                    for="form-field30"
+                  >
+                    Email
+                  </label>
+                  <div
+                    class="pgn__form-control-decorator-group"
+                  >
+                    <input
+                      class="form-control"
+                      id="form-field30"
+                      type="email"
+                      value=""
+                    />
                   </div>
                 </div>
               </div>
-            </div>
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >
+                Save
+              </button>
+            </form>
           </div>
         </div>
       </div>

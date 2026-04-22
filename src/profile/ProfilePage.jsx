@@ -103,8 +103,8 @@ const ProfilePage = ({ params }) => {
   }, [dispatch, authenticatedUserName]);
 
   const isAuthenticatedUserProfile = () => params.username === authenticatedUserName;
-  const isOutsideHrmsLearner = isAuthenticatedUserProfile()
-    && !context.authenticatedUser.administrator;
+  const shouldShowOutsideHrmsForm = isAuthenticatedUserProfile()
+    && Boolean(context.authenticatedUser.administrator);
   const hasCompletedRequiredProfile = completionOverride
     || Boolean(profileCompletionStatus?.complete);
   const shouldBlockNavigation = isAuthenticatedUserProfile()
@@ -306,7 +306,7 @@ const ProfilePage = ({ params }) => {
             ])}
           >
             <div className="w-100 p-0">
-              {isOutsideHrmsLearner ? (
+              {shouldShowOutsideHrmsForm ? (
                 <OutsideHrmsInstructorForm
                   username={authenticatedUserName}
                   onComplete={() => {

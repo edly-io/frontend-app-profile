@@ -91,7 +91,7 @@ const OutsideHrmsInstructorForm = ({ onComplete, username }) => {
     <Card className="shadow-sm">
       <Card.Section className="bg-primary text-white">
         <div className="d-flex flex-wrap align-items-center justify-content-between mb-0">
-          <h2 className="h4 mb-0">Instructor</h2>
+          <h2 className="h4 mb-0 text-white">Instructor</h2>
           <Form.Checkbox checked readOnly className="mb-0 text-white">
             New Instructor outside FBR
           </Form.Checkbox>
