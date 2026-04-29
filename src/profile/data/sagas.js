@@ -20,11 +20,14 @@ import {
   fetchProfileSuccess,
   FETCH_PROFILE,
   resetDrafts,
+  resetSectionDraft,
   saveProfileBegin,
   saveProfileFailure,
   saveProfileReset,
   saveProfileSuccess,
   SAVE_PROFILE,
+  saveDraftSectionSuccess,
+  SAVE_DRAFT_SECTION,
   saveProfilePhotoBegin,
   saveProfilePhotoReset,
   saveProfilePhotoSuccess,
@@ -185,7 +188,11 @@ export function* handleSaveProfile(action) {
     yield put(closeForm(action.payload.formId));
     yield delay(300);
     yield put(saveProfileReset());
-    yield put(resetDrafts());
+    if (biodataSection) {
+      yield put(resetSectionDraft(action.payload.formId));
+    } else {
+      yield put(resetDrafts());
+    }
   } catch (e) {
     if (e.processedData && e.processedData.fieldErrors) {
       yield put(saveProfileFailure(e.processedData.fieldErrors));
@@ -193,6 +200,33 @@ export function* handleSaveProfile(action) {
       yield put(saveProfileReset());
       throw e;
     }
+  }
+}
+
+export function* handleSaveDraftSection(action) {
+  try {
+    const { drafts, account } = yield select(handleSaveProfileSelector);
+    const sectionDraft = drafts[action.payload.formId];
+    if (!sectionDraft) {
+      return;
+    }
+
+    const committedSectionData = buildSectionDraftFromExtendedProfile(
+      action.payload.formId,
+      account.extendedProfile || [],
+    );
+
+    const result = yield call(
+      ProfileApiService.saveBiodataSection,
+      action.payload.formId,
+      sectionDraft,
+      committedSectionData,
+      account.extendedProfile || [],
+    );
+
+    yield put(saveDraftSectionSuccess(result));
+  } catch (e) {
+    // silent — draft saves are best-effort; localStorage is the fallback
   }
 }
 
@@ -225,6 +259,7 @@ export function* handleDeleteProfilePhoto(action) {
 export default function* profileSaga() {
   yield takeEvery(FETCH_PROFILE.BASE, handleFetchProfile);
   yield takeEvery(SAVE_PROFILE.BASE, handleSaveProfile);
+  yield takeEvery(SAVE_DRAFT_SECTION.BASE, handleSaveDraftSection);
   yield takeEvery(SAVE_PROFILE_PHOTO.BASE, handleSaveProfilePhoto);
   yield takeEvery(DELETE_PROFILE_PHOTO.BASE, handleDeleteProfilePhoto);
 }

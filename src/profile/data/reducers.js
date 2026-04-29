@@ -7,6 +7,8 @@ import {
   FETCH_PROFILE,
   UPDATE_DRAFT,
   RESET_DRAFTS,
+  SAVE_DRAFT_SECTION,
+  RESET_SECTION_DRAFT,
 } from './actions';
 
 export const initialState = {
@@ -161,6 +163,26 @@ const profilePage = (state = initialState, action = {}) => {
         ...state,
         drafts: {},
       };
+    case SAVE_DRAFT_SECTION.SUCCESS: {
+      const draftAccount = action.payload.account;
+      return {
+        ...state,
+        account: draftAccount !== null ? {
+          ...state.account,
+          ...draftAccount,
+          extendedProfile: draftAccount.extendedProfile || state.account.extendedProfile,
+          socialLinks: draftAccount.socialLinks || state.account.socialLinks,
+          languageProficiencies: draftAccount.languageProficiencies || state.account.languageProficiencies,
+        } : state.account,
+      };
+    }
+    case RESET_SECTION_DRAFT: {
+      const { [action.payload.sectionId]: _removed, ...remainingDrafts } = state.drafts;
+      return {
+        ...state,
+        drafts: remainingDrafts,
+      };
+    }
     case OPEN_FORM:
       return {
         ...state,
