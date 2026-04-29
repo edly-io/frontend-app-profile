@@ -137,3 +137,21 @@ export const updateDraft = (name, value) => ({
 export const resetDrafts = () => ({
   type: RESET_DRAFTS,
 });
+
+export const SAVE_DRAFT_SECTION = new AsyncActionType('PROFILE', 'SAVE_DRAFT_SECTION');
+export const RESET_SECTION_DRAFT = 'RESET_SECTION_DRAFT';
+
+export const saveDraftSection = (formId, username) => ({
+  type: SAVE_DRAFT_SECTION.BASE,
+  payload: { formId, username },
+});
+
+export const saveDraftSectionSuccess = (account) => ({
+  type: SAVE_DRAFT_SECTION.SUCCESS,
+  payload: { account },
+});
+
+export const resetSectionDraft = (sectionId) => ({
+  type: RESET_SECTION_DRAFT,
+  payload: { sectionId },
+});

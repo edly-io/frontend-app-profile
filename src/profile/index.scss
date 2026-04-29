@@ -259,3 +259,27 @@
 .overflowWrap-breakWord {
   overflow-wrap: break-word;
 }
+
+.biodata-stepper {
+  .biodata-stepper__connector {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    top: 1.475rem;
+    bottom: -1.775rem;
+    background-color: var(--pgn-color-gray-200);
+
+    &.biodata-stepper__connector--completed {
+      background-color: var(--pgn-color-success-base);
+    }
+
+    &.biodata-stepper__connector--error {
+      background-color: var(--pgn-color-danger-base);
+    }
+
+    &.biodata-stepper__connector--active {
+      background-color: var(--pgn-color-primary-500);
+    }
+  }
+}
