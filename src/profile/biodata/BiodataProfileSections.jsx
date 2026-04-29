@@ -4,13 +4,13 @@ import React, {
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, Nav } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 
 import { BIODATA_SECTIONS } from './config';
 import BiodataSection from './BiodataSection';
 import {
-  closeForm, saveProfile, saveProfileFailure, updateDraft,
+  closeForm, saveProfile, saveProfileFailure, saveDraftSection, updateDraft,
 } from '../data/actions';
 import {
   BIODATA_DATE_VALIDATION_MESSAGES,
@@ -104,6 +104,38 @@ const getStepStatusLabel = (stepState, isActive) => {
   return isActive ? 'Current' : 'Not started';
 };
 
+const renderStepStatusIcon = (stepState, isActive) => {
+  if (stepState.error) {
+    return (
+      <FontAwesomeIcon
+        icon={faExclamationCircle}
+        className={isActive ? 'text-white' : 'text-danger'}
+        style={{ fontSize: '1.25rem' }}
+      />
+    );
+  }
+  if (stepState.completed) {
+    return (
+      <FontAwesomeIcon
+        icon={faCheckCircle}
+        className={isActive ? 'text-white' : 'text-success'}
+        style={{ fontSize: '1.25rem' }}
+      />
+    );
+  }
+  return (
+    <span
+      className={classNames(
+        'd-inline-block rounded-circle',
+        isActive ? 'bg-white' : 'bg-gray-400',
+      )}
+      style={{ fontSize: '1.25rem', width: '0.95rem', height: '0.95rem' }}
+    />
+  );
+};
+
+const getBiodataDraftStorageKey = (username, sectionId) => `fbr.biodata.draft:${username}:${sectionId}`;
+
 const isTruthyFlag = value => value === true || String(value || '').trim().toLowerCase() === 'true';
 
 const getSectionCompletedState = (section, savedData) => sectionIsComplete(section, savedData);
@@ -130,6 +162,7 @@ const BiodataProfileSections = () => {
   const accountUsername = account?.username;
   const previousSaveState = useRef(saveState);
   const hasResolvedInitialStep = useRef(false);
+  const hasDraftRestoreRef = useRef(false);
   const [pendingSaveStepId, setPendingSaveStepId] = useState(null);
   const stepperSections = useMemo(() => getStepperSections(BIODATA_SECTIONS), []);
   const [activeStepId, setActiveStepId] = useState(stepperSections[0].id);
@@ -173,7 +206,25 @@ const BiodataProfileSections = () => {
 
   useEffect(() => {
     hasResolvedInitialStep.current = false;
+    hasDraftRestoreRef.current = false;
   }, [accountUsername]);
+
+  useEffect(() => {
+    if (!accountUsername || hasDraftRestoreRef.current || visibleSections.length === 0) {
+      return;
+    }
+    hasDraftRestoreRef.current = true;
+    visibleSections.forEach((section) => {
+      try {
+        const stored = localStorage.getItem(getBiodataDraftStorageKey(accountUsername, section.id));
+        if (stored) {
+          dispatch(updateDraft(section.id, JSON.parse(stored)));
+        }
+      } catch (e) {
+        // ignore parse/storage errors
+      }
+    });
+  }, [accountUsername, dispatch, visibleSections]);
 
   useEffect(() => {
     if (!accountUsername || hasResolvedInitialStep.current || visibleSections.length === 0) {
@@ -242,6 +293,13 @@ const BiodataProfileSections = () => {
           error: false,
         },
       }));
+      if (accountUsername) {
+        try {
+          localStorage.removeItem(getBiodataDraftStorageKey(accountUsername, pendingSaveStepId));
+        } catch (e) {
+          // ignore
+        }
+      }
       const nextSectionId = pendingReturnSectionId
         || getNextIncompleteVisibleSectionId(
           visibleSections,
@@ -273,7 +331,10 @@ const BiodataProfileSections = () => {
       setPendingScrollSectionId(pendingSaveStepId);
       setPendingSaveStepId(null);
     }
-  }, [drafts, errors, extendedProfile, pendingReturnSectionId, pendingSaveStepId, saveState, visibleSections]);
+  }, [
+    accountUsername, drafts, errors, extendedProfile,
+    pendingReturnSectionId, pendingSaveStepId, saveState, visibleSections,
+  ]);
 
   if (!accountUsername || !activeSection) {
     return null;
@@ -354,9 +415,21 @@ const BiodataProfileSections = () => {
       if (incompleteSection) {
         markSectionNeedsAttention(incompleteSection);
         setPendingReturnSectionId(sectionId);
-        moveToSection(incompleteSection.id);
+        setActiveStepId(incompleteSection.id);
+        window.setTimeout(() => {
+          document.getElementById(`biodata-section-${incompleteSection.id}`)
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
         return;
       }
+    }
+
+    if (
+      sectionId !== activeSection.id
+      && drafts[activeSection.id]
+      && accountUsername
+    ) {
+      dispatch(saveDraftSection(activeSection.id, accountUsername));
     }
 
     setPendingReturnSectionId(null);
@@ -374,6 +447,14 @@ const BiodataProfileSections = () => {
     const hasDateValidationErrors = Object.keys(dateValidationErrors).length > 0;
 
     dispatch(updateDraft(sectionId, sanitizedData));
+
+    if (accountUsername) {
+      try {
+        localStorage.setItem(getBiodataDraftStorageKey(accountUsername, sectionId), JSON.stringify(sanitizedData));
+      } catch (e) {
+        // storage quota exceeded — ignore
+      }
+    }
 
     if (!section) {
       return;
@@ -462,69 +543,46 @@ const BiodataProfileSections = () => {
       <div className="col-lg-3 mb-4 mb-lg-0">
         <Card className="position-lg-sticky" style={{ top: '0' }}>
           <Card.Section>
-            <Nav variant="pills" className="flex-column">
+            <Nav variant="pills" className="flex-column biodata-stepper">
               {visibleSections.map((section, index) => {
                 const isActive = activeSection.id === section.id;
                 const isLastVisibleStep = index === visibleSections.length - 1;
                 const stepState = stepStateById[section.id] || {};
                 const statusLabel = getStepStatusLabel(stepState, isActive);
-                const savedData = getSectionInitialData(section, extendedProfile);
 
                 return (
                   <Nav.Item key={section.id}>
                     <Nav.Link
                       active={isActive}
                       data-biodata-nav={section.id}
-                      className={classNames(
-                        'mb-2 d-flex align-items-stretch text-left position-relative',
-                        { 'border border-danger': stepState.error && !isActive },
-                      )}
+                      aria-label={`${section.title}: ${statusLabel}`}
+                      className="mb-2 d-flex align-items-stretch text-left position-relative"
                       onClick={() => handleStepClick(section.id)}
                     >
-                      <span className="d-flex flex-column align-items-center flex-shrink-0 mr-2" aria-hidden="true">
+                      <span className="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative" aria-hidden="true">
                         <span
                           className={classNames(
                             'd-inline-flex align-items-center justify-content-center flex-shrink-0',
-                            {
-                              'text-primary': isActive && !stepState.error,
-                              'text-success': stepState.completed && !isActive && !stepState.error,
-                              'text-danger': stepState.error,
-                              'text-gray-700': !isActive && !stepState.completed && !stepState.error,
-                            },
+                            isActive ? 'bg-primary' : 'bg-white',
                           )}
-                          style={{ width: '1.25rem', minHeight: '1.75rem', zIndex: 1 }}
+                          style={{ width: '1.75rem', minHeight: '1.75rem', zIndex: 1 }}
                         >
-                          {stepState.error && <FontAwesomeIcon icon={faExclamation} size="sm" />}
-                          {!stepState.error && stepState.completed && <FontAwesomeIcon icon={faCheck} size="sm" />}
-                          {!stepState.error && !stepState.completed && (
-                            <span
-                              className={classNames(
-                                'd-inline-block rounded-circle',
-                                isActive ? 'bg-primary' : 'bg-gray-700',
-                              )}
-                              style={{ width: '0.5rem', height: '0.5rem' }}
-                            />
-                          )}
+                          {renderStepStatusIcon(stepState, isActive)}
                         </span>
                         {!isLastVisibleStep && (
                           <span
                             className={classNames(
-                              'border-left flex-grow-1 mt-1 mb-n2',
-                              stepState.completed && !stepState.error ? 'border-success' : 'border-light-500',
+                              'biodata-stepper__connector',
+                              {
+                                'biodata-stepper__connector--completed': stepState.completed && !stepState.error && !isActive,
+                                'biodata-stepper__connector--error': stepState.error && !isActive,
+                                'biodata-stepper__connector--active': isActive,
+                              },
                             )}
-                            style={{ minHeight: '1.25rem' }}
                           />
                         )}
                       </span>
-                      <span className="pb-2">
-                        <span className="font-weight-bold d-block">{section.title}</span>
-                        <span className={classNames('small d-block', stepState.error ? 'text-danger' : 'text-muted')}>
-                          {statusLabel}
-                        </span>
-                        {!sectionHasValue(section, savedData) && !stepState.completed && !stepState.error && (
-                          <span className="small text-muted d-block">No information added</span>
-                        )}
-                      </span>
+                      <span className="font-weight-bold">{section.title}</span>
                     </Nav.Link>
                   </Nav.Item>
                 );
@@ -537,7 +595,7 @@ const BiodataProfileSections = () => {
         <Card id={`biodata-section-${activeSection.id}`} className="shadow-sm">
           <Card.Section>
             <div className="mb-3">
-              <div className="font-weight-bold text-gray-900 h5 mb-1">{activeSection.title}</div>
+              <div className="font-weight-bold text-gray-900 h3 mb-1">{activeSection.title}</div>
               {activeSection.helperText && (
                 <div className="small text-muted">{activeSection.helperText}</div>
               )}
