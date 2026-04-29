@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Alert, Button, Card, Form,
 } from '@openedx/paragon';
 
 import { saveOutsideHrmsInstructorProfile } from '../../data/services';
+import { BiodataFileActions, BiodataFilePreview } from '../../biodata/BiodataFilePreview';
+import { createFileUploadValue, getFileUploadBlob, revokeFilePreviewUrl } from '../../biodata/utils';
 
 const INITIAL_FORM_VALUE = {
   name: '',
@@ -16,6 +18,7 @@ const INITIAL_FORM_VALUE = {
   expertise: '',
   organization: '',
   email: '',
+  cnic: '',
 };
 
 const FORM_FIELDS = [
@@ -28,21 +31,54 @@ const FORM_FIELDS = [
   { key: 'expertise', label: 'Expertise', type: 'text' },
   { key: 'organization', label: 'Organization', type: 'text' },
   { key: 'email', label: 'Email', type: 'email' },
+  { key: 'cnic', label: 'CNIC', type: 'text' },
 ];
 
-const getRequiredErrors = (formValue) => FORM_FIELDS.reduce((accumulator, field) => {
-  if (!String(formValue[field.key] || '').trim()) {
-    accumulator[field.key] = `${field.label} is required.`;
-  }
-  return accumulator;
-}, {});
+const CNIC_FILE_FIELDS = [
+  { key: 'cnicFront', label: 'CNIC Front' },
+  { key: 'cnicBack', label: 'CNIC Back' },
+];
+
+const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp,application/pdf';
+
+const INITIAL_CNIC_FILES = { cnicFront: null, cnicBack: null };
+
+const getRequiredErrors = (formValue, cnicFiles) => {
+  const fieldErrors = FORM_FIELDS.reduce((accumulator, field) => {
+    if (!String(formValue[field.key] || '').trim()) {
+      accumulator[field.key] = `${field.label} is required.`;
+    }
+    return accumulator;
+  }, {});
+
+  CNIC_FILE_FIELDS.forEach(({ key, label }) => {
+    if (!cnicFiles[key]) {
+      fieldErrors[key] = `${label} is required.`;
+    }
+  });
+
+  return fieldErrors;
+};
+
+const fileToBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+  reader.readAsDataURL(file);
+});
 
 const OutsideHrmsInstructorForm = ({ onComplete, username }) => {
   const [formValue, setFormValue] = useState(INITIAL_FORM_VALUE);
+  const [cnicFiles, setCnicFiles] = useState(INITIAL_CNIC_FILES);
   const [errors, setErrors] = useState({});
   const [showSavedMessage, setShowSavedMessage] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+
+  const cnicFrontInputRef = useRef(null);
+  const cnicBackInputRef = useRef(null);
+  const fileInputRefs = { cnicFront: cnicFrontInputRef, cnicBack: cnicBackInputRef };
+
   const errorCount = useMemo(() => Object.keys(errors).length, [errors]);
 
   const handleChange = (fieldName, value) => {
@@ -59,10 +95,37 @@ const OutsideHrmsInstructorForm = ({ onComplete, username }) => {
     setSaveError('');
   };
 
+  const handleFileSelect = (fieldKey, file) => {
+    if (!file) {
+      return;
+    }
+    setCnicFiles((prev) => {
+      revokeFilePreviewUrl(prev[fieldKey]);
+      return { ...prev, [fieldKey]: createFileUploadValue(file) };
+    });
+    setErrors(previousErrors => {
+      const nextErrors = { ...previousErrors };
+      delete nextErrors[fieldKey];
+      return nextErrors;
+    });
+    setShowSavedMessage(false);
+    setSaveError('');
+    if (fileInputRefs[fieldKey]?.current) {
+      fileInputRefs[fieldKey].current.value = '';
+    }
+  };
+
+  const handleFileRemove = (fieldKey) => {
+    setCnicFiles((prev) => {
+      revokeFilePreviewUrl(prev[fieldKey]);
+      return { ...prev, [fieldKey]: null };
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const nextErrors = getRequiredErrors(formValue);
+    const nextErrors = getRequiredErrors(formValue, cnicFiles);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       setShowSavedMessage(false);
@@ -74,8 +137,29 @@ const OutsideHrmsInstructorForm = ({ onComplete, username }) => {
     setSaveError('');
 
     try {
-      const completionStatus = await saveOutsideHrmsInstructorProfile(formValue, username);
+      const frontBlob = getFileUploadBlob(cnicFiles.cnicFront);
+      const backBlob = getFileUploadBlob(cnicFiles.cnicBack);
+
+      const [cnicFrontBase64, cnicBackBase64] = await Promise.all([
+        fileToBase64(frontBlob),
+        fileToBase64(backBlob),
+      ]);
+
+      const completionStatus = await saveOutsideHrmsInstructorProfile(
+        {
+          ...formValue,
+          cnicFrontAttachment: cnicFrontBase64,
+          cnicFrontAttachmentName: cnicFiles.cnicFront.name,
+          cnicBackAttachment: cnicBackBase64,
+          cnicBackAttachmentName: cnicFiles.cnicBack.name,
+        },
+        username,
+      );
+
+      revokeFilePreviewUrl(cnicFiles.cnicFront);
+      revokeFilePreviewUrl(cnicFiles.cnicBack);
       setFormValue(INITIAL_FORM_VALUE);
+      setCnicFiles(INITIAL_CNIC_FILES);
       setErrors({});
       setShowSavedMessage(true);
       onComplete(completionStatus);
@@ -128,6 +212,33 @@ const OutsideHrmsInstructorForm = ({ onComplete, username }) => {
                 {errors[field.key] && (
                   <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-1">
                     {errors[field.key]}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
+            ))}
+
+            {CNIC_FILE_FIELDS.map(({ key, label }) => (
+              <Form.Group key={key} className="col-md-6 mb-3">
+                <Form.Label>{label}</Form.Label>
+                <input
+                  type="file"
+                  accept={ACCEPTED_IMAGE_TYPES}
+                  ref={fileInputRefs[key]}
+                  className="d-none"
+                  onChange={(event) => handleFileSelect(key, event.target.files[0] || null)}
+                />
+                <div className={errors[key] ? 'border border-danger rounded p-2' : ''}>
+                  <BiodataFileActions
+                    field={{ label }}
+                    fileValue={cnicFiles[key]}
+                    onReplace={() => fileInputRefs[key].current?.click()}
+                    onRemove={() => handleFileRemove(key)}
+                  />
+                  <BiodataFilePreview field={{ label }} fileValue={cnicFiles[key]} />
+                </div>
+                {errors[key] && (
+                  <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-1">
+                    {errors[key]}
                   </Form.Control.Feedback>
                 )}
               </Form.Group>
