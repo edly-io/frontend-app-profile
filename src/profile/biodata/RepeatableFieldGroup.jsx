@@ -12,7 +12,7 @@ import {
   revokeFilePreviewUrl,
 } from './utils';
 
-function renderControl(field, value, onChange, error, disabled = false) {
+function renderControl(field, value, onChange, onBlur, error, disabled = false) {
   if (field.type === PROFILE_FIELD_TYPES.FILE) {
     const inputId = field.inputId || field.key;
     return (
@@ -60,6 +60,7 @@ function renderControl(field, value, onChange, error, disabled = false) {
         value={value}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        onBlur={onBlur}
         onChange={(event) => onChange(event.target.value)}
       >
         {(field.options || []).map((option) => (
@@ -80,6 +81,7 @@ function renderControl(field, value, onChange, error, disabled = false) {
         placeholder={field.placeholder}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        onBlur={onBlur}
         onChange={(event) => onChange(event.target.value)}
       />
     );
@@ -92,6 +94,7 @@ function renderControl(field, value, onChange, error, disabled = false) {
       placeholder={field.placeholder}
       isInvalid={Boolean(error)}
       disabled={disabled}
+      onBlur={onBlur}
       onChange={(event) => onChange(event.target.value)}
     />
   );
@@ -102,6 +105,7 @@ const RepeatableFieldGroup = ({
   rows,
   errors,
   onChange,
+  onBlur,
   disabled,
 }) => (
   <div>
@@ -126,7 +130,7 @@ const RepeatableFieldGroup = ({
           </div>
           <div className="row">
             {repeatable.columns.map((column) => {
-              const error = errors[getRepeatableFieldErrorKey(repeatable, row, column.key)] || errors[column.key];
+              const error = errors[getRepeatableFieldErrorKey(repeatable, row, column.key)];
               const controlField = {
                 ...column,
                 inputId: `${row.rowId}-${column.key}`,
@@ -144,7 +148,7 @@ const RepeatableFieldGroup = ({
                     rowIndex,
                     columnKey: column.key,
                     value,
-                  }), error, isControlDisabled)}
+                  }), () => onBlur(rowIndex, column.key), error, isControlDisabled)}
                   {!isControlDisabled && error && error.userMessage && (
                     <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-1">
                       {error.userMessage}
@@ -195,11 +199,13 @@ RepeatableFieldGroup.propTypes = {
     PropTypes.string,
   ])),
   onChange: PropTypes.func.isRequired,
+  onBlur: PropTypes.func,
   disabled: PropTypes.bool,
 };
 
 RepeatableFieldGroup.defaultProps = {
   errors: {},
+  onBlur: () => {},
   disabled: false,
 };
 
