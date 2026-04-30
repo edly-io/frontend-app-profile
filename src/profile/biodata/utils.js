@@ -710,6 +710,46 @@ function validateFieldFormat(field, value) {
   return '';
 }
 
+export function getRepeatableFieldValidationError(repeatable, row, column) {
+  const value = row?.[column.key];
+
+  if (column.type === PROFILE_FIELD_TYPES.FILE) {
+    if (!value) {
+      return getRepeatableFieldError(repeatable, row, column.key, `Upload ${column.label}.`);
+    }
+    return null;
+  }
+
+  if (!hasFieldValue(value)) {
+    return getRepeatableFieldError(
+      repeatable,
+      row,
+      column.key,
+      getRequiredFieldMessage(column.label),
+    );
+  }
+
+  const formatError = validateFieldFormat(
+    {
+      ...column,
+      fieldName: column.key,
+    },
+    value,
+  );
+  if (formatError) {
+    return getRepeatableFieldError(repeatable, row, column.key, formatError);
+  }
+
+  if (column.validate) {
+    const customError = column.validate(value, row);
+    if (customError) {
+      return getRepeatableFieldError(repeatable, row, column.key, customError);
+    }
+  }
+
+  return null;
+}
+
 function validateEducationRowDateRules(repeatable, row) {
   const validationErrors = {};
   const attendedFrom = String(row.attended_from || '').trim();
@@ -842,43 +882,11 @@ export function validateSectionDraft(section, sectionData) {
 
     rows.forEach((row) => {
       repeatable.columns.forEach((column) => {
-        const value = row[column.key];
-
-        if (column.type === PROFILE_FIELD_TYPES.FILE) {
-          if (!value) {
-            validationErrors[column.key] = {
-              userMessage: `Upload ${column.label}.`,
-            };
-          }
-          return;
-        }
-
-        if (!hasFieldValue(value)) {
-          validationErrors[column.key] = {
-            userMessage: getRequiredFieldMessage(column.label),
+        const repeatableFieldError = getRepeatableFieldValidationError(repeatable, row, column);
+        if (repeatableFieldError) {
+          validationErrors[repeatableFieldError.fieldName] = {
+            userMessage: repeatableFieldError.userMessage,
           };
-          return;
-        }
-
-        const formatError = validateFieldFormat(
-          {
-            ...column,
-            fieldName: column.key,
-          },
-          value,
-        );
-        if (formatError) {
-          validationErrors[column.key] = {
-            userMessage: formatError,
-          };
-          return;
-        }
-
-        if (column.validate) {
-          const customError = column.validate(value, row);
-          if (customError) {
-            validationErrors[column.key] = { userMessage: customError };
-          }
         }
       });
     });
@@ -1167,6 +1175,15 @@ export function getSectionError(section, errors) {
   const repeatableError = (section.repeatables || []).find((repeatable) => errors[repeatable.storageFieldName]);
   if (repeatableError) {
     return errors[repeatableError.storageFieldName];
+  }
+
+  const repeatableFieldErrorKey = Object.keys(errors).find((errorFieldName) => (
+    (section.repeatables || []).some((repeatable) => (
+      errorFieldName.startsWith(`${repeatable.storageFieldName}.`)
+    ))
+  ));
+  if (repeatableFieldErrorKey) {
+    return errors[repeatableFieldErrorKey];
   }
 
   const fileError = (section.fileFields || []).find((field) => errors[field.fieldName]);

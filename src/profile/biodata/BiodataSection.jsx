@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import {
   Alert, Button, Form, StatefulButton,
@@ -12,6 +14,8 @@ import RepeatableFieldGroup from './RepeatableFieldGroup';
 import {
   createFileUploadValue,
   createEmptyRepeatableRow,
+  getRepeatableFieldErrorKey,
+  getRepeatableFieldValidationError,
   getSectionError,
   getSectionErrorFields,
   getSectionErrorSummary,
@@ -163,10 +167,12 @@ const BiodataSection = ({
   );
   const formDataRef = useRef(formData);
   const sectionRef = useRef(section);
+  const [localErrors, setLocalErrors] = useState({});
+  const mergedErrors = useMemo(() => ({ ...errors, ...localErrors }), [errors, localErrors]);
   const hasContent = sectionHasValue(section, committedData);
-  const sectionError = getSectionError(section, errors);
-  const sectionErrorSummary = getSectionErrorSummary(section, errors, formData);
-  const sectionErrorFields = getSectionErrorFields(section, errors, formData);
+  const sectionError = getSectionError(section, mergedErrors);
+  const sectionErrorSummary = getSectionErrorSummary(section, mergedErrors, formData);
+  const sectionErrorFields = getSectionErrorFields(section, mergedErrors, formData);
 
   useEffect(() => {
     formDataRef.current = formData;
@@ -176,6 +182,10 @@ const BiodataSection = ({
   useEffect(() => () => {
     revokeSectionFilePreviews(sectionRef.current, formDataRef.current);
   }, []);
+
+  useEffect(() => {
+    setLocalErrors({});
+  }, [section.id]);
 
   if (!isAuthenticatedUserProfile && !hasContent) {
     return null;
@@ -232,9 +242,20 @@ const BiodataSection = ({
       ) {
         return;
       }
+      const currentRow = currentRows[payload.rowIndex];
+      const currentFieldErrorKey = getRepeatableFieldErrorKey(repeatable, currentRow, payload.columnKey);
       nextRows = currentRows.map((row, index) => (
         index === payload.rowIndex ? { ...row, [payload.columnKey]: payload.value } : row
       ));
+      setLocalErrors((previousErrors) => {
+        if (!previousErrors[currentFieldErrorKey]) {
+          return previousErrors;
+        }
+
+        const nextErrors = { ...previousErrors };
+        delete nextErrors[currentFieldErrorKey];
+        return nextErrors;
+      });
     }
 
     nextRows = normalizeRepeatableRows(nextRows, repeatable);
@@ -242,6 +263,32 @@ const BiodataSection = ({
     onDraftChange(section.id, {
       ...formData,
       [repeatable.storageFieldName]: nextRows,
+    });
+  };
+
+  const handleRepeatableFieldBlur = (repeatable, rowIndex, columnKey) => {
+    const row = (formData[repeatable.storageFieldName] || [])[rowIndex];
+    const column = repeatable.columns.find(item => item.key === columnKey);
+
+    if (!row || !column) {
+      return;
+    }
+
+    const fieldErrorKey = getRepeatableFieldErrorKey(repeatable, row, columnKey);
+    const fieldValidationError = getRepeatableFieldValidationError(repeatable, row, column);
+
+    setLocalErrors((previousErrors) => {
+      const nextErrors = { ...previousErrors };
+
+      if (fieldValidationError) {
+        nextErrors[fieldErrorKey] = {
+          userMessage: fieldValidationError.userMessage,
+        };
+      } else {
+        delete nextErrors[fieldErrorKey];
+      }
+
+      return nextErrors;
     });
   };
 
@@ -297,7 +344,7 @@ const BiodataSection = ({
       )}
       <div className="row">
         {visibleFields.map((field) => {
-          const error = errors[field.fieldName];
+          const error = mergedErrors[field.fieldName];
           return (
             <Form.Group
               key={field.fieldName}
@@ -339,8 +386,9 @@ const BiodataSection = ({
           <RepeatableFieldGroup
             repeatable={repeatable}
             rows={formData[repeatable.storageFieldName] || [createEmptyRepeatableRow(repeatable)]}
-            errors={errors}
+            errors={mergedErrors}
             onChange={(action, payload) => handleRepeatableChange(repeatable, action, payload)}
+            onBlur={(rowIndex, columnKey) => handleRepeatableFieldBlur(repeatable, rowIndex, columnKey)}
             disabled={
               disabled
               || isSectionDisabled
@@ -351,7 +399,7 @@ const BiodataSection = ({
       ))}
       {(section.fileFields || []).map((field) => {
         const fileValue = formData[field.fieldName];
-        const error = errors[field.fieldName];
+        const error = mergedErrors[field.fieldName];
         if (disabled || isSectionDisabled) {
           return <div key={field.fieldName}>{renderReadonlyFile(field, fileValue)}</div>;
         }
