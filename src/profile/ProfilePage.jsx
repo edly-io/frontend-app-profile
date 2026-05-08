@@ -103,11 +103,13 @@ const ProfilePage = ({ params }) => {
   }, [dispatch, authenticatedUserName]);
 
   const isAuthenticatedUserProfile = () => params.username === authenticatedUserName;
-  const shouldShowOutsideHrmsForm = isAuthenticatedUserProfile()
-    && Boolean(context.authenticatedUser.administrator);
+  // const shouldShowOutsideHrmsForm = isAuthenticatedUserProfile()
+  //   && Boolean(context.authenticatedUser.administrator);
+  const isRequiredProfileGuardDisabled = true;
   const hasCompletedRequiredProfile = completionOverride
     || Boolean(profileCompletionStatus?.complete);
-  const shouldBlockNavigation = isAuthenticatedUserProfile()
+  const shouldBlockNavigation = !isRequiredProfileGuardDisabled
+    && isAuthenticatedUserProfile()
     && Boolean(profileCompletionStatus?.required)
     && !hasCompletedRequiredProfile;
 
@@ -306,7 +308,7 @@ const ProfilePage = ({ params }) => {
             ])}
           >
             <div className="w-100 p-0">
-              {shouldShowOutsideHrmsForm ? (
+              {/* {shouldShowOutsideHrmsForm ? (
                 <OutsideHrmsInstructorForm
                   username={authenticatedUserName}
                   onComplete={() => {
@@ -314,7 +316,8 @@ const ProfilePage = ({ params }) => {
                     setNavigationBlocked(false);
                   }}
                 />
-              ) : <BiodataProfileSections />}
+              ) : null} */}
+              <BiodataProfileSections />
             </div>
           </div>
           <div
