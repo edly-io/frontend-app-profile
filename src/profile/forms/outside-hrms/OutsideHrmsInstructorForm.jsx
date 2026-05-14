@@ -25,11 +25,11 @@ const FORM_FIELDS = [
   { key: 'name', label: 'Name', type: 'text' },
   { key: 'shortName', label: 'Short Name', type: 'text' },
   { key: 'designation', label: 'Designation', type: 'text' },
+  { key: 'organization', label: 'Organization', type: 'text' },
   { key: 'phone', label: 'Phone', type: 'tel' },
   { key: 'mobile', label: 'Mobile', type: 'tel' },
   { key: 'address', label: 'Address', type: 'text' },
   { key: 'expertise', label: 'Expertise', type: 'text' },
-  { key: 'organization', label: 'Organization', type: 'text' },
   { key: 'email', label: 'Email', type: 'email' },
   { key: 'cnic', label: 'CNIC', type: 'text' },
 ];
@@ -43,22 +43,12 @@ const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp,application/pdf';
 
 const INITIAL_CNIC_FILES = { cnicFront: null, cnicBack: null };
 
-const getRequiredErrors = (formValue, cnicFiles) => {
-  const fieldErrors = FORM_FIELDS.reduce((accumulator, field) => {
-    if (!String(formValue[field.key] || '').trim()) {
-      accumulator[field.key] = `${field.label} is required.`;
-    }
-    return accumulator;
-  }, {});
-
-  CNIC_FILE_FIELDS.forEach(({ key, label }) => {
-    if (!cnicFiles[key]) {
-      fieldErrors[key] = `${label} is required.`;
-    }
-  });
-
-  return fieldErrors;
-};
+const getRequiredErrors = (formValue) => FORM_FIELDS.reduce((accumulator, field) => {
+  if (!String(formValue[field.key] || '').trim()) {
+    accumulator[field.key] = `${field.label} is required.`;
+  }
+  return accumulator;
+}, {});
 
 const fileToBase64 = file => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -120,12 +110,19 @@ const OutsideHrmsInstructorForm = ({ onComplete, username }) => {
       revokeFilePreviewUrl(prev[fieldKey]);
       return { ...prev, [fieldKey]: null };
     });
+    setErrors(previousErrors => {
+      const nextErrors = { ...previousErrors };
+      delete nextErrors[fieldKey];
+      return nextErrors;
+    });
+    setShowSavedMessage(false);
+    setSaveError('');
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const nextErrors = getRequiredErrors(formValue, cnicFiles);
+    const nextErrors = getRequiredErrors(formValue);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       setShowSavedMessage(false);
@@ -139,19 +136,22 @@ const OutsideHrmsInstructorForm = ({ onComplete, username }) => {
     try {
       const frontBlob = getFileUploadBlob(cnicFiles.cnicFront);
       const backBlob = getFileUploadBlob(cnicFiles.cnicBack);
-
       const [cnicFrontBase64, cnicBackBase64] = await Promise.all([
-        fileToBase64(frontBlob),
-        fileToBase64(backBlob),
+        frontBlob ? fileToBase64(frontBlob) : Promise.resolve(null),
+        backBlob ? fileToBase64(backBlob) : Promise.resolve(null),
       ]);
 
       const completionStatus = await saveOutsideHrmsInstructorProfile(
         {
           ...formValue,
-          cnicFrontAttachment: cnicFrontBase64,
-          cnicFrontAttachmentName: cnicFiles.cnicFront.name,
-          cnicBackAttachment: cnicBackBase64,
-          cnicBackAttachmentName: cnicFiles.cnicBack.name,
+          ...(cnicFrontBase64 ? {
+            cnicFrontAttachment: cnicFrontBase64,
+            cnicFrontAttachmentName: cnicFiles.cnicFront.name,
+          } : {}),
+          ...(cnicBackBase64 ? {
+            cnicBackAttachment: cnicBackBase64,
+            cnicBackAttachmentName: cnicFiles.cnicBack.name,
+          } : {}),
         },
         username,
       );

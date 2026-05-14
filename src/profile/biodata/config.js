@@ -8,6 +8,11 @@ export const PROFILE_FIELD_TYPES = {
   FILE: 'file',
 };
 
+export const CSS_EXAM_TOTAL_MARKS = 1500;
+export const CSS_REQUIRED_ELECTIVE_SUBJECT_COUNT = 6;
+export const CSS_SUBJECT_TOTAL_MARKS = 100;
+export const CSS_VIVA_TOTAL_MARKS = 300;
+
 const YES_NO_OPTIONS = [
   { value: '', label: 'Select option' },
   { value: 'Yes', label: 'Yes' },
@@ -63,6 +68,7 @@ export const BIODATA_SECTIONS = [
       { fieldName: 'date_of_birth', label: 'Date of Birth', type: PROFILE_FIELD_TYPES.DATE },
       { fieldName: 'place_of_birth', label: 'Place of Birth', placeholder: 'Enter place of birth' },
       { fieldName: 'district_of_domicile', label: 'District of Domicile', placeholder: 'Enter district of domicile' },
+      { fieldName: 'province_of_domicile', label: 'Province of Domicile', placeholder: 'Enter province of domicile' },
       { fieldName: 'religion', label: 'Religion', placeholder: 'Enter religion' },
       {
         fieldName: 'marital_status', label: 'Marital Status', type: PROFILE_FIELD_TYPES.SELECT, options: MARITAL_STATUS_OPTIONS,
@@ -335,7 +341,7 @@ export const BIODATA_SECTIONS = [
         protectedColumns: ['subject', 'total_marks'],
         emptyRow: {
           subject: '',
-          total_marks: '',
+          total_marks: '100',
           marks_obtained: '',
         },
         columns: [

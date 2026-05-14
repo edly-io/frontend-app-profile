@@ -18,6 +18,7 @@ export const BIODATA_SECTION_ENDPOINTS = {
         date_of_birth: 'date_of_birth',
         place_of_birth: 'place_of_birth',
         domicile_district: 'district_of_domicile',
+        province_of_domicile: 'province_of_domicile',
         domicile_file: 'domicile_file',
         religion: 'religion',
         marital_status: 'marital_status',

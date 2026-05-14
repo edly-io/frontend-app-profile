@@ -265,6 +265,7 @@ describe('services', () => {
 
       await validateBiodataSection('basicInformation', {
         profile_full_name: 'John Doe',
+        province_of_domicile: 'Punjab',
       });
 
       expect(mockHttpClient.post).toHaveBeenCalledWith(
@@ -273,6 +274,7 @@ describe('services', () => {
           section: 'basicInformation',
           flat: expect.objectContaining({
             full_name: 'John Doe',
+            province_of_domicile: 'Punjab',
           }),
         }),
       );
@@ -286,14 +288,21 @@ describe('services', () => {
 
       const result = await saveBiodataSection(
         'basicInformation',
-        { profile_full_name: 'John Doe' },
-        { profile_full_name: '' },
+        {
+          profile_full_name: 'John Doe',
+          province_of_domicile: 'Punjab',
+        },
+        {
+          profile_full_name: '',
+          province_of_domicile: '',
+        },
       );
 
       expect(mockHttpClient.patch).toHaveBeenCalledWith(
         expect.stringMatching(/\/basic-information\/$/),
         expect.objectContaining({
           full_name: 'John Doe',
+          province_of_domicile: 'Punjab',
         }),
         {
           headers: { 'Content-Type': 'application/json' },
@@ -319,7 +328,7 @@ describe('services', () => {
         processedData: {
           fieldErrors: {
             identity_card_number: {
-              userMessage: 'Enter a valid CNIC in the format XXXXX-XXXXXXX-X.',
+              userMessage: 'Enter a valid 13-digit CNIC number.',
             },
           },
         },
@@ -354,6 +363,9 @@ describe('services', () => {
           reading: 'Native',
           writing: 'Advanced',
         }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
       );
     });
 
@@ -391,6 +403,9 @@ describe('services', () => {
           grade: '',
           subjects: 'computer science',
         }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
       );
     });
 
@@ -421,7 +436,7 @@ describe('services', () => {
         processedData: {
           fieldErrors: {
             language_name: {
-              userMessage: 'This field is required.',
+              userMessage: 'Language is required.',
             },
           },
         },
