@@ -32,7 +32,7 @@ import { useIsOnMobileScreen, useIsOnTabletScreen } from './data/hooks';
 
 import BiodataProfileSections from './biodata/BiodataProfileSections';
 import FbrProfileTabs from './fbr-profile/FbrProfileTabs';
-import { getBiodataEndpointUrl } from './biodata/apiConfig';
+import { getBiodataEndpointUrl, getBiodataTargetUserId } from './biodata/apiConfig';
 
 ensureConfig(['CREDENTIALS_BASE_URL', 'LMS_BASE_URL', 'ACCOUNT_SETTINGS_URL'], 'ProfilePage');
 
@@ -102,6 +102,7 @@ const ProfilePage = ({ params }) => {
   }, [username, saveState, navigate]);
 
   const authenticatedUserName = context.authenticatedUser.username;
+  const biodataTargetUserId = getBiodataTargetUserId();
 
   const handleSaveProfilePhoto = useCallback((formData) => {
     dispatch(saveProfilePhoto(authenticatedUserName, formData));
@@ -118,6 +119,23 @@ const ProfilePage = ({ params }) => {
     let isMounted = true;
 
     const loadFbrProfile = async () => {
+      if (biodataTargetUserId) {
+        setFbrProfileLoaded(false);
+        try {
+          const { data } = await getAuthenticatedHttpClient().get(
+            getBiodataEndpointUrl(getFbrProfileDetailPath(biodataTargetUserId)),
+          );
+          if (!isMounted) return;
+          setFbrProfile(data);
+        } catch (error) {
+          if (!isMounted) return;
+          setFbrProfile(null);
+        } finally {
+          if (isMounted) setFbrProfileLoaded(true);
+        }
+        return;
+      }
+
       if (!isAuthenticatedUserProfile()) {
         setFbrProfile(null);
         setFbrProfileLoaded(true);
@@ -147,7 +165,7 @@ const ProfilePage = ({ params }) => {
 
     loadFbrProfile();
     return () => { isMounted = false; };
-  }, [authenticatedUserName, params.username]);
+  }, [authenticatedUserName, biodataTargetUserId, params.username]);
 
   const hasCompletedRequiredProfile = completionOverride
     || Boolean(profileCompletionStatus?.complete);
@@ -387,7 +405,7 @@ const ProfilePage = ({ params }) => {
 
 ProfilePage.propTypes = {
   params: PropTypes.shape({
-    username: PropTypes.string.isRequired,
+    username: PropTypes.string,
   }).isRequired,
 };
 

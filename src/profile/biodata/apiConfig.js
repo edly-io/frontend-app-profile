@@ -20,8 +20,25 @@ export function getBiodataApiBaseUrl() {
   return `${LMS_BASE_URL}${BIODATA_API_DEFAULT_BASE_PATH}`;
 }
 
-export function getBiodataEndpointUrl(path) {
-  return `${getBiodataApiBaseUrl()}/${normalizeBiodataPath(path)}`;
+export function getBiodataTargetUserId() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const targetUserId = new URLSearchParams(window.location.search).get('for_user');
+  return targetUserId ? String(targetUserId).trim() : null;
+}
+
+export function getBiodataEndpointUrl(path, options = {}) {
+  const { includeTargetUser = false } = options;
+  const url = new URL(`${getBiodataApiBaseUrl()}/${normalizeBiodataPath(path)}`);
+  const targetUserId = includeTargetUser ? getBiodataTargetUserId() : null;
+
+  if (targetUserId) {
+    url.searchParams.set('for_user', targetUserId);
+  }
+
+  return url.toString();
 }
 
 export const BIODATA_SECTION_ENDPOINTS = {
