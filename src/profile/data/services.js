@@ -7,8 +7,8 @@ import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject, convertKeyNames, snakeCaseObject } from '../utils';
 import { FIELD_LABELS } from './constants';
 import {
-  BIODATA_API_DEFAULT_BASE_PATH,
   BIODATA_VALIDATE_PATH,
+  getBiodataEndpointUrl,
   getConfiguredBiodataSections,
   getSectionEndpointConfig,
   getSectionRepeatableConfigs,
@@ -60,24 +60,6 @@ function processAndThrowError(error, errorDataProcessor) {
   } else {
     throw error;
   }
-}
-
-function normalizeBiodataPath(path) {
-  return path.replace(/^\//, '');
-}
-
-function getBiodataApiBaseUrl() {
-  const { LMS_BASE_URL, BIODATA_API_BASE_URL } = getConfig();
-
-  if (BIODATA_API_BASE_URL) {
-    return BIODATA_API_BASE_URL.replace(/\/$/, '');
-  }
-
-  return `${LMS_BASE_URL}${BIODATA_API_DEFAULT_BASE_PATH}`;
-}
-
-function getBiodataEndpointUrl(path) {
-  return `${getBiodataApiBaseUrl()}/${normalizeBiodataPath(path)}`;
 }
 
 function getStorageUsername(username = null) {

@@ -1,7 +1,28 @@
+import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { BIODATA_SECTION_MAP } from './config';
+
+ensureConfig(['LMS_BASE_URL'], 'Biodata API config');
 
 export const BIODATA_API_DEFAULT_BASE_PATH = '/fbr/api/biodata';
 export const BIODATA_VALIDATE_PATH = 'v1/validate/';
+
+export function normalizeBiodataPath(path) {
+  return path.replace(/^\//, '');
+}
+
+export function getBiodataApiBaseUrl() {
+  const { LMS_BASE_URL, BIODATA_API_BASE_URL } = getConfig();
+
+  if (BIODATA_API_BASE_URL) {
+    return BIODATA_API_BASE_URL.replace(/\/$/, '');
+  }
+
+  return `${LMS_BASE_URL}${BIODATA_API_DEFAULT_BASE_PATH}`;
+}
+
+export function getBiodataEndpointUrl(path) {
+  return `${getBiodataApiBaseUrl()}/${normalizeBiodataPath(path)}`;
+}
 
 export const BIODATA_SECTION_ENDPOINTS = {
   basicInformation: {
