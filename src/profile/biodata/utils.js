@@ -33,7 +33,7 @@ const GOVERNMENT_SERVICE_DETAILS_SECTION_ID = 'governmentServiceDetails';
 const OTHER_INCOME_SOURCE_FIELD_NAME = 'other_income_source_besides_salary';
 const OTHER_INCOME_DETAILS_FIELD_NAME = 'other_income_details';
 const EDUCATION_ATTENDED_TO_DATE_MESSAGE = 'Attended To must be later than Attended From.';
-const EDUCATION_YEAR_OF_PASSING_MESSAGE = 'Year of Passing must be the same as the Attended To year.';
+const EDUCATION_YEAR_OF_PASSING_MESSAGE = 'Year of Passing must be the same as or later than the Attended To year.';
 const FOREIGN_VISIT_TO_DATE_MESSAGE = 'To date must be on or after From date.';
 const EMPLOYMENT_TO_DATE_MESSAGE = 'To date must be on or after From date.';
 const CSS_TOTAL_MARKS_PER_SUBJECT_MESSAGE = `Each CSS subject must have total marks of ${CSS_SUBJECT_TOTAL_MARKS}.`;
@@ -59,8 +59,6 @@ const PAKISTAN_MOBILE_FIELD_NAMES = [
   'spouse_phone',
 ];
 const CONDITIONAL_FILE_FIELD_DEPENDENCIES = {
-  cnic_front: 'identity_card_number',
-  cnic_back: 'identity_card_number',
   domicile_file: 'district_of_domicile',
 };
 
@@ -787,7 +785,11 @@ function validateEducationRowDateRules(repeatable, row) {
     validationErrors[error.fieldName] = { userMessage: error.userMessage };
   }
 
-  if (isValidDateValue(attendedTo) && yearOfPassing && yearOfPassing !== getYearFromDateValue(attendedTo)) {
+  if (
+    isValidDateValue(attendedTo)
+    && yearOfPassing
+    && Number(yearOfPassing) < Number(getYearFromDateValue(attendedTo))
+  ) {
     const error = getRepeatableFieldError(repeatable, row, 'year_of_passing', EDUCATION_YEAR_OF_PASSING_MESSAGE);
     validationErrors[error.fieldName] = { userMessage: error.userMessage };
   }

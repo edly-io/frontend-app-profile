@@ -62,10 +62,7 @@ export const BIODATA_SECTIONS = [
       {
         fieldName: 'profile_title', label: 'Title', type: PROFILE_FIELD_TYPES.SELECT, options: TITLE_OPTIONS,
       },
-      { fieldName: 'profile_full_name', label: 'Full Name', placeholder: 'Enter full name' },
       { fieldName: 'preferred_calling_name', label: 'Preferred / calling name', placeholder: 'Enter preferred name' },
-      { fieldName: 'identity_card_number', label: 'Identity Card Number', placeholder: 'Enter identity card number' },
-      { fieldName: 'date_of_birth', label: 'Date of Birth', type: PROFILE_FIELD_TYPES.DATE },
       { fieldName: 'place_of_birth', label: 'Place of Birth', placeholder: 'Enter place of birth' },
       { fieldName: 'district_of_domicile', label: 'District of Domicile', placeholder: 'Enter district of domicile' },
       { fieldName: 'province_of_domicile', label: 'Province of Domicile', placeholder: 'Enter province of domicile' },
