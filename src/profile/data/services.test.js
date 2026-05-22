@@ -103,7 +103,6 @@ describe('services', () => {
       const result = await getBiodataProfile();
 
       expect(result).toEqual(expect.arrayContaining([
-        expect.objectContaining({ fieldName: 'profile_full_name', fieldValue: 'John Doe' }),
         expect.objectContaining({ fieldName: 'marital_status', fieldValue: 'single' }),
         expect.objectContaining({
           fieldName: 'education_records',
@@ -143,7 +142,7 @@ describe('services', () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect(result).toEqual(expect.arrayContaining([
-        expect.objectContaining({ fieldName: 'profile_full_name', fieldValue: '' }),
+        expect.objectContaining({ fieldName: 'preferred_calling_name', fieldValue: '' }),
         expect.objectContaining({ fieldName: 'education_records', fieldValue: [] }),
       ]));
     });
@@ -264,7 +263,7 @@ describe('services', () => {
       mockHttpClient.post.mockResolvedValue({});
 
       await validateBiodataSection('basicInformation', {
-        profile_full_name: 'John Doe',
+        preferred_calling_name: 'John',
         province_of_domicile: 'Punjab',
       });
 
@@ -273,7 +272,7 @@ describe('services', () => {
         expect.objectContaining({
           section: 'basicInformation',
           flat: expect.objectContaining({
-            full_name: 'John Doe',
+            preferred_name: 'John',
             province_of_domicile: 'Punjab',
           }),
         }),
@@ -289,11 +288,11 @@ describe('services', () => {
       const result = await saveBiodataSection(
         'basicInformation',
         {
-          profile_full_name: 'John Doe',
+          preferred_calling_name: 'John',
           province_of_domicile: 'Punjab',
         },
         {
-          profile_full_name: '',
+          preferred_calling_name: '',
           province_of_domicile: '',
         },
       );
@@ -301,7 +300,7 @@ describe('services', () => {
       expect(mockHttpClient.patch).toHaveBeenCalledWith(
         expect.stringMatching(/\/basic-information\/$/),
         expect.objectContaining({
-          full_name: 'John Doe',
+          preferred_name: 'John',
           province_of_domicile: 'Punjab',
         }),
         {

@@ -23,6 +23,7 @@ jest.mock('./services', () => ({
   validateBiodataSection: jest.fn(),
   getCourseCertificates: jest.fn(),
   getCountryList: jest.fn(),
+  getProfileCompletionStatus: jest.fn(),
 }));
 
 jest.mock('@edx/frontend-platform/auth', () => ({
@@ -33,6 +34,7 @@ jest.mock('@edx/frontend-platform/auth', () => ({
 import profileSaga, {
   handleFetchProfile,
   handleSaveProfile,
+  handleSaveDraftSection,
   handleSaveProfilePhoto,
   handleDeleteProfilePhoto,
 } from './sagas';
@@ -48,6 +50,8 @@ describe('RootSaga', () => {
         .toEqual(takeEvery(profileActions.FETCH_PROFILE.BASE, handleFetchProfile));
       expect(gen.next().value)
         .toEqual(takeEvery(profileActions.SAVE_PROFILE.BASE, handleSaveProfile));
+      expect(gen.next().value)
+        .toEqual(takeEvery(profileActions.SAVE_DRAFT_SECTION.BASE, handleSaveDraftSection));
       expect(gen.next().value)
         .toEqual(takeEvery(profileActions.SAVE_PROFILE_PHOTO.BASE, handleSaveProfilePhoto));
       expect(gen.next().value)
@@ -71,8 +75,9 @@ describe('RootSaga', () => {
       const action = profileActions.fetchProfile('gonzo');
       const gen = handleFetchProfile(action);
 
-      const biodata = [{ fieldName: 'profile_full_name', fieldValue: 'Gonzo' }];
-      const result = [userAccount, [1, 2, 3], [], { preferences: 'stuff' }, biodata];
+      const biodata = [{ fieldName: 'preferred_calling_name', fieldValue: 'Gonzo' }];
+      const profileCompletionStatus = { complete: false, required: true };
+      const result = [userAccount, [1, 2, 3], [], { preferences: 'stuff' }, biodata, profileCompletionStatus];
 
       expect(gen.next().value).toEqual(select(userAccountSelector));
       expect(gen.next(selectorData).value).toEqual(put(profileActions.fetchProfileBegin()));
@@ -82,11 +87,13 @@ describe('RootSaga', () => {
         call(ProfileApiService.getCountryList),
         call(ProfileApiService.getPreferences, 'gonzo'),
         call(ProfileApiService.getBiodataProfile),
+        call(ProfileApiService.getProfileCompletionStatus, 'gonzo'),
       ]));
       expect(gen.next(result).value)
         .toEqual(put(profileActions.fetchProfileSuccess({
           ...userAccount,
           extendedProfile: biodata,
+          profileCompletionStatus,
         }, result[3], result[1], true, [])));
       expect(gen.next().value).toEqual(put(profileActions.fetchProfileReset()));
       expect(gen.next().value).toBeUndefined();
@@ -162,7 +169,7 @@ describe('RootSaga', () => {
         ...selectorData,
         drafts: {
           basicInformation: {
-            profile_full_name: 'Full Name',
+            preferred_calling_name: 'Full Name',
           },
         },
         account: {
@@ -170,7 +177,7 @@ describe('RootSaga', () => {
         },
       };
       const savedAccount = {
-        extendedProfile: [{ fieldName: 'profile_full_name', fieldValue: 'Full Name' }],
+        extendedProfile: [{ fieldName: 'preferred_calling_name', fieldValue: 'Full Name' }],
       };
 
       expect(gen.next().value).toEqual(select(handleSaveProfileSelector));
@@ -183,7 +190,6 @@ describe('RootSaga', () => {
           cnic_back: null,
           cnic_front: null,
           daughters: '',
-          date_of_birth: '',
           district_of_domicile: '',
           domicile_file: null,
           identity_card_number: '',
@@ -192,7 +198,6 @@ describe('RootSaga', () => {
           place_of_birth: '',
           province_of_domicile: '',
           preferred_calling_name: '',
-          profile_full_name: '',
           profile_title: '',
           religion: '',
           sons: '',
