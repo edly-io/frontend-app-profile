@@ -23,7 +23,6 @@ import DateJoined from './DateJoined';
 import UserCertificateSummary from './UserCertificateSummary';
 import PageLoading from './PageLoading';
 import Certificates from './Certificates';
-import OutsideHrmsInstructorForm from './forms/outside-hrms/OutsideHrmsInstructorForm';
 
 import { profilePageSelector } from './data/selectors';
 import messages from './ProfilePage.messages';
@@ -68,7 +67,7 @@ const ProfilePage = ({ params }) => {
 
   const navigate = useNavigate();
   const [viewMyRecordsUrl, setViewMyRecordsUrl] = useState(null);
-  const [completionOverride, setCompletionOverride] = useState(false);
+  const completionOverride = false;
   const [navigationBlocked, setNavigationBlocked] = useState(false);
   const allowRequiredProfileLogoutRef = useRef(false);
   const isMobileView = useIsOnMobileScreen();
