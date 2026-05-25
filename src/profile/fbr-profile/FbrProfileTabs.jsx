@@ -30,6 +30,26 @@ const formatRoles = roles => (Array.isArray(roles) ? roles.map(role => ROLE_LABE
 
 const normalizeValue = value => (typeof value === 'string' ? value.trim() : value);
 
+const getPakistanMobileSubscriber = (value) => {
+  let digits = String(value || '').replace(/\D/g, '');
+  if (digits.startsWith('92')) digits = digits.slice(2);
+  if (digits.startsWith('0')) digits = digits.slice(1);
+  if (digits && digits[0] !== '3') digits = '';
+  return digits.slice(0, 10);
+};
+
+const formatPakistanMobileValue = value => `+92${getPakistanMobileSubscriber(value)}`;
+
+const normalizePakistanMobilePayload = (value) => {
+  const subscriber = getPakistanMobileSubscriber(value);
+  return subscriber ? `+92${subscriber}` : '';
+};
+
+const isValidOptionalPakistanMobile = (value) => {
+  const subscriber = getPakistanMobileSubscriber(value);
+  return !subscriber || /^3\d{9}$/.test(subscriber);
+};
+
 const getApiErrorMessage = (error, fallback) => {
   const data = error?.response?.data;
   if (!data) {
@@ -160,19 +180,21 @@ EditableCard.defaultProps = {
 };
 
 const TextInput = ({
-  label, value, onChange, type, readOnly, as,
+  label, value, onChange, type, readOnly, as, inputKind,
 }) => (
   <Form.Group className="col-md-6 col-lg-4 mb-4">
     <Form.Label>{label}</Form.Label>
     <Form.Control
       as={as}
-      type={type}
-      value={value || ''}
+      type={inputKind === 'pakistan-mobile' ? 'text' : type}
+      value={inputKind === 'pakistan-mobile' ? formatPakistanMobileValue(value) : value || ''}
       readOnly={readOnly}
       disabled={readOnly}
       style={readOnly ? readOnlyFieldStyle : undefined}
       rows={as === 'textarea' ? 3 : undefined}
-      onChange={event => onChange(event.target.value)}
+      inputMode={inputKind === 'pakistan-mobile' ? 'numeric' : undefined}
+      maxLength={inputKind === 'pakistan-mobile' ? 13 : undefined}
+      onChange={event => onChange(inputKind === 'pakistan-mobile' ? formatPakistanMobileValue(event.target.value) : event.target.value)}
     />
   </Form.Group>
 );
@@ -184,6 +206,7 @@ TextInput.propTypes = {
   type: PropTypes.string,
   readOnly: PropTypes.bool,
   as: PropTypes.string,
+  inputKind: PropTypes.string,
 };
 
 TextInput.defaultProps = {
@@ -192,6 +215,7 @@ TextInput.defaultProps = {
   type: 'text',
   readOnly: false,
   as: undefined,
+  inputKind: '',
 };
 
 const BaseProfilePanel = ({
@@ -218,15 +242,24 @@ const BaseProfilePanel = ({
   };
 
   const handleSave = async () => {
+    if (!isValidOptionalPakistanMobile(formValue.mobile)) {
+      setError('Mobile must start with 3 and contain 10 digits after +92.');
+      return;
+    }
+    if (!isValidOptionalPakistanMobile(formValue.emergency_contact_phone)) {
+      setError('Emergency phone must start with 3 and contain 10 digits after +92.');
+      return;
+    }
+
     setIsSaving(true);
     setError('');
     try {
       const payload = {
         full_name: normalizeValue(formValue.full_name),
-        mobile: normalizeValue(formValue.mobile) || null,
+        mobile: normalizePakistanMobilePayload(formValue.mobile) || null,
         field_organisation: normalizeValue(formValue.field_organisation) || '',
         emergency_contact_name: normalizeValue(formValue.emergency_contact_name) || '',
-        emergency_contact_phone: normalizeValue(formValue.emergency_contact_phone) || '',
+        emergency_contact_phone: normalizePakistanMobilePayload(formValue.emergency_contact_phone) || '',
         education_degree: normalizeValue(formValue.education_degree) || '',
         education_institute: normalizeValue(formValue.education_institute) || '',
         education_year: formValue.education_year ? Number(formValue.education_year) : null,
@@ -256,11 +289,11 @@ const BaseProfilePanel = ({
         <div className="row">
           <TextInput label="Full Name" value={formValue.full_name} onChange={value => setField('full_name', value)} />
           <TextInput label="Email" value={formValue.email} readOnly />
-          <TextInput label="Mobile" value={formValue.mobile} onChange={value => setField('mobile', value)} />
+          <TextInput label="Mobile" value={formValue.mobile} inputKind="pakistan-mobile" onChange={value => setField('mobile', value)} />
           <TextInput label="CNIC" value={formValue.cnic} readOnly />
           <TextInput label="Field Organisation" value={formValue.field_organisation} onChange={value => setField('field_organisation', value)} />
           <TextInput label="Emergency Contact" value={formValue.emergency_contact_name} onChange={value => setField('emergency_contact_name', value)} />
-          <TextInput label="Emergency Phone" value={formValue.emergency_contact_phone} onChange={value => setField('emergency_contact_phone', value)} />
+          <TextInput label="Emergency Phone" value={formValue.emergency_contact_phone} inputKind="pakistan-mobile" onChange={value => setField('emergency_contact_phone', value)} />
           <TextInput label="Education Degree" value={formValue.education_degree} onChange={value => setField('education_degree', value)} />
           <TextInput label="Education Institute" value={formValue.education_institute} onChange={value => setField('education_institute', value)} />
           <TextInput label="Education Year" type="number" value={formValue.education_year} onChange={value => setField('education_year', value)} />
