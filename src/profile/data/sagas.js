@@ -35,6 +35,7 @@ import {
 } from './actions';
 import { handleSaveProfileSelector, userAccountSelector } from './selectors';
 import * as ProfileApiService from './services';
+import { getBiodataTargetUserId } from '../biodata/apiConfig';
 import { getSectionById } from '../biodata/utils';
 import { buildSectionDraftFromExtendedProfile } from '../biodata/apiTransforms';
 
@@ -42,6 +43,7 @@ export function* handleFetchProfile(action) {
   const { username } = action.payload;
   const userAccount = yield select(userAccountSelector);
   const isAuthenticatedUserProfile = username === getAuthenticatedUser().username;
+  const isAdminActingOnTargetUser = Boolean(getBiodataTargetUserId()) && !isAuthenticatedUserProfile;
   let preferences = {};
   let account = userAccount;
   let courseCertificates = null;
@@ -52,14 +54,15 @@ export function* handleFetchProfile(action) {
   try {
     yield put(fetchProfileBegin());
 
-    const calls = [
-      call(ProfileApiService.getAccount, username),
-      call(ProfileApiService.getCourseCertificates, username),
-      call(ProfileApiService.getCountryList),
-    ];
+    const calls = [call(ProfileApiService.getCountryList)];
 
     if (isAuthenticatedUserProfile) {
+      calls.unshift(call(ProfileApiService.getCourseCertificates, username));
+      calls.unshift(call(ProfileApiService.getAccount, username));
       calls.push(call(ProfileApiService.getPreferences, username));
+    }
+
+    if (isAuthenticatedUserProfile || isAdminActingOnTargetUser) {
       calls.push(call(ProfileApiService.getBiodataProfile));
       calls.push(call(ProfileApiService.getProfileCompletionStatus, username));
     }
@@ -80,8 +83,26 @@ export function* handleFetchProfile(action) {
         extendedProfile: biodataExtendedProfile,
         profileCompletionStatus,
       };
+    } else if (isAdminActingOnTargetUser) {
+      [
+        countriesCodesList,
+        biodataExtendedProfile,
+        profileCompletionStatus,
+      ] = result;
+      account = {
+        ...userAccount,
+        username,
+        extendedProfile: biodataExtendedProfile,
+        profileCompletionStatus,
+      };
+      courseCertificates = [];
     } else {
-      [account, courseCertificates, countriesCodesList] = result;
+      [countriesCodesList] = result;
+      account = {
+        ...userAccount,
+        username,
+      };
+      courseCertificates = [];
     }
 
     if (isAuthenticatedUserProfile && result[0].accountPrivacy === 'all_users') {

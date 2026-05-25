@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { ensureConfig } from '@edx/frontend-platform';
+import { ensureConfig, getConfig } from '@edx/frontend-platform';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Hyperlink } from '@openedx/paragon';
@@ -23,7 +24,6 @@ import DateJoined from './DateJoined';
 import UserCertificateSummary from './UserCertificateSummary';
 import PageLoading from './PageLoading';
 import Certificates from './Certificates';
-import OutsideHrmsInstructorForm from './forms/outside-hrms/OutsideHrmsInstructorForm';
 
 import { profilePageSelector } from './data/selectors';
 import messages from './ProfilePage.messages';
@@ -31,11 +31,18 @@ import withParams from '../utils/hoc';
 import { useIsOnMobileScreen, useIsOnTabletScreen } from './data/hooks';
 
 import BiodataProfileSections from './biodata/BiodataProfileSections';
+import FbrProfileTabs from './fbr-profile/FbrProfileTabs';
+import { getBiodataEndpointUrl, getBiodataTargetUserId } from './biodata/apiConfig';
 
 ensureConfig(['CREDENTIALS_BASE_URL', 'LMS_BASE_URL', 'ACCOUNT_SETTINGS_URL'], 'ProfilePage');
 
 const IGNORED_LINK_PROTOCOLS = ['mailto:', 'tel:', 'java'.concat('script:')];
 const LOGOUT_PATH_PATTERN = /(^|\/)(logout|signout|sign-out)(\/|$)/i;
+const FBR_PROFILE_ME_PATH = 'v1/users/me/';
+
+function getFbrProfileDetailPath(profileId) {
+  return `v1/users/${profileId}/`;
+}
 
 function isLogoutNavigation(targetUrl, config = {}) {
   const configuredLogoutUrl = config.LOGOUT_URL;
@@ -70,6 +77,8 @@ const ProfilePage = ({ params }) => {
   const [viewMyRecordsUrl, setViewMyRecordsUrl] = useState(null);
   const [completionOverride, setCompletionOverride] = useState(false);
   const [navigationBlocked, setNavigationBlocked] = useState(false);
+  const [fbrProfile, setFbrProfile] = useState(null);
+  const [fbrProfileLoaded, setFbrProfileLoaded] = useState(false);
   const allowRequiredProfileLogoutRef = useRef(false);
   const isMobileView = useIsOnMobileScreen();
   const isTabletView = useIsOnTabletScreen();
@@ -93,6 +102,7 @@ const ProfilePage = ({ params }) => {
   }, [username, saveState, navigate]);
 
   const authenticatedUserName = context.authenticatedUser.username;
+  const biodataTargetUserId = getBiodataTargetUserId();
 
   const handleSaveProfilePhoto = useCallback((formData) => {
     dispatch(saveProfilePhoto(authenticatedUserName, formData));
@@ -103,12 +113,63 @@ const ProfilePage = ({ params }) => {
   }, [dispatch, authenticatedUserName]);
 
   const isAuthenticatedUserProfile = () => params.username === authenticatedUserName;
-  // const shouldShowOutsideHrmsForm = isAuthenticatedUserProfile()
-  //   && Boolean(context.authenticatedUser.administrator);
-  const isRequiredProfileGuardDisabled = true;
+  const isStpTrainee = fbrProfile?.trainee_profile?.trainee_type === 'stp';
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadFbrProfile = async () => {
+      if (biodataTargetUserId) {
+        setFbrProfileLoaded(false);
+        try {
+          const { data } = await getAuthenticatedHttpClient().get(
+            getBiodataEndpointUrl(getFbrProfileDetailPath(biodataTargetUserId)),
+          );
+          if (!isMounted) return;
+          setFbrProfile(data);
+        } catch (error) {
+          if (!isMounted) return;
+          setFbrProfile(null);
+        } finally {
+          if (isMounted) setFbrProfileLoaded(true);
+        }
+        return;
+      }
+
+      if (!isAuthenticatedUserProfile()) {
+        setFbrProfile(null);
+        setFbrProfileLoaded(true);
+        return;
+      }
+
+      setFbrProfileLoaded(false);
+      try {
+        const { data: scopeData } = await getAuthenticatedHttpClient().get(
+          getBiodataEndpointUrl(FBR_PROFILE_ME_PATH),
+        );
+        if (!scopeData?.id) {
+          throw new Error('FBR profile id missing from scope response.');
+        }
+        const { data } = await getAuthenticatedHttpClient().get(
+          getBiodataEndpointUrl(getFbrProfileDetailPath(scopeData.id)),
+        );
+        if (!isMounted) return;
+        setFbrProfile(data);
+      } catch (error) {
+        if (!isMounted) return;
+        setFbrProfile(null);
+      } finally {
+        if (isMounted) setFbrProfileLoaded(true);
+      }
+    };
+
+    loadFbrProfile();
+    return () => { isMounted = false; };
+  }, [authenticatedUserName, biodataTargetUserId, params.username]);
+
   const hasCompletedRequiredProfile = completionOverride
     || Boolean(profileCompletionStatus?.complete);
-  const shouldBlockNavigation = !isRequiredProfileGuardDisabled
+  const shouldBlockNavigation = isStpTrainee
     && isAuthenticatedUserProfile()
     && Boolean(profileCompletionStatus?.required)
     && !hasCompletedRequiredProfile;
@@ -214,7 +275,7 @@ const ProfilePage = ({ params }) => {
 
   return (
     <div className="profile-page">
-      {isLoadingProfile ? (
+      {isLoadingProfile || !fbrProfileLoaded ? (
         <PageLoading srMessage={intl.formatMessage(messages['profile.loading'])} />
       ) : (
         <>
@@ -308,16 +369,19 @@ const ProfilePage = ({ params }) => {
             ])}
           >
             <div className="w-100 p-0">
-              {/* {shouldShowOutsideHrmsForm ? (
-                <OutsideHrmsInstructorForm
-                  username={authenticatedUserName}
-                  onComplete={() => {
+              {isAuthenticatedUserProfile() ? (
+                <FbrProfileTabs
+                  profile={fbrProfile}
+                  showStpBiodataForm={isStpTrainee}
+                  onProfileUpdated={setFbrProfile}
+                  onStpBiodataComplete={() => {
                     setCompletionOverride(true);
                     setNavigationBlocked(false);
                   }}
                 />
-              ) : null} */}
-              <BiodataProfileSections />
+              ) : (
+                <BiodataProfileSections />
+              )}
             </div>
           </div>
           <div
@@ -341,7 +405,7 @@ const ProfilePage = ({ params }) => {
 
 ProfilePage.propTypes = {
   params: PropTypes.shape({
-    username: PropTypes.string.isRequired,
+    username: PropTypes.string,
   }).isRequired,
 };
 

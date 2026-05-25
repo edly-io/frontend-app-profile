@@ -8,6 +8,7 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      <Route path="/u" element={<AuthenticatedPageRoute><ProfilePage navigate={navigate} /></AuthenticatedPageRoute>} />
       <Route path="/u/:username" element={<AuthenticatedPageRoute><ProfilePage navigate={navigate} /></AuthenticatedPageRoute>} />
       <Route path="/notfound" element={<PageWrap><NotFoundPage /></PageWrap>} />
       <Route path="*" element={<PageWrap><NotFoundPage /></PageWrap>} />

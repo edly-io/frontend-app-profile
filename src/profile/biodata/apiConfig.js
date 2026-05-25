@@ -1,7 +1,45 @@
+import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { BIODATA_SECTION_MAP } from './config';
+
+ensureConfig(['LMS_BASE_URL'], 'Biodata API config');
 
 export const BIODATA_API_DEFAULT_BASE_PATH = '/fbr/api/biodata';
 export const BIODATA_VALIDATE_PATH = 'v1/validate/';
+
+export function normalizeBiodataPath(path) {
+  return path.replace(/^\//, '');
+}
+
+export function getBiodataApiBaseUrl() {
+  const { LMS_BASE_URL, BIODATA_API_BASE_URL } = getConfig();
+
+  if (BIODATA_API_BASE_URL) {
+    return BIODATA_API_BASE_URL.replace(/\/$/, '');
+  }
+
+  return `${LMS_BASE_URL}${BIODATA_API_DEFAULT_BASE_PATH}`;
+}
+
+export function getBiodataTargetUserId() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const targetUserId = new URLSearchParams(window.location.search).get('for_user');
+  return targetUserId ? String(targetUserId).trim() : null;
+}
+
+export function getBiodataEndpointUrl(path, options = {}) {
+  const { includeTargetUser = false } = options;
+  const url = new URL(`${getBiodataApiBaseUrl()}/${normalizeBiodataPath(path)}`);
+  const targetUserId = includeTargetUser ? getBiodataTargetUserId() : null;
+
+  if (targetUserId) {
+    url.searchParams.set('for_user', targetUserId);
+  }
+
+  return url.toString();
+}
 
 export const BIODATA_SECTION_ENDPOINTS = {
   basicInformation: {

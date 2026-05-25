@@ -7,8 +7,8 @@ import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject, convertKeyNames, snakeCaseObject } from '../utils';
 import { FIELD_LABELS } from './constants';
 import {
-  BIODATA_API_DEFAULT_BASE_PATH,
   BIODATA_VALIDATE_PATH,
+  getBiodataEndpointUrl,
   getConfiguredBiodataSections,
   getSectionEndpointConfig,
   getSectionRepeatableConfigs,
@@ -60,24 +60,6 @@ function processAndThrowError(error, errorDataProcessor) {
   } else {
     throw error;
   }
-}
-
-function normalizeBiodataPath(path) {
-  return path.replace(/^\//, '');
-}
-
-function getBiodataApiBaseUrl() {
-  const { LMS_BASE_URL, BIODATA_API_BASE_URL } = getConfig();
-
-  if (BIODATA_API_BASE_URL) {
-    return BIODATA_API_BASE_URL.replace(/\/$/, '');
-  }
-
-  return `${LMS_BASE_URL}${BIODATA_API_DEFAULT_BASE_PATH}`;
-}
-
-function getBiodataEndpointUrl(path) {
-  return `${getBiodataApiBaseUrl()}/${normalizeBiodataPath(path)}`;
 }
 
 function getStorageUsername(username = null) {
@@ -160,7 +142,7 @@ async function getFlatBiodataSection(section) {
   }
 
   try {
-    const { data } = await getHttpClient().get(getBiodataEndpointUrl(sectionEndpointConfig.flat.path));
+    const { data } = await getHttpClient().get(getBiodataEndpointUrl(sectionEndpointConfig.flat.path, { includeTargetUser: true }));
     return data && typeof data === 'object' ? snakeCaseObject(data) : {};
   } catch (error) {
     if (isMissingBiodataResponse(error)) {
@@ -226,7 +208,7 @@ async function getRepeatableBiodataSection(section, repeatable, endpoint, flatRe
   }
 
   try {
-    const { data } = await getHttpClient().get(getBiodataEndpointUrl(endpoint.path));
+    const { data } = await getHttpClient().get(getBiodataEndpointUrl(endpoint.path, { includeTargetUser: true }));
     const rows = dedupeRepeatableRows(endpoint, Array.isArray(data) ? data : data?.results || []);
     const metadataSource = Array.isArray(data) ? rows[0] : data;
     const rowMetadataSource = !metadataSource?.not_applicable && !metadataSource?.is_submitted
@@ -306,7 +288,7 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
     const payload = buildBiodataRequestPayload(
       endpoint.batchPayloadKey ? { [endpoint.batchPayloadKey]: rowValues } : rowValues,
     );
-    const url = getBiodataEndpointUrl(endpointPath);
+    const url = getBiodataEndpointUrl(endpointPath, { includeTargetUser: true });
     if (payload.headers) {
       await getHttpClient().post(url, payload.data, { headers: payload.headers });
     } else {
@@ -334,12 +316,12 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
   draftRows.forEach((row) => {
     const payload = buildBiodataRequestPayload(row.values);
     if (row.backendId != null && !shouldPostRows) {
-      const url = getBiodataEndpointUrl(`${endpointPath}${row.backendId}/`);
+      const url = getBiodataEndpointUrl(`${endpointPath}${row.backendId}/`, { includeTargetUser: true });
       operations.push(payload.headers
         ? getHttpClient().patch(url, payload.data, { headers: payload.headers })
         : getHttpClient().patch(url, payload.data));
     } else {
-      const url = getBiodataEndpointUrl(endpointPath);
+      const url = getBiodataEndpointUrl(endpointPath, { includeTargetUser: true });
       operations.push(payload.headers
         ? getHttpClient().post(url, payload.data, { headers: payload.headers })
         : getHttpClient().post(url, payload.data));
@@ -349,7 +331,7 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
   if (!shouldPostRows) {
     Object.keys(committedRowMap).forEach((backendId) => {
       if (!draftRowMap[backendId]) {
-        operations.push(getHttpClient().delete(getBiodataEndpointUrl(`${endpointPath}${backendId}/`)));
+        operations.push(getHttpClient().delete(getBiodataEndpointUrl(`${endpointPath}${backendId}/`, { includeTargetUser: true })));
       }
     });
   }
@@ -534,7 +516,7 @@ export async function getProfileCompletionStatus() {
 
   if (declarationEndpoint) {
     try {
-      const { data } = await getHttpClient().get(getBiodataEndpointUrl(declarationEndpoint));
+      const { data } = await getHttpClient().get(getBiodataEndpointUrl(declarationEndpoint, { includeTargetUser: true }));
       complete = Boolean(snakeCaseObject(data || {}).is_submitted);
     } catch (error) {
       if (!isMissingBiodataResponse(error)) {
@@ -574,7 +556,7 @@ export async function validateBiodataSection(sectionId, sectionData) {
 
   const payload = normalizeBiodataPayload(buildValidationPayload(section, sectionData));
   try {
-    await getHttpClient().post(getBiodataEndpointUrl(BIODATA_VALIDATE_PATH), payload);
+    await getHttpClient().post(getBiodataEndpointUrl(BIODATA_VALIDATE_PATH, { includeTargetUser: true }), payload);
     return null;
   } catch (error) {
     throw normalizeBiodataErrorForSection(error, sectionId);
@@ -592,7 +574,7 @@ export async function saveBiodataSection(sectionId, sectionData, committedData, 
   try {
     if (sectionEndpointConfig.flat?.path) {
       const flatPayload = buildBiodataRequestPayload(mapSectionDataToFlatPayload(section, sectionData));
-      const url = getBiodataEndpointUrl(sectionEndpointConfig.flat.path);
+      const url = getBiodataEndpointUrl(sectionEndpointConfig.flat.path, { includeTargetUser: true });
       const requestMethod = sectionEndpointConfig.flat.method === 'post' ? 'post' : 'patch';
       if (flatPayload.headers) {
         await getHttpClient()[requestMethod](url, flatPayload.data, { headers: flatPayload.headers });
@@ -611,7 +593,7 @@ export async function saveBiodataSection(sectionId, sectionData, committedData, 
 
       if (Object.keys(payload.extraFields).length > 0 && extraFieldsEndpointPath) {
         const extraPayload = buildBiodataRequestPayload(payload.extraFields);
-        const url = getBiodataEndpointUrl(extraFieldsEndpointPath);
+        const url = getBiodataEndpointUrl(extraFieldsEndpointPath, { includeTargetUser: true });
         const requestMethod = payload.endpoint.extraFieldsMethod === 'post' ? 'post' : 'patch';
         if (extraPayload.headers) {
           await getHttpClient()[requestMethod](url, extraPayload.data, { headers: extraPayload.headers });

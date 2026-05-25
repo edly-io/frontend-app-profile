@@ -12,6 +12,7 @@ import BiodataSection from './BiodataSection';
 import {
   closeForm, saveProfile, saveProfileFailure, saveDraftSection, updateDraft,
 } from '../data/actions';
+import { getBiodataTargetUserId } from './apiConfig';
 import {
   BIODATA_DATE_VALIDATION_MESSAGES,
   getSanitizedSectionData,
@@ -158,6 +159,7 @@ const BiodataProfileSections = () => {
     saveState,
     isAuthenticatedUserProfile,
   } = useSelector((state) => state.profilePage);
+  const canEditBiodata = isAuthenticatedUserProfile || Boolean(getBiodataTargetUserId());
   const extendedProfile = useMemo(() => account?.extendedProfile || [], [account?.extendedProfile]);
   const accountUsername = account?.username;
   const previousSaveState = useRef(saveState);
@@ -606,8 +608,8 @@ const BiodataProfileSections = () => {
               draftValue={drafts[activeSection.id]}
               errors={errors}
               saveState={saveState}
-              isAuthenticatedUserProfile={isAuthenticatedUserProfile}
-              isEditing={isAuthenticatedUserProfile}
+              isAuthenticatedUserProfile={canEditBiodata}
+              isEditing={canEditBiodata}
               isLocked={isBiodataLocked}
               forceEditingWhenEmpty={!activeSectionHasSavedContent}
               onClose={handleCloseSection}
