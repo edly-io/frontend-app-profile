@@ -1,6 +1,13 @@
 import { getConfig } from '@edx/frontend-platform';
 
-import { BIODATA_SECTION_MAP, PROFILE_FIELD_TYPES } from './config';
+import {
+  BIODATA_SECTION_MAP,
+  CSS_EXAM_TOTAL_MARKS,
+  CSS_REQUIRED_ELECTIVE_SUBJECT_COUNT,
+  CSS_SUBJECT_TOTAL_MARKS,
+  CSS_VIVA_TOTAL_MARKS,
+  PROFILE_FIELD_TYPES,
+} from './config';
 
 let repeatableRowCounter = 0;
 const BASIC_INFORMATION_CHILD_FIELD_NAMES = ['number_of_children', 'sons', 'daughters'];
@@ -26,9 +33,11 @@ const GOVERNMENT_SERVICE_DETAILS_SECTION_ID = 'governmentServiceDetails';
 const OTHER_INCOME_SOURCE_FIELD_NAME = 'other_income_source_besides_salary';
 const OTHER_INCOME_DETAILS_FIELD_NAME = 'other_income_details';
 const EDUCATION_ATTENDED_TO_DATE_MESSAGE = 'Attended To must be later than Attended From.';
-const EDUCATION_YEAR_OF_PASSING_MESSAGE = 'Year of Passing must be the same as the Attended To year.';
+const EDUCATION_YEAR_OF_PASSING_MESSAGE = 'Year of Passing must be the same as or later than the Attended To year.';
 const FOREIGN_VISIT_TO_DATE_MESSAGE = 'To date must be on or after From date.';
 const EMPLOYMENT_TO_DATE_MESSAGE = 'To date must be on or after From date.';
+const CSS_TOTAL_MARKS_PER_SUBJECT_MESSAGE = `Each CSS subject must have total marks of ${CSS_SUBJECT_TOTAL_MARKS}.`;
+const CSS_VIVA_TOTAL_MARKS_MESSAGE = `Viva Voce must have total marks of ${CSS_VIVA_TOTAL_MARKS}.`;
 export const BIODATA_DATE_VALIDATION_MESSAGES = [
   EDUCATION_ATTENDED_TO_DATE_MESSAGE,
   EDUCATION_YEAR_OF_PASSING_MESSAGE,
@@ -50,8 +59,6 @@ const PAKISTAN_MOBILE_FIELD_NAMES = [
   'spouse_phone',
 ];
 const CONDITIONAL_FILE_FIELD_DEPENDENCIES = {
-  cnic_front: 'identity_card_number',
-  cnic_back: 'identity_card_number',
   domicile_file: 'district_of_domicile',
 };
 
@@ -710,6 +717,10 @@ function validateFieldFormat(field, value) {
   return '';
 }
 
+function isCssVivaSubject(row) {
+  return String(row?.subject || '').trim().toLowerCase() === 'viva voce';
+}
+
 export function getRepeatableFieldValidationError(repeatable, row, column) {
   const value = row?.[column.key];
 
@@ -740,6 +751,19 @@ export function getRepeatableFieldValidationError(repeatable, row, column) {
     return getRepeatableFieldError(repeatable, row, column.key, formatError);
   }
 
+  if (repeatable.storageFieldName === CSS_SUBJECT_MARKS_FIELD_NAME && column.key === 'total_marks') {
+    const expectedTotalMarks = isCssVivaSubject(row) ? CSS_VIVA_TOTAL_MARKS : CSS_SUBJECT_TOTAL_MARKS;
+
+    if (Number(value) !== expectedTotalMarks) {
+      return getRepeatableFieldError(
+        repeatable,
+        row,
+        column.key,
+        isCssVivaSubject(row) ? CSS_VIVA_TOTAL_MARKS_MESSAGE : CSS_TOTAL_MARKS_PER_SUBJECT_MESSAGE,
+      );
+    }
+  }
+
   if (column.validate) {
     const customError = column.validate(value, row);
     if (customError) {
@@ -761,7 +785,11 @@ function validateEducationRowDateRules(repeatable, row) {
     validationErrors[error.fieldName] = { userMessage: error.userMessage };
   }
 
-  if (isValidDateValue(attendedTo) && yearOfPassing && yearOfPassing !== getYearFromDateValue(attendedTo)) {
+  if (
+    isValidDateValue(attendedTo)
+    && yearOfPassing
+    && Number(yearOfPassing) < Number(getYearFromDateValue(attendedTo))
+  ) {
     const error = getRepeatableFieldError(repeatable, row, 'year_of_passing', EDUCATION_YEAR_OF_PASSING_MESSAGE);
     validationErrors[error.fieldName] = { userMessage: error.userMessage };
   }
@@ -890,6 +918,38 @@ export function validateSectionDraft(section, sectionData) {
         }
       });
     });
+
+    if (section.id === CSS_EXAM_DETAILS_SECTION_ID && repeatable.storageFieldName === CSS_SUBJECT_MARKS_FIELD_NAME) {
+      const filledElectiveRows = rows
+        .filter(row => !isProtectedRepeatableRow(row, repeatable))
+        .filter(row => repeatable.columns.some((column) => {
+          if (column.displayOnly || isProtectedRepeatableColumn(row, repeatable, column.key)) {
+            return false;
+          }
+
+          if (column.type === PROFILE_FIELD_TYPES.FILE) {
+            return Boolean(row[column.key]);
+          }
+
+          return hasFieldValue(row[column.key]);
+        }));
+      const totalSubjectMarks = rows.reduce((total, row) => {
+        const totalMarksValue = String(row.total_marks ?? '').trim();
+        const numericTotalMarks = Number(totalMarksValue);
+
+        return Number.isNaN(numericTotalMarks) ? total : total + numericTotalMarks;
+      }, 0);
+
+      if (filledElectiveRows.length !== CSS_REQUIRED_ELECTIVE_SUBJECT_COUNT) {
+        validationErrors[repeatable.storageFieldName] = {
+          userMessage: `Add exactly ${CSS_REQUIRED_ELECTIVE_SUBJECT_COUNT} elective subjects.`,
+        };
+      } else if (totalSubjectMarks !== CSS_EXAM_TOTAL_MARKS) {
+        validationErrors[repeatable.storageFieldName] = {
+          userMessage: `Subject total marks must add up to ${CSS_EXAM_TOTAL_MARKS}.`,
+        };
+      }
+    }
   });
 
   (section.fileFields || []).forEach((field) => {
@@ -969,6 +1029,32 @@ function isDefaultRepeatableRow(row, repeatable, rowIndex) {
   });
 }
 
+function isFilled(value) {
+  return String(value ?? '').trim().length > 0;
+}
+
+function findRepeatable(section, storageFieldName) {
+  return (section.repeatables || []).find(repeatable => repeatable.storageFieldName === storageFieldName);
+}
+
+function getCssSubjectMarksRepeatable(section) {
+  return findRepeatable(section, CSS_SUBJECT_MARKS_FIELD_NAME);
+}
+
+function getCssSubjectRows(section, sectionData) {
+  return sectionData[CSS_SUBJECT_MARKS_FIELD_NAME] || [];
+}
+
+function getNumericValue(value) {
+  const trimmedValue = String(value ?? '').trim();
+
+  if (!trimmedValue || Number.isNaN(Number(trimmedValue))) {
+    return 0;
+  }
+
+  return Number(trimmedValue);
+}
+
 function rowHasUserValue(row, repeatable, rowIndex = null) {
   if (rowIndex !== null && isDefaultRepeatableRow(row, repeatable, rowIndex)) {
     return false;
@@ -987,12 +1073,75 @@ function rowHasUserValue(row, repeatable, rowIndex = null) {
   });
 }
 
-function isFilled(value) {
-  return String(value ?? '').trim().length > 0;
+function getCssElectiveSubjectRows(section, sectionData) {
+  const repeatable = getCssSubjectMarksRepeatable(section);
+  const subjectRows = getCssSubjectRows(section, sectionData);
+
+  if (!repeatable) {
+    return [];
+  }
+
+  return subjectRows.filter(row => !isProtectedRepeatableRow(row, repeatable));
 }
 
-function findRepeatable(section, storageFieldName) {
-  return (section.repeatables || []).find(repeatable => repeatable.storageFieldName === storageFieldName);
+function getFilledCssElectiveSubjectRows(section, sectionData) {
+  const repeatable = getCssSubjectMarksRepeatable(section);
+
+  if (!repeatable) {
+    return [];
+  }
+
+  return getCssElectiveSubjectRows(section, sectionData)
+    .filter(row => rowHasUserValue(row, repeatable));
+}
+
+function getCssTotalSubjectMarks(section, sectionData) {
+  return getCssSubjectRows(section, sectionData)
+    .reduce((total, row) => total + getNumericValue(row.total_marks), 0);
+}
+
+function getCssObtainedMarks(section, sectionData) {
+  return getCssSubjectRows(section, sectionData)
+    .reduce((total, row) => total + getNumericValue(row.marks_obtained), 0);
+}
+
+function hasCompleteCssElectiveSubjectMarks(section, sectionData) {
+  const repeatable = getCssSubjectMarksRepeatable(section);
+  const electiveRows = getFilledCssElectiveSubjectRows(section, sectionData);
+
+  if (!repeatable) {
+    return true;
+  }
+
+  if (electiveRows.length !== CSS_REQUIRED_ELECTIVE_SUBJECT_COUNT) {
+    return false;
+  }
+
+  const hasRequiredValues = electiveRows.every((row) => repeatable.columns.every((column) => (
+    column.type === PROFILE_FIELD_TYPES.FILE
+      ? Boolean(row[column.key])
+      : hasFieldValue(row[column.key])
+  )));
+
+  if (!hasRequiredValues) {
+    return false;
+  }
+
+  return getCssTotalSubjectMarks(section, sectionData) === CSS_EXAM_TOTAL_MARKS;
+}
+
+export function getCssExamMarksSummary(section, sectionData) {
+  const sanitizedData = getSanitizedSectionData(section, sectionData);
+  const electiveRows = getFilledCssElectiveSubjectRows(section, sanitizedData);
+  const totalSubjectMarks = getCssTotalSubjectMarks(section, sanitizedData);
+
+  return {
+    totalMarks: totalSubjectMarks,
+    obtainedMarks: getCssObtainedMarks(section, sanitizedData),
+    electiveSubjectCount: electiveRows.length,
+    totalSubjectMarks,
+    requiredTotalMarks: CSS_EXAM_TOTAL_MARKS,
+  };
 }
 
 function hasCompleteCssServicePreferences(section, sectionData) {
@@ -1008,7 +1157,7 @@ function hasCompleteCssServicePreferences(section, sectionData) {
 }
 
 function hasCompleteCompulsoryCssSubjectMarks(section, sectionData) {
-  const subjectMarksRepeatable = findRepeatable(section, CSS_SUBJECT_MARKS_FIELD_NAME);
+  const subjectMarksRepeatable = getCssSubjectMarksRepeatable(section);
 
   if (!subjectMarksRepeatable?.protectedRows?.length) {
     return true;
@@ -1036,7 +1185,8 @@ function cssExamDetailsHasRequiredValues(section, sectionData) {
 
   return hasRequiredFlatFields
     && hasCompleteCssServicePreferences(section, sanitizedData)
-    && hasCompleteCompulsoryCssSubjectMarks(section, sanitizedData);
+    && hasCompleteCompulsoryCssSubjectMarks(section, sanitizedData)
+    && hasCompleteCssElectiveSubjectMarks(section, sanitizedData);
 }
 
 function employmentHasRequiredValues(section, sectionData) {

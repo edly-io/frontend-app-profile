@@ -55,9 +55,9 @@ const Education = ({
                 className="m-0 pb-3"
                 isInvalid={error !== null}
               >
-                <p data-hj-suppress className="h5 font-weight-bold m-0 pb-2.5">
+                <label data-hj-suppress className="h5 font-weight-bold m-0 pb-2.5 d-block" htmlFor={formId}>
                   {intl.formatMessage(messages['profile.education.education'])}
-                </p>
+                </label>
                 <select
                   data-hj-suppress
                   className="form-control py-10px"
@@ -66,7 +66,7 @@ const Education = ({
                   value={levelOfEducation}
                   onChange={handleChange}
                 >
-                  <option value=""> </option>
+                  <option value="">Select education level</option>
                   {EDUCATION_LEVELS.map(level => (
                     <option key={level} value={level}>
                       {intl.formatMessage(get(

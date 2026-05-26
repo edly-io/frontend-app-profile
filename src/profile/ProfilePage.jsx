@@ -75,7 +75,7 @@ const ProfilePage = ({ params }) => {
 
   const navigate = useNavigate();
   const [viewMyRecordsUrl, setViewMyRecordsUrl] = useState(null);
-  const [completionOverride, setCompletionOverride] = useState(false);
+  const completionOverride = false;
   const [navigationBlocked, setNavigationBlocked] = useState(false);
   const [fbrProfile, setFbrProfile] = useState(null);
   const [fbrProfileLoaded, setFbrProfileLoaded] = useState(false);

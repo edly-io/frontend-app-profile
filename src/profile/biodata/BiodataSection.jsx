@@ -21,6 +21,7 @@ import {
   getSectionErrorSummary,
   getSectionInitialData,
   getSanitizedSectionData,
+  getCssExamMarksSummary,
   getVisibleSectionFields,
   getVisibleSectionRepeatables,
   isProtectedRepeatableColumn,
@@ -329,6 +330,9 @@ const BiodataSection = ({
   const isSectionDisabled = Boolean(section.naFieldName && formData[section.naFieldName]);
   const visibleFields = getVisibleSectionFields(section, formData);
   const visibleRepeatables = getVisibleSectionRepeatables(section, formData);
+  const cssExamMarksSummary = section.id === 'cssExamDetails'
+    ? getCssExamMarksSummary(section, formData)
+    : null;
   const renderFormFields = (disabled = false) => (
     <>
       {section.naFieldName && (
@@ -369,6 +373,21 @@ const BiodataSection = ({
           );
         })}
       </div>
+      {cssExamMarksSummary && (
+        <div className="row">
+          <Form.Group className="col-md-6 mb-3">
+            <Form.Label>Total Marks</Form.Label>
+            <Form.Control type="number" value={cssExamMarksSummary.totalMarks} disabled readOnly />
+            <Form.Text className="text-muted">
+              Required collective total: {cssExamMarksSummary.requiredTotalMarks} (100 per subject, 300 for viva)
+            </Form.Text>
+          </Form.Group>
+          <Form.Group className="col-md-6 mb-3">
+            <Form.Label>Total Obtained Marks</Form.Label>
+            <Form.Control type="number" value={cssExamMarksSummary.obtainedMarks} disabled readOnly />
+          </Form.Group>
+        </div>
+      )}
       {visibleRepeatables.map((repeatable) => (
         <div key={repeatable.storageFieldName} className="mb-3">
           {repeatable.naFieldName && (

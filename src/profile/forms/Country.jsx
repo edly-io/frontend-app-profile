@@ -58,9 +58,9 @@ const Country = ({
                 className="m-0 pb-3"
                 isInvalid={error !== null}
               >
-                <p data-hj-suppress className="h5 font-weight-bold m-0 pb-2.5">
+                <label data-hj-suppress className="h5 font-weight-bold m-0 pb-2.5 d-block" htmlFor={formId}>
                   {intl.formatMessage(messages['profile.country.label'])}
-                </p>
+                </label>
                 <select
                   data-hj-suppress
                   className="form-control py-10px"
@@ -70,7 +70,7 @@ const Country = ({
                   value={country}
                   onChange={handleChange}
                 >
-                  <option value=""> </option>
+                  <option value="">Select a country</option>
                   {translatedCountries.map(({ code, name }) => (
                     <option key={code} value={code} disabled={isDisabledCountry(code)}>
                       {name}

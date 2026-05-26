@@ -103,7 +103,6 @@ describe('services', () => {
       const result = await getBiodataProfile();
 
       expect(result).toEqual(expect.arrayContaining([
-        expect.objectContaining({ fieldName: 'profile_full_name', fieldValue: 'John Doe' }),
         expect.objectContaining({ fieldName: 'marital_status', fieldValue: 'single' }),
         expect.objectContaining({
           fieldName: 'education_records',
@@ -143,7 +142,7 @@ describe('services', () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect(result).toEqual(expect.arrayContaining([
-        expect.objectContaining({ fieldName: 'profile_full_name', fieldValue: '' }),
+        expect.objectContaining({ fieldName: 'preferred_calling_name', fieldValue: '' }),
         expect.objectContaining({ fieldName: 'education_records', fieldValue: [] }),
       ]));
     });
@@ -264,7 +263,8 @@ describe('services', () => {
       mockHttpClient.post.mockResolvedValue({});
 
       await validateBiodataSection('basicInformation', {
-        profile_full_name: 'John Doe',
+        preferred_calling_name: 'John',
+        province_of_domicile: 'Punjab',
       });
 
       expect(mockHttpClient.post).toHaveBeenCalledWith(
@@ -272,7 +272,8 @@ describe('services', () => {
         expect.objectContaining({
           section: 'basicInformation',
           flat: expect.objectContaining({
-            full_name: 'John Doe',
+            preferred_name: 'John',
+            province_of_domicile: 'Punjab',
           }),
         }),
       );
@@ -286,14 +287,21 @@ describe('services', () => {
 
       const result = await saveBiodataSection(
         'basicInformation',
-        { profile_full_name: 'John Doe' },
-        { profile_full_name: '' },
+        {
+          preferred_calling_name: 'John',
+          province_of_domicile: 'Punjab',
+        },
+        {
+          preferred_calling_name: '',
+          province_of_domicile: '',
+        },
       );
 
       expect(mockHttpClient.patch).toHaveBeenCalledWith(
         expect.stringMatching(/\/basic-information\/$/),
         expect.objectContaining({
-          full_name: 'John Doe',
+          preferred_name: 'John',
+          province_of_domicile: 'Punjab',
         }),
         {
           headers: { 'Content-Type': 'application/json' },
@@ -319,7 +327,7 @@ describe('services', () => {
         processedData: {
           fieldErrors: {
             identity_card_number: {
-              userMessage: 'Enter a valid CNIC in the format XXXXX-XXXXXXX-X.',
+              userMessage: 'Enter a valid 13-digit CNIC number.',
             },
           },
         },
@@ -354,6 +362,9 @@ describe('services', () => {
           reading: 'Native',
           writing: 'Advanced',
         }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
       );
     });
 
@@ -391,6 +402,9 @@ describe('services', () => {
           grade: '',
           subjects: 'computer science',
         }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
       );
     });
 
@@ -421,7 +435,7 @@ describe('services', () => {
         processedData: {
           fieldErrors: {
             language_name: {
-              userMessage: 'This field is required.',
+              userMessage: 'Language is required.',
             },
           },
         },

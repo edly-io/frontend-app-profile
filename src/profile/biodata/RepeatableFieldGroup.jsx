@@ -107,65 +107,74 @@ const RepeatableFieldGroup = ({
   onChange,
   onBlur,
   disabled,
-}) => (
-  <div>
-    {rows.map((row, rowIndex) => {
-      const isProtectedRow = isProtectedRepeatableRow(row, repeatable);
+}) => {
+  const groupError = errors[repeatable.storageFieldName];
 
-      return (
-        <div key={row.rowId} className="border rounded p-3 mb-3">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <p className="h6 font-weight-bold mb-0">
-              {repeatable.itemLabel}{repeatable.showRowNumber === false ? '' : ` ${rowIndex + 1}`}
-            </p>
-            <Button
-              variant="link"
-              className="p-0 text-danger"
-              type="button"
-              onClick={() => onChange('removeRow', { rowIndex })}
-              disabled={disabled || rows.length === 1 || isProtectedRow}
-            >
-              Remove
-            </Button>
-          </div>
-          <div className="row">
-            {repeatable.columns.map((column) => {
-              const error = errors[getRepeatableFieldErrorKey(repeatable, row, column.key)];
-              const controlField = {
-                ...column,
-                inputId: `${row.rowId}-${column.key}`,
-              };
-              const isControlDisabled = disabled
-                || Boolean(column.displayOnly)
-                || isProtectedRepeatableColumn(row, repeatable, column.key);
-              return (
-                <Form.Group
-                  key={`${row.rowId}-${column.key}`}
-                  className={column.type === PROFILE_FIELD_TYPES.TEXTAREA ? 'col-12 mb-3' : 'col-md-6 mb-3'}
-                >
-                  <Form.Label>{column.label}</Form.Label>
-                  {renderControl(controlField, row[column.key], (value) => onChange('updateCell', {
-                    rowIndex,
-                    columnKey: column.key,
-                    value,
-                  }), () => onBlur(rowIndex, column.key), error, isControlDisabled)}
-                  {!isControlDisabled && error && error.userMessage && (
+  return (
+    <div>
+      {rows.map((row, rowIndex) => {
+        const isProtectedRow = isProtectedRepeatableRow(row, repeatable);
+
+        return (
+          <div key={row.rowId} className="border rounded p-3 mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <p className="h6 font-weight-bold mb-0">
+                {repeatable.itemLabel}{repeatable.showRowNumber === false ? '' : ` ${rowIndex + 1}`}
+              </p>
+              <Button
+                variant="link"
+                className="p-0 text-danger"
+                type="button"
+                onClick={() => onChange('removeRow', { rowIndex })}
+                disabled={disabled || rows.length === 1 || isProtectedRow}
+              >
+                Remove
+              </Button>
+            </div>
+            <div className="row">
+              {repeatable.columns.map((column) => {
+                const error = errors[getRepeatableFieldErrorKey(repeatable, row, column.key)] || errors[column.key];
+                const controlField = {
+                  ...column,
+                  inputId: `${row.rowId}-${column.key}`,
+                };
+                const isControlDisabled = disabled
+                  || Boolean(column.displayOnly)
+                  || isProtectedRepeatableColumn(row, repeatable, column.key);
+                return (
+                  <Form.Group
+                    key={`${row.rowId}-${column.key}`}
+                    className={column.type === PROFILE_FIELD_TYPES.TEXTAREA ? 'col-12 mb-3' : 'col-md-6 mb-3'}
+                  >
+                    <Form.Label>{column.label}</Form.Label>
+                    {renderControl(controlField, row[column.key], (value) => onChange('updateCell', {
+                      rowIndex,
+                      columnKey: column.key,
+                      value,
+                    }), () => onBlur(rowIndex, column.key), error, isControlDisabled)}
+                    {!isControlDisabled && error && error.userMessage && (
                     <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-1">
                       {error.userMessage}
                     </Form.Control.Feedback>
-                  )}
-                </Form.Group>
-              );
-            })}
+                    )}
+                  </Form.Group>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      );
-    })}
-    <Button type="button" variant="link" className="p-0" onClick={() => onChange('addRow')} disabled={disabled}>
-      + {repeatable.addButtonLabel}
-    </Button>
-  </div>
-);
+        );
+      })}
+      <Button type="button" variant="link" className="p-0" onClick={() => onChange('addRow')} disabled={disabled}>
+        + {repeatable.addButtonLabel}
+      </Button>
+      {!disabled && groupError?.userMessage && (
+        <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-2">
+          {groupError.userMessage}
+        </Form.Control.Feedback>
+      )}
+    </div>
+  );
+};
 
 RepeatableFieldGroup.propTypes = {
   repeatable: PropTypes.shape({
