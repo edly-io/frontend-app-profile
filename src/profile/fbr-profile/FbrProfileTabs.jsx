@@ -354,8 +354,7 @@ const TraineeProfilePanel = ({
     try {
       const payload = {
         trainee_profile: {
-          trainee_type: formValue.trainee_type,
-          batch: formValue.trainee_type === 'stp' && formValue.batch ? Number(formValue.batch) : null,
+          batch: traineeProfile.trainee_type === 'stp' && formValue.batch ? Number(formValue.batch) : null,
           date_of_birth: normalizeValue(formValue.date_of_birth) || null,
           designation: normalizeValue(formValue.designation) || '',
           bps_grade: formValue.bps_grade ? Number(formValue.bps_grade) : null,
@@ -387,14 +386,12 @@ const TraineeProfilePanel = ({
     >
       {isEditing ? (
         <div className="row">
-          <Form.Group className="col-md-6 col-lg-4 mb-4">
-            <Form.Label>Trainee Type</Form.Label>
-            <Form.Control as="select" value={formValue.trainee_type} onChange={event => setField('trainee_type', event.target.value)}>
-              <option value="stp">STP</option>
-              <option value="dst_ist">DST / IST</option>
-            </Form.Control>
-          </Form.Group>
-          {formValue.trainee_type === 'stp' && (
+          <TextInput
+            label="Trainee Type"
+            value={TRAINEE_TYPE_LABELS[traineeProfile.trainee_type] || traineeProfile.trainee_type}
+            readOnly
+          />
+          {traineeProfile.trainee_type === 'stp' && (
             <Form.Group className="col-md-6 col-lg-4 mb-4">
               <Form.Label>Batch</Form.Label>
               <Form.Control as="select" value={formValue.batch || ''} onChange={event => setField('batch', event.target.value)}>
