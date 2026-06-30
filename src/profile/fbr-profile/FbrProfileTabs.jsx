@@ -32,9 +32,9 @@ const normalizeValue = value => (typeof value === 'string' ? value.trim() : valu
 
 const getPakistanMobileSubscriber = (value) => {
   let digits = String(value || '').replace(/\D/g, '');
-  if (digits.startsWith('92')) digits = digits.slice(2);
-  if (digits.startsWith('0')) digits = digits.slice(1);
-  if (digits && digits[0] !== '3') digits = '';
+  if (digits.startsWith('92')) { digits = digits.slice(2); }
+  if (digits.startsWith('0')) { digits = digits.slice(1); }
+  if (digits && digits[0] !== '3') { digits = ''; }
   return digits.slice(0, 10);
 };
 
@@ -77,6 +77,50 @@ const getApiErrorMessage = (error, fallback) => {
 };
 
 const readOnlyFieldStyle = { backgroundColor: '#f7f7f7', cursor: 'not-allowed' };
+const cityShape = PropTypes.shape({
+  name: PropTypes.string,
+});
+
+const batchShape = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+});
+
+const traineeProfileShape = PropTypes.shape({
+  trainee_type: PropTypes.string,
+  batch: batchShape,
+  date_of_birth: PropTypes.string,
+  designation: PropTypes.string,
+  bps_grade: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  hostel_preference: PropTypes.string,
+  service_history: PropTypes.string,
+  languages_awards_publications: PropTypes.string,
+});
+
+const instructorProfileShape = PropTypes.shape({
+  field_of_expertise: PropTypes.string,
+  languages_awards_publications: PropTypes.string,
+});
+
+const profileShape = PropTypes.shape({
+  id: PropTypes.number,
+  full_name: PropTypes.string,
+  email: PropTypes.string,
+  mobile: PropTypes.string,
+  cnic: PropTypes.string,
+  roles: PropTypes.arrayOf(PropTypes.string),
+  status: PropTypes.string,
+  city: cityShape,
+  field_organisation: PropTypes.string,
+  employee_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  emergency_contact_name: PropTypes.string,
+  emergency_contact_phone: PropTypes.string,
+  education_degree: PropTypes.string,
+  education_institute: PropTypes.string,
+  education_year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  trainee_profile: traineeProfileShape,
+  instructor_profile: instructorProfileShape,
+});
 
 const toBaseForm = profile => ({
   full_name: profile?.full_name || '',
@@ -321,7 +365,7 @@ const BaseProfilePanel = ({
 };
 
 BaseProfilePanel.propTypes = {
-  profile: PropTypes.shape({ id: PropTypes.number }).isRequired,
+  profile: profileShape.isRequired,
   onProfileUpdated: PropTypes.func.isRequired,
 };
 
@@ -427,9 +471,9 @@ const TraineeProfilePanel = ({
 };
 
 TraineeProfilePanel.propTypes = {
-  profile: PropTypes.shape({ id: PropTypes.number }).isRequired,
-  traineeProfile: PropTypes.shape({}).isRequired,
-  batches: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number, name: PropTypes.string })).isRequired,
+  profile: profileShape.isRequired,
+  traineeProfile: traineeProfileShape.isRequired,
+  batches: PropTypes.arrayOf(batchShape).isRequired,
   onProfileUpdated: PropTypes.func.isRequired,
 };
 
@@ -503,8 +547,8 @@ const InstructorProfilePanel = ({
 };
 
 InstructorProfilePanel.propTypes = {
-  profile: PropTypes.shape({ id: PropTypes.number }).isRequired,
-  instructorProfile: PropTypes.shape({}).isRequired,
+  profile: profileShape.isRequired,
+  instructorProfile: instructorProfileShape.isRequired,
   onProfileUpdated: PropTypes.func.isRequired,
 };
 
@@ -603,29 +647,35 @@ const EditRequestPanel = () => {
             {successMessage}
           </Alert>
         )}
+        {(() => {
+          if (isLoading) {
+            return <div className="text-muted">Loading request...</div>;
+          }
 
-        {isLoading ? (
-          <div className="text-muted">Loading request...</div>
-        ) : latestRequest ? (
-          <div className="mb-4">
-            <div className="d-flex flex-wrap align-items-center mb-3" style={{ gap: '0.5rem' }}>
-              <RequestStatusBadge status={latestRequest.status} />
-              <span className="small text-muted">Submitted {formatDateTime(latestRequest.created_at)}</span>
-            </div>
-            <div className="row">
-              <DetailCell label="Your Message" value={latestRequest.message} />
-              <DetailCell label="Admin Note" value={latestRequest.admin_note} />
-              <DetailCell label="Resolved By" value={latestRequest.resolved_by_name} />
-              <DetailCell label="Resolved At" value={formatDateTime(latestRequest.resolved_at)} />
-            </div>
-          </div>
-        ) : (
-          <div className="text-muted mb-4">You have not submitted an edit request yet.</div>
-        )}
+          if (latestRequest) {
+            return (
+              <div className="mb-4">
+                <div className="d-flex flex-wrap align-items-center mb-3" style={{ gap: '0.5rem' }}>
+                  <RequestStatusBadge status={latestRequest.status} />
+                  <span className="small text-muted">Submitted {formatDateTime(latestRequest.created_at)}</span>
+                </div>
+                <div className="row">
+                  <DetailCell label="Your Message" value={latestRequest.message} />
+                  <DetailCell label="Admin Note" value={latestRequest.admin_note} />
+                  <DetailCell label="Resolved By" value={latestRequest.resolved_by_name} />
+                  <DetailCell label="Resolved At" value={formatDateTime(latestRequest.resolved_at)} />
+                </div>
+              </div>
+            );
+          }
+
+          return <div className="text-muted mb-4">You have not submitted an edit request yet.</div>;
+        })()}
 
         {isPending ? (
           <Alert variant="warning" dismissible={false} show>
-            You already have a pending edit request. Please wait for an administrator to resolve it before submitting another one.
+            You already have a pending edit request. Please wait for an administrator to
+            resolve it before submitting another one.
           </Alert>
         ) : (
           <Form onSubmit={handleSubmit}>
@@ -664,9 +714,9 @@ const FbrProfileTabs = ({ profile, showStpBiodataForm, onProfileUpdated }) => {
       }
       try {
         const { data } = await getAuthenticatedHttpClient().get(BATCHES_PATH());
-        if (isMounted) setBatches(Array.isArray(data) ? data : []);
+        if (isMounted) { setBatches(Array.isArray(data) ? data : []); }
       } catch (error) {
-        if (isMounted) setBatches([]);
+        if (isMounted) { setBatches([]); }
       }
     };
 
@@ -733,10 +783,7 @@ const FbrProfileTabs = ({ profile, showStpBiodataForm, onProfileUpdated }) => {
 };
 
 FbrProfileTabs.propTypes = {
-  profile: PropTypes.shape({
-    trainee_profile: PropTypes.shape({}),
-    instructor_profile: PropTypes.shape({}),
-  }),
+  profile: profileShape,
   showStpBiodataForm: PropTypes.bool,
   onProfileUpdated: PropTypes.func,
 };

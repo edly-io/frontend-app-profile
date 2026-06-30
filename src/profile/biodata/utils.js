@@ -55,18 +55,6 @@ const PAKISTAN_MOBILE_FORMAT = /^(?:\+92|92|0)3[0-9]{9}$/;
 const PAKISTAN_MOBILE_VALIDATION_MESSAGE = 'Enter a valid Pakistani mobile number in the format +923XXXXXXXXX.';
 const NO_FUTURE_DATE_MESSAGE = 'Date cannot be in the future.';
 const NON_NEGATIVE_NUMBER_MESSAGE = 'Value cannot be negative.';
-const FIELD_NAMES_REQUIRING_NON_NUMERIC_TEXT = new Set([
-  'district_of_domicile',
-  'province_of_domicile',
-  'religion',
-  'educational_institute',
-  'grade_division',
-  'subjects_studied',
-  'language_name',
-  'subject',
-  'first_employment_gap_details_after_education',
-  'hobbies',
-]);
 const FIELD_NAMES_REQUIRING_BASIC_TEXT_CHARACTERS = new Set([
   'district_of_domicile',
   'province_of_domicile',

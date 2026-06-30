@@ -28,7 +28,9 @@ const repeatableSection = {
         { key: 'name', label: 'Relative Name', placeholder: 'Enter relative name' },
         { key: 'designation', label: 'Designation', placeholder: 'Enter designation' },
         { key: 'relationship', label: 'Relationship', placeholder: 'Enter relationship' },
-        { key: 'address', label: 'Address', placeholder: 'Enter address', type: 'textarea' },
+        {
+          key: 'address', label: 'Address', placeholder: 'Enter address', type: 'textarea',
+        },
       ],
     },
   ],
@@ -45,7 +47,7 @@ const initialDraft = {
   }],
 };
 
-function SectionHarness() {
+const SectionHarness = () => {
   const [draft, setDraft] = React.useState(initialDraft);
 
   return (
@@ -66,7 +68,7 @@ function SectionHarness() {
       onDraftChange={(_, nextDraft) => setDraft(nextDraft)}
     />
   );
-}
+};
 
 describe('<BiodataSection />', () => {
   it('restores previous repeatable rows after unchecking N/A', () => {

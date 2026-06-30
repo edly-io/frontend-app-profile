@@ -135,19 +135,45 @@ describe('biodata utils', () => {
         intend_to_sit_for_forthcoming_css_exam: 'No',
         last_chance_date_year: 'abcd',
         css_subject_marks: [
-          { rowId: 'comp-1', subject: 'English Essay', total_marks: '100', marks_obtained: '-5' },
-          { rowId: 'comp-2', subject: 'English Precise and Composition', total_marks: '100', marks_obtained: '50' },
-          { rowId: 'comp-3', subject: 'General Science and Ability', total_marks: '100', marks_obtained: '50' },
-          { rowId: 'comp-4', subject: 'Current Affairs', total_marks: '100', marks_obtained: '50' },
-          { rowId: 'comp-5', subject: 'Pakistan Affairs', total_marks: '100', marks_obtained: '50' },
-          { rowId: 'comp-6', subject: 'Islamic Studies', total_marks: '100', marks_obtained: '50' },
-          { rowId: 'comp-7', subject: 'Viva Voce', total_marks: '300', marks_obtained: '150' },
-          { rowId: 'el-1', subject: 'Psychology', total_marks: '100', marks_obtained: '70' },
-          { rowId: 'el-2', subject: 'Psychology', total_marks: '100', marks_obtained: '80' },
-          { rowId: 'el-3', subject: 'Geography', total_marks: '100', marks_obtained: '60' },
-          { rowId: 'el-4', subject: 'History', total_marks: '100', marks_obtained: '55' },
-          { rowId: 'el-5', subject: 'Sociology', total_marks: '100', marks_obtained: '65' },
-          { rowId: 'el-6', subject: 'Public Administration', total_marks: '100', marks_obtained: '75' },
+          {
+            rowId: 'comp-1', subject: 'English Essay', total_marks: '100', marks_obtained: '-5',
+          },
+          {
+            rowId: 'comp-2', subject: 'English Precise and Composition', total_marks: '100', marks_obtained: '50',
+          },
+          {
+            rowId: 'comp-3', subject: 'General Science and Ability', total_marks: '100', marks_obtained: '50',
+          },
+          {
+            rowId: 'comp-4', subject: 'Current Affairs', total_marks: '100', marks_obtained: '50',
+          },
+          {
+            rowId: 'comp-5', subject: 'Pakistan Affairs', total_marks: '100', marks_obtained: '50',
+          },
+          {
+            rowId: 'comp-6', subject: 'Islamic Studies', total_marks: '100', marks_obtained: '50',
+          },
+          {
+            rowId: 'comp-7', subject: 'Viva Voce', total_marks: '300', marks_obtained: '150',
+          },
+          {
+            rowId: 'el-1', subject: 'Psychology', total_marks: '100', marks_obtained: '70',
+          },
+          {
+            rowId: 'el-2', subject: 'Psychology', total_marks: '100', marks_obtained: '80',
+          },
+          {
+            rowId: 'el-3', subject: 'Geography', total_marks: '100', marks_obtained: '60',
+          },
+          {
+            rowId: 'el-4', subject: 'History', total_marks: '100', marks_obtained: '55',
+          },
+          {
+            rowId: 'el-5', subject: 'Sociology', total_marks: '100', marks_obtained: '65',
+          },
+          {
+            rowId: 'el-6', subject: 'Public Administration', total_marks: '100', marks_obtained: '75',
+          },
         ],
       });
 

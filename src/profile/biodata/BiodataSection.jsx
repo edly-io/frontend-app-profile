@@ -506,17 +506,18 @@ const BiodataSection = ({
     const currentRows = formData[repeatable.storageFieldName] || [];
     const meaningfulCurrentRows = currentRows.filter(row => rowHasMeaningfulValues(row, repeatable));
     const savedBackupRows = Array.isArray(formData[backupFieldName]) ? formData[backupFieldName] : [];
-    const nextRows = value
+    const nextRows = value || savedBackupRows.length === 0
       ? currentRows
-      : (savedBackupRows.length > 0 ? savedBackupRows : currentRows);
+      : savedBackupRows;
+    const nextBackupRows = value && meaningfulCurrentRows.length > 0
+      ? meaningfulCurrentRows
+      : savedBackupRows;
 
     onDraftChange(section.id, getSanitizedSectionData(section, {
       ...formData,
       [repeatable.naFieldName]: value,
       [repeatable.storageFieldName]: nextRows,
-      [backupFieldName]: value
-        ? (meaningfulCurrentRows.length > 0 ? meaningfulCurrentRows : savedBackupRows)
-        : savedBackupRows,
+      [backupFieldName]: nextBackupRows,
     }));
   };
 

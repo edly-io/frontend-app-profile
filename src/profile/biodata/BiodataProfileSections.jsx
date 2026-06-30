@@ -211,15 +211,18 @@ const BiodataProfileSections = () => {
       const shouldShowLiveValidation = Boolean(attentionSectionIds[section.id]);
       const hasLiveValidationError = shouldShowLiveValidation && Object.keys(liveValidationErrors).length > 0;
       const error = Boolean(backendSectionError) || hasLiveValidationError;
+      let errorSummary = '';
+
+      if (backendSectionError) {
+        errorSummary = getSectionErrorSummary(section, errors);
+      } else if (shouldShowLiveValidation) {
+        errorSummary = getSectionErrorSummary(section, liveValidationErrors);
+      }
 
       accumulator[section.id] = {
         completed: !error && sectionIsComplete(section, liveSectionData),
         error,
-        errorSummary: backendSectionError
-          ? getSectionErrorSummary(section, errors)
-          : shouldShowLiveValidation
-            ? getSectionErrorSummary(section, liveValidationErrors)
-            : '',
+        errorSummary,
       };
       return accumulator;
     }, {}),

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { ensureConfig, getConfig } from '@edx/frontend-platform';
+import { ensureConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -75,7 +75,7 @@ const ProfilePage = ({ params }) => {
 
   const navigate = useNavigate();
   const [viewMyRecordsUrl, setViewMyRecordsUrl] = useState(null);
-  const completionOverride = false;
+  const [completionOverride, setCompletionOverride] = useState(false);
   const [navigationBlocked, setNavigationBlocked] = useState(false);
   const [fbrProfile, setFbrProfile] = useState(null);
   const [fbrProfileLoaded, setFbrProfileLoaded] = useState(false);
@@ -131,13 +131,13 @@ const ProfilePage = ({ params }) => {
           const { data } = await getAuthenticatedHttpClient().get(
             getBiodataEndpointUrl(getFbrProfileDetailPath(biodataTargetUserId)),
           );
-          if (!isMounted) return;
+          if (!isMounted) { return; }
           setFbrProfile(data);
         } catch (error) {
-          if (!isMounted) return;
+          if (!isMounted) { return; }
           setFbrProfile(null);
         } finally {
-          if (isMounted) setFbrProfileLoaded(true);
+          if (isMounted) { setFbrProfileLoaded(true); }
         }
         return;
       }
@@ -159,19 +159,19 @@ const ProfilePage = ({ params }) => {
         const { data } = await getAuthenticatedHttpClient().get(
           getBiodataEndpointUrl(getFbrProfileDetailPath(scopeData.id)),
         );
-        if (!isMounted) return;
+        if (!isMounted) { return; }
         setFbrProfile(data);
       } catch (error) {
-        if (!isMounted) return;
+        if (!isMounted) { return; }
         setFbrProfile(null);
       } finally {
-        if (isMounted) setFbrProfileLoaded(true);
+        if (isMounted) { setFbrProfileLoaded(true); }
       }
     };
 
     loadFbrProfile();
     return () => { isMounted = false; };
-  }, [authenticatedUserName, biodataTargetUserId, params.username]);
+  }, [authenticatedUserName, biodataTargetUserId, isOwnProfileView, params.username]);
 
   const hasCompletedRequiredProfile = completionOverride
     || Boolean(profileCompletionStatus?.complete);
@@ -246,9 +246,28 @@ const ProfilePage = ({ params }) => {
 
   const isBlockVisible = (blockInfo) => isOwnProfileView
       || (!isOwnProfileView && Boolean(blockInfo));
-  const shouldShowAdminBiodataFallback = isOwnProfileView
-    && isAdministrator
-    && !fbrProfile;
+  const shouldShowAdminBiodataFallback = isOwnProfileView && isAdministrator && !fbrProfile;
+  const profileContent = (() => {
+    if (isTargetUserBiodataView || shouldShowAdminBiodataFallback) {
+      return <BiodataProfileSections />;
+    }
+
+    if (isOwnProfileView) {
+      return (
+        <FbrProfileTabs
+          profile={fbrProfile}
+          showStpBiodataForm={isStpTrainee}
+          onProfileUpdated={setFbrProfile}
+          onStpBiodataComplete={() => {
+            setCompletionOverride(true);
+            setNavigationBlocked(false);
+          }}
+        />
+      );
+    }
+
+    return <BiodataProfileSections />;
+  })();
 
   const renderViewMyRecordsButton = () => {
     if (!(viewMyRecordsUrl && isOwnProfileView)) {
@@ -377,22 +396,8 @@ const ProfilePage = ({ params }) => {
               isMobileView ? 'py-4 px-3' : 'px-120px py-6',
             ])}
           >
-              <div className="w-100 p-0">
-              {isTargetUserBiodataView || shouldShowAdminBiodataFallback ? (
-                <BiodataProfileSections />
-              ) : isOwnProfileView ? (
-                <FbrProfileTabs
-                  profile={fbrProfile}
-                  showStpBiodataForm={isStpTrainee}
-                  onProfileUpdated={setFbrProfile}
-                  onStpBiodataComplete={() => {
-                    setCompletionOverride(true);
-                    setNavigationBlocked(false);
-                  }}
-                />
-              ) : (
-                <BiodataProfileSections />
-              )}
+            <div className="w-100 p-0">
+              {profileContent}
             </div>
           </div>
           <div
