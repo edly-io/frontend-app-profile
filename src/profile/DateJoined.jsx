@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, FormattedDate } from '@edx/frontend-platform/i18n';
 
-const DateJoined = ({ date }) => {
+const DateJoined = ({ date = null }) => {
   if (!date) { return null; }
 
   return (
@@ -21,9 +21,6 @@ const DateJoined = ({ date }) => {
 
 DateJoined.propTypes = {
   date: PropTypes.string,
-};
-DateJoined.defaultProps = {
-  date: null,
 };
 
 export default memo(DateJoined);

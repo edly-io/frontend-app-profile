@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, Nav } from '@openedx/paragon';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
@@ -10,11 +11,10 @@ import classNames from 'classnames';
 import { BIODATA_SECTIONS } from './config';
 import BiodataSection from './BiodataSection';
 import {
-  closeForm, saveProfile, saveProfileFailure, saveDraftSection, updateDraft,
+  closeForm, resetSectionDraft, saveProfile, saveProfileFailure, saveDraftSection, updateDraft,
 } from '../data/actions';
 import { getBiodataTargetUserId } from './apiConfig';
 import {
-  BIODATA_DATE_VALIDATION_MESSAGES,
   getSanitizedSectionData,
   getExtendedProfileValue,
   getSectionError,
@@ -46,15 +46,6 @@ const getStepperSections = (sections) => {
     ...sectionsWithoutSpouse.slice(1),
   ].filter(Boolean);
 };
-
-const buildStepState = (sections, extendedProfile) => sections.reduce((accumulator, section) => {
-  const savedData = getSectionInitialData(section, extendedProfile);
-  accumulator[section.id] = {
-    completed: sectionIsComplete(section, savedData),
-    error: false,
-  };
-  return accumulator;
-}, {});
 
 const isSectionCompleteForNavigation = (
   section,
@@ -92,6 +83,10 @@ const getNextIncompleteVisibleSectionId = (
 
   return nextIncompleteSection?.id || sections[currentIndex + 1]?.id || sectionId;
 };
+
+const isLastInteractiveSectionId = (sections, sectionId) => (
+  Boolean(sectionId) && sections[sections.length - 1]?.id === sectionId
+);
 
 const getStepStatusLabel = (stepState, isActive) => {
   if (stepState?.error) {
@@ -139,7 +134,10 @@ const getBiodataDraftStorageKey = (username, sectionId) => `fbr.biodata.draft:${
 
 const isTruthyFlag = value => value === true || String(value || '').trim().toLowerCase() === 'true';
 
-const getSectionCompletedState = (section, savedData) => sectionIsComplete(section, savedData);
+const getSectionLiveData = (section, drafts, extendedProfile) => getSanitizedSectionData(
+  section,
+  drafts[section.id] || getSectionInitialData(section, extendedProfile),
+);
 
 const getResumeSectionId = (sections, extendedProfile) => {
   const firstIncompleteSection = sections.find(section => !sectionIsComplete(
@@ -159,18 +157,19 @@ const BiodataProfileSections = () => {
     saveState,
     isAuthenticatedUserProfile,
   } = useSelector((state) => state.profilePage);
-  const canEditBiodata = isAuthenticatedUserProfile || Boolean(getBiodataTargetUserId());
+  const biodataTargetUserId = getBiodataTargetUserId();
+  const canEditBiodata = isAuthenticatedUserProfile || Boolean(biodataTargetUserId);
   const extendedProfile = useMemo(() => account?.extendedProfile || [], [account?.extendedProfile]);
-  const accountUsername = account?.username;
+  const accountUsername = biodataTargetUserId || account?.username || getAuthenticatedUser()?.username || null;
   const previousSaveState = useRef(saveState);
   const hasResolvedInitialStep = useRef(false);
   const hasDraftRestoreRef = useRef(false);
   const [pendingSaveStepId, setPendingSaveStepId] = useState(null);
   const stepperSections = useMemo(() => getStepperSections(BIODATA_SECTIONS), []);
   const [activeStepId, setActiveStepId] = useState(stepperSections[0].id);
-  const [stepStateById, setStepStateById] = useState(() => buildStepState(stepperSections, []));
   const [pendingScrollSectionId, setPendingScrollSectionId] = useState(null);
   const [pendingReturnSectionId, setPendingReturnSectionId] = useState(null);
+  const [attentionSectionIds, setAttentionSectionIds] = useState({});
 
   const basicInformationData = useMemo(() => getSanitizedSectionData(
     BIODATA_SECTIONS[0],
@@ -181,42 +180,64 @@ const BiodataProfileSections = () => {
     () => getVisibleSections(basicInformationData.marital_status, stepperSections),
     [basicInformationData.marital_status, stepperSections],
   );
+  const isDeclarationAvailable = !biodataTargetUserId;
+  const renderableSections = visibleSections.length > 0 ? visibleSections : stepperSections;
+  const interactiveSections = useMemo(
+    () => (
+      isDeclarationAvailable
+        ? renderableSections
+        : renderableSections.filter(section => section.id !== 'declaration')
+    ),
+    [isDeclarationAvailable, renderableSections],
+  );
   const hasDeclarationLockFlag = isTruthyFlag(
     getExtendedProfileValue(extendedProfile, getSectionSubmittedFieldName('declaration')),
   );
-  const isBiodataLocked = hasDeclarationLockFlag;
+  const isBiodataLocked = hasDeclarationLockFlag && !biodataTargetUserId;
 
   const activeSection = useMemo(
-    () => visibleSections.find(section => section.id === activeStepId) || visibleSections[0],
-    [activeStepId, visibleSections],
+    () => interactiveSections.find(section => section.id === activeStepId) || interactiveSections[0] || null,
+    [activeStepId, interactiveSections],
   );
-
-  useEffect(() => {
-    setStepStateById(previousState => visibleSections.reduce((accumulator, section) => {
-      const savedData = getSectionInitialData(section, extendedProfile);
-      const previousStepState = previousState[section.id] || {};
-      const completed = getSectionCompletedState(section, savedData);
+  const isLastAdminInteractiveSection = !isDeclarationAvailable && isLastInteractiveSectionId(
+    interactiveSections,
+    activeSection?.id,
+  );
+  const stepStateById = useMemo(
+    () => visibleSections.reduce((accumulator, section) => {
+      const liveSectionData = getSectionLiveData(section, drafts, extendedProfile);
+      const liveValidationErrors = validateSectionDraft(section, liveSectionData);
+      const backendSectionError = getSectionError(section, errors);
+      const shouldShowLiveValidation = Boolean(attentionSectionIds[section.id]);
+      const hasLiveValidationError = shouldShowLiveValidation && Object.keys(liveValidationErrors).length > 0;
+      const error = Boolean(backendSectionError) || hasLiveValidationError;
 
       accumulator[section.id] = {
-        completed,
-        error: previousStepState.error || Boolean(getSectionError(section, errors)),
-        errorSummary: getSectionErrorSummary(section, errors),
+        completed: !error && sectionIsComplete(section, liveSectionData),
+        error,
+        errorSummary: backendSectionError
+          ? getSectionErrorSummary(section, errors)
+          : shouldShowLiveValidation
+            ? getSectionErrorSummary(section, liveValidationErrors)
+            : '',
       };
       return accumulator;
-    }, {}));
-  }, [errors, extendedProfile, visibleSections]);
+    }, {}),
+    [attentionSectionIds, drafts, errors, extendedProfile, visibleSections],
+  );
 
   useEffect(() => {
     hasResolvedInitialStep.current = false;
     hasDraftRestoreRef.current = false;
+    setAttentionSectionIds({});
   }, [accountUsername]);
 
   useEffect(() => {
-    if (!accountUsername || hasDraftRestoreRef.current || visibleSections.length === 0) {
+    if (!accountUsername || hasDraftRestoreRef.current || interactiveSections.length === 0) {
       return;
     }
     hasDraftRestoreRef.current = true;
-    visibleSections.forEach((section) => {
+    interactiveSections.forEach((section) => {
       try {
         const stored = localStorage.getItem(getBiodataDraftStorageKey(accountUsername, section.id));
         if (stored) {
@@ -226,25 +247,25 @@ const BiodataProfileSections = () => {
         // ignore parse/storage errors
       }
     });
-  }, [accountUsername, dispatch, visibleSections]);
+  }, [accountUsername, dispatch, interactiveSections]);
 
   useEffect(() => {
-    if (!accountUsername || hasResolvedInitialStep.current || visibleSections.length === 0) {
+    if (!accountUsername || hasResolvedInitialStep.current || interactiveSections.length === 0) {
       return;
     }
 
-    const resumeSectionId = getResumeSectionId(visibleSections, extendedProfile);
+    const resumeSectionId = getResumeSectionId(interactiveSections, extendedProfile);
     if (resumeSectionId) {
       setActiveStepId(resumeSectionId);
     }
     hasResolvedInitialStep.current = true;
-  }, [accountUsername, extendedProfile, visibleSections]);
+  }, [accountUsername, extendedProfile, interactiveSections]);
 
   useEffect(() => {
-    if (!visibleSections.some(section => section.id === activeStepId)) {
-      setActiveStepId(visibleSections[0]?.id || null);
+    if (!interactiveSections.some(section => section.id === activeStepId)) {
+      setActiveStepId(interactiveSections[0]?.id || null);
     }
-  }, [activeStepId, visibleSections]);
+  }, [activeStepId, interactiveSections]);
 
   useEffect(() => {
     if (!pendingScrollSectionId || activeSection?.id !== pendingScrollSectionId) {
@@ -282,19 +303,19 @@ const BiodataProfileSections = () => {
     }
 
     if (saveState === 'complete') {
-      const savedSection = visibleSections.find(section => section.id === pendingSaveStepId);
+      const savedSection = interactiveSections.find(section => section.id === pendingSaveStepId);
       const completed = savedSection
         ? sectionIsComplete(savedSection, getSectionInitialData(savedSection, extendedProfile))
         : false;
+      setAttentionSectionIds((previousStateById) => {
+        if (!previousStateById[pendingSaveStepId]) {
+          return previousStateById;
+        }
 
-      setStepStateById(previousStateById => ({
-        ...previousStateById,
-        [pendingSaveStepId]: {
-          ...previousStateById[pendingSaveStepId],
-          completed,
-          error: false,
-        },
-      }));
+        const nextState = { ...previousStateById };
+        delete nextState[pendingSaveStepId];
+        return nextState;
+      });
       if (accountUsername) {
         try {
           localStorage.removeItem(getBiodataDraftStorageKey(accountUsername, pendingSaveStepId));
@@ -302,13 +323,18 @@ const BiodataProfileSections = () => {
           // ignore
         }
       }
+      dispatch(resetSectionDraft(pendingSaveStepId));
       const nextSectionId = pendingReturnSectionId
-        || getNextIncompleteVisibleSectionId(
-          visibleSections,
-          pendingSaveStepId,
-          extendedProfile,
-          pendingSaveStepId,
-          completed,
+        || (
+          !isDeclarationAvailable && isLastInteractiveSectionId(interactiveSections, pendingSaveStepId)
+            ? pendingSaveStepId
+            : getNextIncompleteVisibleSectionId(
+              interactiveSections,
+              pendingSaveStepId,
+              extendedProfile,
+              pendingSaveStepId,
+              completed,
+            )
         );
       setActiveStepId(nextSectionId);
       setPendingScrollSectionId(nextSectionId);
@@ -317,38 +343,23 @@ const BiodataProfileSections = () => {
     }
 
     if (saveState === 'error') {
-      setStepStateById(previousStateById => ({
+      setAttentionSectionIds(previousStateById => ({
         ...previousStateById,
-        [pendingSaveStepId]: {
-          ...previousStateById[pendingSaveStepId],
-          completed: false,
-          error: true,
-          errorSummary: getSectionErrorSummary(
-            visibleSections.find(section => section.id === pendingSaveStepId) || {},
-            errors,
-          ),
-        },
+        [pendingSaveStepId]: true,
       }));
       setActiveStepId(pendingSaveStepId);
       setPendingScrollSectionId(pendingSaveStepId);
       setPendingSaveStepId(null);
     }
   }, [
-    accountUsername, drafts, errors, extendedProfile,
-    pendingReturnSectionId, pendingSaveStepId, saveState, visibleSections,
+    accountUsername, dispatch, drafts, errors, extendedProfile,
+    pendingReturnSectionId, pendingSaveStepId, saveState, interactiveSections, isDeclarationAvailable,
   ]);
-
-  if (!accountUsername || !activeSection) {
-    return null;
-  }
 
   const activeSectionSavedData = getSectionInitialData(activeSection, extendedProfile);
   const activeSectionHasSavedContent = sectionHasValue(activeSection, activeSectionSavedData);
 
-  const getSectionDraftData = section => getSanitizedSectionData(
-    section,
-    drafts[section.id] || getSectionInitialData(section, extendedProfile),
-  );
+  const getSectionDraftData = section => getSectionLiveData(section, drafts, extendedProfile);
 
   const sectionNeedsAttention = (section) => {
     const sectionData = getSectionDraftData(section);
@@ -358,25 +369,25 @@ const BiodataProfileSections = () => {
   };
 
   const getFirstIncompleteSectionBefore = (sectionId) => {
-    const currentSectionIndex = visibleSections.findIndex(section => section.id === sectionId);
+    const currentSectionIndex = interactiveSections.findIndex(section => section.id === sectionId);
 
     if (currentSectionIndex <= 0) {
       return null;
     }
 
-    return visibleSections
+    return interactiveSections
       .slice(0, currentSectionIndex)
       .find(section => sectionNeedsAttention(section)) || null;
   };
 
   const getFirstBlockedSectionBefore = (sectionId) => {
-    const currentSectionIndex = visibleSections.findIndex(section => section.id === sectionId);
+    const currentSectionIndex = interactiveSections.findIndex(section => section.id === sectionId);
 
     if (currentSectionIndex <= 0) {
       return null;
     }
 
-    return visibleSections.slice(0, currentSectionIndex).find((section) => {
+    return interactiveSections.slice(0, currentSectionIndex).find((section) => {
       const sectionData = getSectionDraftData(section);
 
       return Object.keys(validateSectionDraft(section, sectionData)).length > 0
@@ -392,15 +403,9 @@ const BiodataProfileSections = () => {
     if (Object.keys(validationErrors).length > 0) {
       dispatch(saveProfileFailure(validationErrors));
     }
-    setStepStateById(previousStateById => ({
+    setAttentionSectionIds(previousStateById => ({
       ...previousStateById,
-      [section.id]: {
-        ...previousStateById[section.id],
-        completed: false,
-        error: true,
-        errorSummary: getSectionErrorSummary(section, validationErrors)
-          || 'Please complete this section before continuing.',
-      },
+      [section.id]: true,
     }));
   };
 
@@ -410,13 +415,23 @@ const BiodataProfileSections = () => {
   };
 
   const handleStepClick = (sectionId) => {
-    if (sectionId === 'declaration') {
+    if (sectionId === 'declaration' && !isDeclarationAvailable) {
+      return;
+    }
+
+    const targetSectionIndex = interactiveSections.findIndex(section => section.id === sectionId);
+    const activeSectionIndex = interactiveSections.findIndex(section => section.id === activeSection.id);
+    const isMovingForward = targetSectionIndex > activeSectionIndex;
+    const shouldGuardForwardNavigation = canEditBiodata && !hasDeclarationLockFlag && isMovingForward;
+    const shouldGuardDeclarationNavigation = sectionId === 'declaration' && !hasDeclarationLockFlag;
+
+    if (shouldGuardDeclarationNavigation || shouldGuardForwardNavigation) {
       const incompleteSection = getFirstBlockedSectionBefore(sectionId)
         || getFirstIncompleteSectionBefore(sectionId);
 
       if (incompleteSection) {
         markSectionNeedsAttention(incompleteSection);
-        setPendingReturnSectionId(sectionId);
+        setPendingReturnSectionId(sectionId === 'declaration' ? sectionId : null);
         setActiveStepId(incompleteSection.id);
         window.setTimeout(() => {
           document.getElementById(`biodata-section-${incompleteSection.id}`)
@@ -443,7 +458,7 @@ const BiodataProfileSections = () => {
   };
 
   const handleDraftChange = (sectionId, value) => {
-    const section = visibleSections.find(item => item.id === sectionId);
+    const section = interactiveSections.find(item => item.id === sectionId);
     const sanitizedData = section ? getSanitizedSectionData(section, value) : value;
     const dateValidationErrors = section ? validateSectionDateRules(section, sanitizedData) : {};
     const hasDateValidationErrors = Object.keys(dateValidationErrors).length > 0;
@@ -464,42 +479,31 @@ const BiodataProfileSections = () => {
 
     if (hasDateValidationErrors) {
       dispatch(saveProfileFailure(dateValidationErrors));
-      setStepStateById(previousStateById => ({
+      setAttentionSectionIds(previousStateById => ({
         ...previousStateById,
-        [section.id]: {
-          ...previousStateById[section.id],
-          completed: false,
-          error: true,
-          dateValidationError: true,
-          errorSummary: getSectionErrorSummary(section, dateValidationErrors),
-        },
+        [section.id]: true,
       }));
       return;
     }
 
-    setStepStateById(previousStateById => {
-      const previousSectionState = previousStateById[section.id] || {};
-      if (
-        !previousSectionState.dateValidationError
-        && !BIODATA_DATE_VALIDATION_MESSAGES.includes(previousSectionState.errorSummary)
-      ) {
+    setAttentionSectionIds((previousStateById) => {
+      if (!previousStateById[section.id]) {
         return previousStateById;
       }
 
-      return {
-        ...previousStateById,
-        [section.id]: {
-          ...previousSectionState,
-          error: false,
-          dateValidationError: false,
-          errorSummary: '',
-        },
-      };
+      const validationErrors = validateSectionDraft(section, sanitizedData);
+      if (Object.keys(validationErrors).length > 0) {
+        return previousStateById;
+      }
+
+      const nextState = { ...previousStateById };
+      delete nextState[section.id];
+      return nextState;
     });
   };
 
   const handleSaveAndNext = (sectionId) => {
-    const section = visibleSections.find(item => item.id === sectionId);
+    const section = interactiveSections.find(item => item.id === sectionId);
     if (!section || !accountUsername) {
       return;
     }
@@ -522,14 +526,9 @@ const BiodataProfileSections = () => {
     if (Object.keys(validationErrors).length > 0) {
       dispatch(updateDraft(section.id, nextSectionData));
       dispatch(saveProfileFailure(validationErrors));
-      setStepStateById(previousStateById => ({
+      setAttentionSectionIds(previousStateById => ({
         ...previousStateById,
-        [section.id]: {
-          ...previousStateById[section.id],
-          completed: false,
-          error: true,
-          errorSummary: getSectionErrorSummary(section, validationErrors),
-        },
+        [section.id]: true,
       }));
       moveToSection(section.id);
       return;
@@ -546,9 +545,10 @@ const BiodataProfileSections = () => {
         <Card className="position-lg-sticky" style={{ top: '0' }}>
           <Card.Section>
             <Nav variant="pills" className="flex-column biodata-stepper">
-              {visibleSections.map((section, index) => {
+              {renderableSections.map((section, index) => {
+                const isDisabled = section.id === 'declaration' && !isDeclarationAvailable;
                 const isActive = activeSection.id === section.id;
-                const isLastVisibleStep = index === visibleSections.length - 1;
+                const isLastVisibleStep = index === renderableSections.length - 1;
                 const stepState = stepStateById[section.id] || {};
                 const statusLabel = getStepStatusLabel(stepState, isActive);
 
@@ -556,8 +556,10 @@ const BiodataProfileSections = () => {
                   <Nav.Item key={section.id}>
                     <Nav.Link
                       active={isActive}
+                      disabled={isDisabled}
                       data-biodata-nav={section.id}
-                      aria-label={`${section.title}: ${statusLabel}`}
+                      aria-label={`${section.title}: ${isDisabled ? 'Unavailable for admin' : statusLabel}`}
+                      aria-disabled={isDisabled}
                       className="mb-2 d-flex align-items-stretch text-left position-relative"
                       onClick={() => handleStepClick(section.id)}
                     >
@@ -620,7 +622,7 @@ const BiodataProfileSections = () => {
               showCancelButton={false}
               showSubmitButton={!isBiodataLocked}
               submitLabels={{
-                default: 'Save and Next',
+                default: isLastAdminInteractiveSection ? 'Save' : 'Save and Next',
                 pending: 'Saving',
                 complete: 'Saved',
               }}

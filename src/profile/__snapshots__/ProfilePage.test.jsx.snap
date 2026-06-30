@@ -96,7 +96,978 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
     >
       <div
         class="w-100 p-0"
-      />
+      >
+        <div
+          class="row"
+        >
+          <div
+            class="col-lg-3 mb-4 mb-lg-0"
+          >
+            <div
+              class="position-lg-sticky pgn__card pgn__card-light card"
+              style="top: 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="pgn__card-section"
+              >
+                <div
+                  class="flex-column biodata-stepper nav nav-pills"
+                >
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Basic Information: Current"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
+                      data-biodata-nav="basicInformation"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-primary"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-white"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector biodata-stepper__connector--active"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Basic Information
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Physical / Medical Information: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="physicalMedicalInformation"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Physical / Medical Information
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Contact Information: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="contactInformation"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Contact Information
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Education: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="education"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Education
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Achievements: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="achievements"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Achievements
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Languages: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="languages"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Languages
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Employment: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="employment"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Employment
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Competitive Examinations: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="competitiveExaminations"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Competitive Examinations
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="CSS Exam Details: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="cssExamDetails"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        CSS Exam Details
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Government Service Details: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="governmentServiceDetails"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Government Service Details
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Personal Interests: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="personalInterests"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Personal Interests
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Foreign Visits: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="foreignVisits"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Foreign Visits
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Family Information: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="familyInformation"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Family Information
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Siblings: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="siblings"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Siblings
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Close Relatives in Government Service: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="closeRelativesInGovernmentService"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                        <span
+                          class="biodata-stepper__connector"
+                        />
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Close Relatives in Government Service
+                      </span>
+                    </a>
+                  </div>
+                  <div
+                    class="nav-item"
+                  >
+                    <a
+                      aria-disabled="false"
+                      aria-label="Declaration: Not started"
+                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      data-biodata-nav="declaration"
+                      href="#"
+                      role="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative"
+                      >
+                        <span
+                          class="d-inline-flex align-items-center justify-content-center flex-shrink-0 bg-white"
+                          style="width: 1.75rem; min-height: 1.75rem; z-index: 1;"
+                        >
+                          <span
+                            class="d-inline-block rounded-circle bg-gray-400"
+                            style="font-size: 1.25rem; width: 0.95rem; height: 0.95rem;"
+                          />
+                        </span>
+                      </span>
+                      <span
+                        class="font-weight-bold"
+                      >
+                        Declaration
+                      </span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-lg-9"
+          >
+            <div
+              class="shadow-sm pgn__card pgn__card-light card"
+              id="biodata-section-basicInformation"
+              tabindex="-1"
+            >
+              <div
+                class="pgn__card-section"
+              >
+                <div
+                  class="mb-3"
+                >
+                  <div
+                    class="font-weight-bold text-gray-900 h3 mb-1"
+                  >
+                    Basic Information
+                  </div>
+                  <div
+                    class="small text-muted"
+                  >
+                    Core personal biodata details.
+                  </div>
+                </div>
+                <div
+                  class="pgn-transition-replace-group position-relative pt-0"
+                >
+                  <div
+                    style="padding: 0.1px 0px;"
+                  >
+                    <div
+                      aria-labelledby="basicInformation-label"
+                      role="dialog"
+                    >
+                      <form>
+                        <div
+                          class="row"
+                        >
+                          <div
+                            class="pgn__form-group col-md-6 mb-3"
+                          >
+                            <label
+                              class="pgn__form-label"
+                              for="form-field29"
+                            >
+                              Title
+                            </label>
+                            <div
+                              class="pgn__form-control-decorator-group"
+                            >
+                              <select
+                                class="form-control"
+                                id="form-field29"
+                              >
+                                <option
+                                  value=""
+                                >
+                                  Select title
+                                </option>
+                                <option
+                                  value="mr"
+                                >
+                                  Mr
+                                </option>
+                                <option
+                                  value="mrs"
+                                >
+                                  Mrs
+                                </option>
+                                <option
+                                  value="ms"
+                                >
+                                  Ms
+                                </option>
+                                <option
+                                  value="miss"
+                                >
+                                  Miss
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div
+                            class="pgn__form-group col-md-6 mb-3"
+                          >
+                            <label
+                              class="pgn__form-label"
+                              for="form-field30"
+                            >
+                              Preferred / calling name
+                            </label>
+                            <div
+                              class="pgn__form-control-decorator-group"
+                            >
+                              <input
+                                class="form-control"
+                                id="form-field30"
+                                inputmode="text"
+                                placeholder="Enter preferred name"
+                                type="text"
+                                value=""
+                              />
+                            </div>
+                          </div>
+                          <div
+                            class="pgn__form-group col-md-6 mb-3"
+                          >
+                            <label
+                              class="pgn__form-label"
+                              for="form-field31"
+                            >
+                              Place of Birth
+                            </label>
+                            <div
+                              class="pgn__form-control-decorator-group"
+                            >
+                              <input
+                                class="form-control"
+                                id="form-field31"
+                                inputmode="text"
+                                placeholder="Enter place of birth"
+                                type="text"
+                                value=""
+                              />
+                            </div>
+                          </div>
+                          <div
+                            class="pgn__form-group col-md-6 mb-3"
+                          >
+                            <label
+                              class="pgn__form-label"
+                              for="form-field32"
+                            >
+                              District of Domicile
+                            </label>
+                            <div
+                              class="pgn__form-control-decorator-group"
+                            >
+                              <input
+                                class="form-control"
+                                id="form-field32"
+                                inputmode="text"
+                                placeholder="Enter district of domicile"
+                                type="text"
+                                value=""
+                              />
+                            </div>
+                          </div>
+                          <div
+                            class="pgn__form-group col-md-6 mb-3"
+                          >
+                            <label
+                              class="pgn__form-label"
+                              for="form-field33"
+                            >
+                              Province of Domicile
+                            </label>
+                            <div
+                              class="pgn__form-control-decorator-group"
+                            >
+                              <input
+                                class="form-control"
+                                id="form-field33"
+                                inputmode="text"
+                                placeholder="Enter province of domicile"
+                                type="text"
+                                value=""
+                              />
+                            </div>
+                          </div>
+                          <div
+                            class="pgn__form-group col-md-6 mb-3"
+                          >
+                            <label
+                              class="pgn__form-label"
+                              for="form-field34"
+                            >
+                              Religion
+                            </label>
+                            <div
+                              class="pgn__form-control-decorator-group"
+                            >
+                              <input
+                                class="form-control"
+                                id="form-field34"
+                                inputmode="text"
+                                placeholder="Enter religion"
+                                type="text"
+                                value=""
+                              />
+                            </div>
+                          </div>
+                          <div
+                            class="pgn__form-group col-md-6 mb-3"
+                          >
+                            <label
+                              class="pgn__form-label"
+                              for="form-field35"
+                            >
+                              Marital Status
+                            </label>
+                            <div
+                              class="pgn__form-control-decorator-group"
+                            >
+                              <select
+                                class="form-control"
+                                id="form-field35"
+                              >
+                                <option
+                                  value=""
+                                >
+                                  Select marital status
+                                </option>
+                                <option
+                                  value="single"
+                                >
+                                  Single
+                                </option>
+                                <option
+                                  value="married"
+                                >
+                                  Married
+                                </option>
+                                <option
+                                  value="widowed"
+                                >
+                                  Widowed
+                                </option>
+                                <option
+                                  value="divorced"
+                                >
+                                  Divorced
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="border rounded p-3 mb-3 bg-light-200"
+                        >
+                          <p
+                            class="h6 font-weight-bold mb-2"
+                          >
+                            CNIC Front
+                          </p>
+                          <div
+                            class="d-flex flex-wrap align-items-center"
+                          >
+                            <button
+                              aria-label="Upload CNIC Front"
+                              class="d-inline-flex align-items-center justify-content-center mr-2 mb-2 p-2 btn btn-outline-primary btn-sm"
+                              style="width: 2.25rem; height: 2.25rem;"
+                              type="button"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                fill="none"
+                                focusable="false"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M14 2H4v20h16V8l-6-6zm-1 13v4h-2v-4H8l4.01-4L16 15h-3zm0-6V3.5L18.5 9H13z"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                          <input
+                            accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            class="d-none"
+                            id="basicInformation-cnic_front"
+                            type="file"
+                          />
+                        </div>
+                        <div
+                          class="border rounded p-3 mb-3 bg-light-200"
+                        >
+                          <p
+                            class="h6 font-weight-bold mb-2"
+                          >
+                            CNIC Back
+                          </p>
+                          <div
+                            class="d-flex flex-wrap align-items-center"
+                          >
+                            <button
+                              aria-label="Upload CNIC Back"
+                              class="d-inline-flex align-items-center justify-content-center mr-2 mb-2 p-2 btn btn-outline-primary btn-sm"
+                              style="width: 2.25rem; height: 2.25rem;"
+                              type="button"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                fill="none"
+                                focusable="false"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M14 2H4v20h16V8l-6-6zm-1 13v4h-2v-4H8l4.01-4L16 15h-3zm0-6V3.5L18.5 9H13z"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                          <input
+                            accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            class="d-none"
+                            id="basicInformation-cnic_back"
+                            type="file"
+                          />
+                        </div>
+                        <div
+                          class="border rounded p-3 mb-3 bg-light-200"
+                        >
+                          <p
+                            class="h6 font-weight-bold mb-2"
+                          >
+                            Domicile Attachment
+                          </p>
+                          <div
+                            class="d-flex flex-wrap align-items-center"
+                          >
+                            <button
+                              aria-label="Upload Domicile Attachment"
+                              class="d-inline-flex align-items-center justify-content-center mr-2 mb-2 p-2 btn btn-outline-primary btn-sm"
+                              style="width: 2.25rem; height: 2.25rem;"
+                              type="button"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                fill="none"
+                                focusable="false"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M14 2H4v20h16V8l-6-6zm-1 13v4h-2v-4H8l4.01-4L16 15h-3zm0-6V3.5L18.5 9H13z"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                          <input
+                            accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            class="d-none"
+                            id="basicInformation-domicile_file"
+                            type="file"
+                          />
+                        </div>
+                        <div
+                          class="d-flex flex-row-reverse flex-wrap justify-content-end align-items-center"
+                        >
+                          <div
+                            class="row form-group flex-shrink-0 flex-grow-1 m-0 p-0"
+                          >
+                            <div
+                              class="p-0 m-0"
+                            >
+                              <button
+                                aria-disabled="false"
+                                aria-live="assertive"
+                                class="pgn__stateful-btn pgn__stateful-btn-state-null btn btn-primary"
+                                type="submit"
+                              >
+                                <span
+                                  class="d-flex align-items-center justify-content-center"
+                                >
+                                  <span>
+                                    Save and Next
+                                  </span>
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div
       class="col container-fluid d-inline-flex bg-color-grey-FBFAF9 h-100 w-100 align-items-start justify-content-start g-3rem px-120px py-6"
@@ -211,6 +1182,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Basic Information: Current"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
                       data-biodata-nav="basicInformation"
@@ -245,6 +1217,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Physical / Medical Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="physicalMedicalInformation"
@@ -279,6 +1252,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Contact Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="contactInformation"
@@ -313,6 +1287,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Education: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="education"
@@ -347,6 +1322,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Achievements: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="achievements"
@@ -381,6 +1357,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Languages: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="languages"
@@ -415,6 +1392,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Employment: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="employment"
@@ -449,6 +1427,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Competitive Examinations: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="competitiveExaminations"
@@ -483,6 +1462,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="CSS Exam Details: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="cssExamDetails"
@@ -517,6 +1497,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Government Service Details: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="governmentServiceDetails"
@@ -551,6 +1532,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Personal Interests: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="personalInterests"
@@ -585,6 +1567,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Foreign Visits: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="foreignVisits"
@@ -619,6 +1602,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Family Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="familyInformation"
@@ -653,6 +1637,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Siblings: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="siblings"
@@ -687,6 +1672,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Close Relatives in Government Service: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
@@ -721,6 +1707,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Declaration: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="declaration"
@@ -957,6 +1944,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Basic Information: Current"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
                       data-biodata-nav="basicInformation"
@@ -991,6 +1979,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Physical / Medical Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="physicalMedicalInformation"
@@ -1025,6 +2014,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Contact Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="contactInformation"
@@ -1059,6 +2049,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Education: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="education"
@@ -1093,6 +2084,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Achievements: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="achievements"
@@ -1127,6 +2119,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Languages: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="languages"
@@ -1161,6 +2154,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Employment: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="employment"
@@ -1195,6 +2189,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Competitive Examinations: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="competitiveExaminations"
@@ -1229,6 +2224,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="CSS Exam Details: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="cssExamDetails"
@@ -1263,6 +2259,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Government Service Details: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="governmentServiceDetails"
@@ -1297,6 +2294,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Personal Interests: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="personalInterests"
@@ -1331,6 +2329,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Foreign Visits: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="foreignVisits"
@@ -1365,6 +2364,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Family Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="familyInformation"
@@ -1399,6 +2399,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Siblings: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="siblings"
@@ -1433,6 +2434,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Close Relatives in Government Service: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
@@ -1467,6 +2469,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Declaration: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="declaration"
@@ -1596,6 +2599,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               <input
                                 class="form-control"
                                 id="form-field2"
+                                inputmode="text"
                                 placeholder="Enter preferred name"
                                 type="text"
                                 value=""
@@ -1617,6 +2621,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               <input
                                 class="form-control"
                                 id="form-field3"
+                                inputmode="text"
                                 placeholder="Enter place of birth"
                                 type="text"
                                 value=""
@@ -1638,6 +2643,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               <input
                                 class="form-control"
                                 id="form-field4"
+                                inputmode="text"
                                 placeholder="Enter district of domicile"
                                 type="text"
                                 value=""
@@ -1659,6 +2665,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               <input
                                 class="form-control"
                                 id="form-field5"
+                                inputmode="text"
                                 placeholder="Enter province of domicile"
                                 type="text"
                                 value=""
@@ -1680,6 +2687,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               <input
                                 class="form-control"
                                 id="form-field6"
+                                inputmode="text"
                                 placeholder="Enter religion"
                                 type="text"
                                 value=""
@@ -2148,6 +3156,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Basic Information: Current"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
                       data-biodata-nav="basicInformation"
@@ -2182,6 +3191,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Physical / Medical Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="physicalMedicalInformation"
@@ -2216,6 +3226,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Contact Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="contactInformation"
@@ -2250,6 +3261,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Education: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="education"
@@ -2284,6 +3296,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Achievements: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="achievements"
@@ -2318,6 +3331,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Languages: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="languages"
@@ -2352,6 +3366,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Employment: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="employment"
@@ -2386,6 +3401,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Competitive Examinations: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="competitiveExaminations"
@@ -2420,6 +3436,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="CSS Exam Details: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="cssExamDetails"
@@ -2454,6 +3471,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Government Service Details: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="governmentServiceDetails"
@@ -2488,6 +3506,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Personal Interests: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="personalInterests"
@@ -2522,6 +3541,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Foreign Visits: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="foreignVisits"
@@ -2556,6 +3576,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Family Information: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="familyInformation"
@@ -2590,6 +3611,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Siblings: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="siblings"
@@ -2624,6 +3646,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Close Relatives in Government Service: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
@@ -2658,6 +3681,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     class="nav-item"
                   >
                     <a
+                      aria-disabled="false"
                       aria-label="Declaration: Not started"
                       class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
                       data-biodata-nav="declaration"
@@ -2787,6 +3811,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               <input
                                 class="form-control"
                                 id="form-field16"
+                                inputmode="text"
                                 placeholder="Enter preferred name"
                                 type="text"
                                 value=""
@@ -2808,6 +3833,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               <input
                                 class="form-control"
                                 id="form-field17"
+                                inputmode="text"
                                 placeholder="Enter place of birth"
                                 type="text"
                                 value=""
@@ -2829,6 +3855,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               <input
                                 class="form-control"
                                 id="form-field18"
+                                inputmode="text"
                                 placeholder="Enter district of domicile"
                                 type="text"
                                 value=""
@@ -2850,6 +3877,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               <input
                                 class="form-control"
                                 id="form-field19"
+                                inputmode="text"
                                 placeholder="Enter province of domicile"
                                 type="text"
                                 value=""
@@ -2871,6 +3899,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               <input
                                 class="form-control"
                                 id="form-field20"
+                                inputmode="text"
                                 placeholder="Enter religion"
                                 type="text"
                                 value=""

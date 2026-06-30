@@ -14,6 +14,11 @@ import RepeatableFieldGroup from './RepeatableFieldGroup';
 import {
   createFileUploadValue,
   createEmptyRepeatableRow,
+  FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS,
+  FIELD_NAMES_REQUIRING_VALID_YEAR,
+  fieldAllowsOnlyDigits,
+  fieldDisallowsDigits,
+  fieldDisallowsSpecialCharacters,
   getRepeatableFieldErrorKey,
   getRepeatableFieldValidationError,
   getSectionError,
@@ -27,12 +32,126 @@ import {
   isProtectedRepeatableColumn,
   isProtectedRepeatableRow,
   normalizeRepeatableRows,
+  removeDigitsFromValue,
+  removeNonDigitsFromValue,
+  removeSpecialCharactersFromValue,
   revokeFilePreviewUrl,
   sectionHasValue,
   shouldShowSpouseInformation,
+  validateSectionDraft,
 } from './utils';
 
-function renderFieldControl(field, value, onChange, error, disabled = false) {
+const TODAY_DATE = new Date().toISOString().slice(0, 10);
+const DATE_FIELDS_WITH_MAX_TODAY = new Set([
+  'last_annual_medical_checkup',
+  'attended_from',
+  'attended_to',
+]);
+
+function getRepeatableNaBackupFieldName(storageFieldName) {
+  return `__${storageFieldName}_backup_rows`;
+}
+
+function rowHasMeaningfulValues(row, repeatable) {
+  return (repeatable.columns || []).some(({ key, type }) => {
+    const value = row?.[key];
+
+    if (type === PROFILE_FIELD_TYPES.FILE) {
+      return Boolean(value);
+    }
+
+    return String(value || '').trim().length > 0;
+  });
+}
+
+function getFieldInputAttributes(field) {
+  if (field.type === PROFILE_FIELD_TYPES.DATE && DATE_FIELDS_WITH_MAX_TODAY.has(field.fieldName)) {
+    return { max: TODAY_DATE };
+  }
+
+  if (FIELD_NAMES_REQUIRING_VALID_YEAR.has(field.fieldName)) {
+    return {
+      inputMode: 'numeric',
+      pattern: '\\d{4}',
+      maxLength: 4,
+    };
+  }
+
+  if (
+    field.type === PROFILE_FIELD_TYPES.NUMBER
+    && FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS.has(field.fieldName)
+  ) {
+    return {
+      min: 0,
+      inputMode: 'numeric',
+    };
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldAllowsOnlyDigits(field.fieldName)
+  ) {
+    return { inputMode: 'tel' };
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldDisallowsDigits(field.fieldName)
+  ) {
+    return { inputMode: 'text' };
+  }
+
+  return {};
+}
+
+function normalizeFieldInputValue(field, value) {
+  let nextValue = value;
+
+  if (
+    field.type === PROFILE_FIELD_TYPES.NUMBER
+    && FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS.has(field.fieldName)
+  ) {
+    nextValue = removeNonDigitsFromValue(nextValue);
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldAllowsOnlyDigits(field.fieldName)
+  ) {
+    nextValue = removeNonDigitsFromValue(nextValue);
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldDisallowsDigits(field.fieldName)
+  ) {
+    nextValue = removeDigitsFromValue(nextValue);
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldDisallowsSpecialCharacters(field.fieldName)
+  ) {
+    nextValue = removeSpecialCharactersFromValue(nextValue);
+  }
+
+  return nextValue;
+}
+
+function renderFieldControl(
+  field,
+  value,
+  onChange,
+  onBlur,
+  error,
+  disabled = false,
+  onNativeValidationChange = () => {},
+) {
+  const syncNativeValidationState = (event) => {
+    const { currentTarget } = event;
+    onNativeValidationChange(currentTarget.validity.valid ? '' : currentTarget.validationMessage);
+  };
+
   if (field.type === PROFILE_FIELD_TYPES.CHECKBOX) {
     return (
       <Form.Checkbox
@@ -53,7 +172,14 @@ function renderFieldControl(field, value, onChange, error, disabled = false) {
         value={value}
         isInvalid={Boolean(error)}
         disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
+        {...getFieldInputAttributes(field)}
+        onBlur={onBlur}
+        onFocus={syncNativeValidationState}
+        onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
+        onChange={(event) => {
+          syncNativeValidationState(event);
+          onChange(normalizeFieldInputValue(field, event.target.value));
+        }}
       >
         {(field.options || []).map((option) => (
           <option key={`${field.fieldName}-${option.value || 'blank'}`} value={option.value}>
@@ -68,12 +194,19 @@ function renderFieldControl(field, value, onChange, error, disabled = false) {
     return (
       <Form.Control
         as="textarea"
-        rows={3}
+        rows={field.rows || 3}
         value={value}
         placeholder={field.placeholder}
         isInvalid={Boolean(error)}
         disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
+        {...getFieldInputAttributes(field)}
+        onBlur={onBlur}
+        onFocus={syncNativeValidationState}
+        onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
+        onChange={(event) => {
+          syncNativeValidationState(event);
+          onChange(normalizeFieldInputValue(field, event.target.value));
+        }}
       />
     );
   }
@@ -85,7 +218,14 @@ function renderFieldControl(field, value, onChange, error, disabled = false) {
       placeholder={field.placeholder}
       isInvalid={Boolean(error)}
       disabled={disabled}
-      onChange={(event) => onChange(event.target.value)}
+      {...getFieldInputAttributes(field)}
+      onBlur={onBlur}
+      onFocus={syncNativeValidationState}
+      onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
+      onChange={(event) => {
+        syncNativeValidationState(event);
+        onChange(normalizeFieldInputValue(field, event.target.value));
+      }}
     />
   );
 }
@@ -169,6 +309,7 @@ const BiodataSection = ({
   const formDataRef = useRef(formData);
   const sectionRef = useRef(section);
   const [localErrors, setLocalErrors] = useState({});
+  const [nativeValidationErrors, setNativeValidationErrors] = useState({});
   const mergedErrors = useMemo(() => ({ ...errors, ...localErrors }), [errors, localErrors]);
   const hasContent = sectionHasValue(section, committedData);
   const sectionError = getSectionError(section, mergedErrors);
@@ -218,6 +359,46 @@ const BiodataSection = ({
     }
 
     onDraftChange(section.id, getSanitizedSectionData(section, nextFormData));
+  };
+
+  const handleFieldBlur = (fieldName) => {
+    const validationErrors = validateSectionDraft(section, formData);
+    const nextFieldError = validationErrors[fieldName];
+
+    setLocalErrors((previousErrors) => {
+      const nextErrors = { ...previousErrors };
+
+      if (nextFieldError) {
+        nextErrors[fieldName] = nextFieldError;
+      } else {
+        delete nextErrors[fieldName];
+      }
+
+      return nextErrors;
+    });
+  };
+
+  const handleNativeValidationChange = (fieldName, validationMessage) => {
+    setNativeValidationErrors((previousErrors) => {
+      if (!validationMessage) {
+        if (!previousErrors[fieldName]) {
+          return previousErrors;
+        }
+
+        const nextErrors = { ...previousErrors };
+        delete nextErrors[fieldName];
+        return nextErrors;
+      }
+
+      if (previousErrors[fieldName] === validationMessage) {
+        return previousErrors;
+      }
+
+      return {
+        ...previousErrors,
+        [fieldName]: validationMessage,
+      };
+    });
   };
 
   const handleRepeatableChange = (repeatable, action, payload = {}) => {
@@ -321,9 +502,21 @@ const BiodataSection = ({
   };
 
   const handleRepeatableNaChange = (repeatable, value) => {
+    const backupFieldName = getRepeatableNaBackupFieldName(repeatable.storageFieldName);
+    const currentRows = formData[repeatable.storageFieldName] || [];
+    const meaningfulCurrentRows = currentRows.filter(row => rowHasMeaningfulValues(row, repeatable));
+    const savedBackupRows = Array.isArray(formData[backupFieldName]) ? formData[backupFieldName] : [];
+    const nextRows = value
+      ? currentRows
+      : (savedBackupRows.length > 0 ? savedBackupRows : currentRows);
+
     onDraftChange(section.id, getSanitizedSectionData(section, {
       ...formData,
       [repeatable.naFieldName]: value,
+      [repeatable.storageFieldName]: nextRows,
+      [backupFieldName]: value
+        ? (meaningfulCurrentRows.length > 0 ? meaningfulCurrentRows : savedBackupRows)
+        : savedBackupRows,
     }));
   };
 
@@ -361,10 +554,12 @@ const BiodataSection = ({
                 field,
                 formData[field.fieldName],
                 (value) => handleFieldChange(field.fieldName, value),
+                () => handleFieldBlur(field.fieldName),
                 error,
                 disabled || isSectionDisabled,
+                (validationMessage) => handleNativeValidationChange(field.fieldName, validationMessage),
               )}
-              {!disabled && error && error.userMessage && (
+              {!disabled && error && error.userMessage && !nativeValidationErrors[field.fieldName] && (
                 <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-1">
                   {error.userMessage}
                 </Form.Control.Feedback>
@@ -402,18 +597,16 @@ const BiodataSection = ({
             </Form.Group>
           )}
           <p className="h6 font-weight-bold mb-2">{repeatable.itemLabel}s</p>
-          <RepeatableFieldGroup
-            repeatable={repeatable}
-            rows={formData[repeatable.storageFieldName] || [createEmptyRepeatableRow(repeatable)]}
-            errors={mergedErrors}
-            onChange={(action, payload) => handleRepeatableChange(repeatable, action, payload)}
-            onBlur={(rowIndex, columnKey) => handleRepeatableFieldBlur(repeatable, rowIndex, columnKey)}
-            disabled={
-              disabled
-              || isSectionDisabled
-              || Boolean(repeatable.naFieldName && formData[repeatable.naFieldName])
-            }
-          />
+          {!(repeatable.naFieldName && formData[repeatable.naFieldName]) && (
+            <RepeatableFieldGroup
+              repeatable={repeatable}
+              rows={formData[repeatable.storageFieldName] || [createEmptyRepeatableRow(repeatable)]}
+              errors={mergedErrors}
+              onChange={(action, payload) => handleRepeatableChange(repeatable, action, payload)}
+              onBlur={(rowIndex, columnKey) => handleRepeatableFieldBlur(repeatable, rowIndex, columnKey)}
+              disabled={disabled || isSectionDisabled}
+            />
+          )}
         </div>
       ))}
       {(section.fileFields || []).map((field) => {
@@ -561,6 +754,7 @@ BiodataSection.propTypes = {
       label: PropTypes.string.isRequired,
       type: PropTypes.string,
       placeholder: PropTypes.string,
+      rows: PropTypes.number,
     })),
     repeatables: PropTypes.arrayOf(PropTypes.shape({
       storageFieldName: PropTypes.string.isRequired,

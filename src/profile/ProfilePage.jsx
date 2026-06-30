@@ -95,14 +95,21 @@ const ProfilePage = ({ params }) => {
     });
   }, [dispatch, params.username, context.config]);
 
+  const authenticatedUserName = context.authenticatedUser.username;
+  const isAdministrator = Boolean(context.authenticatedUser?.administrator);
+  const biodataTargetUserId = getBiodataTargetUserId();
+  const isTargetUserBiodataView = Boolean(biodataTargetUserId);
+
   useEffect(() => {
-    if (!username && saveState === 'error' && navigate) {
+    if (!username && saveState === 'error' && navigate && !isTargetUserBiodataView) {
       navigate('/notfound');
     }
-  }, [username, saveState, navigate]);
+  }, [username, saveState, navigate, isTargetUserBiodataView]);
 
-  const authenticatedUserName = context.authenticatedUser.username;
-  const biodataTargetUserId = getBiodataTargetUserId();
+  const isOwnProfileView = params.username === authenticatedUserName && !isTargetUserBiodataView;
+  const profileHeaderUsername = isTargetUserBiodataView
+    ? fbrProfile?.username || params.username
+    : params.username;
 
   const handleSaveProfilePhoto = useCallback((formData) => {
     dispatch(saveProfilePhoto(authenticatedUserName, formData));
@@ -112,7 +119,6 @@ const ProfilePage = ({ params }) => {
     dispatch(deleteProfilePhoto(authenticatedUserName));
   }, [dispatch, authenticatedUserName]);
 
-  const isAuthenticatedUserProfile = () => params.username === authenticatedUserName;
   const isStpTrainee = fbrProfile?.trainee_profile?.trainee_type === 'stp';
 
   useEffect(() => {
@@ -136,7 +142,7 @@ const ProfilePage = ({ params }) => {
         return;
       }
 
-      if (!isAuthenticatedUserProfile()) {
+      if (!isOwnProfileView) {
         setFbrProfile(null);
         setFbrProfileLoaded(true);
         return;
@@ -170,7 +176,7 @@ const ProfilePage = ({ params }) => {
   const hasCompletedRequiredProfile = completionOverride
     || Boolean(profileCompletionStatus?.complete);
   const shouldBlockNavigation = isStpTrainee
-    && isAuthenticatedUserProfile()
+    && isOwnProfileView
     && Boolean(profileCompletionStatus?.required)
     && !hasCompletedRequiredProfile;
 
@@ -238,11 +244,14 @@ const ProfilePage = ({ params }) => {
     };
   }, [context.config, profileCompletionStatus, shouldBlockNavigation]);
 
-  const isBlockVisible = (blockInfo) => isAuthenticatedUserProfile()
-      || (!isAuthenticatedUserProfile() && Boolean(blockInfo));
+  const isBlockVisible = (blockInfo) => isOwnProfileView
+      || (!isOwnProfileView && Boolean(blockInfo));
+  const shouldShowAdminBiodataFallback = isOwnProfileView
+    && isAdministrator
+    && !fbrProfile;
 
   const renderViewMyRecordsButton = () => {
-    if (!(viewMyRecordsUrl && isAuthenticatedUserProfile())) {
+    if (!(viewMyRecordsUrl && isOwnProfileView)) {
       return null;
     }
 
@@ -317,7 +326,7 @@ const ProfilePage = ({ params }) => {
                     onSave={handleSaveProfilePhoto}
                     onDelete={handleDeleteProfilePhoto}
                     savePhotoState={savePhotoState}
-                    isEditable={isAuthenticatedUserProfile()}
+                    isEditable={isOwnProfileView}
                   />
                   <div
                     className={classNames([
@@ -328,7 +337,7 @@ const ProfilePage = ({ params }) => {
                     ])}
                   >
                     <p className="row m-0 font-weight-bold text-truncate text-primary-500 h3">
-                      {params.username}
+                      {profileHeaderUsername}
                     </p>
                     <div className={classNames(
                       'row pt-2 m-0',
@@ -368,8 +377,10 @@ const ProfilePage = ({ params }) => {
               isMobileView ? 'py-4 px-3' : 'px-120px py-6',
             ])}
           >
-            <div className="w-100 p-0">
-              {isAuthenticatedUserProfile() ? (
+              <div className="w-100 p-0">
+              {isTargetUserBiodataView || shouldShowAdminBiodataFallback ? (
+                <BiodataProfileSections />
+              ) : isOwnProfileView ? (
                 <FbrProfileTabs
                   profile={fbrProfile}
                   showStpBiodataForm={isStpTrainee}

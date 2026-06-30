@@ -1,8 +1,11 @@
 import { getConfig } from '@edx/frontend-platform';
 import * as analytics from '@edx/frontend-platform/analytics';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppContext } from '@edx/frontend-platform/react';
 import { configure as configureI18n, IntlProvider } from '@edx/frontend-platform/i18n';
-import { render } from '@testing-library/react';
+import {
+  fireEvent, render, screen, waitFor,
+} from '@testing-library/react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
@@ -72,15 +75,16 @@ configureI18n({
 beforeEach(() => {
   analytics.sendTrackingLogEvent.mockReset();
   useNavigate.mockReset();
+  getAuthenticatedHttpClient.mockReset();
 });
 
 const ProfilePageWrapper = ({
-  contextValue, store, params,
+  contextValue, store, params, initialEntry,
 }) => (
   <AppContext.Provider value={contextValue}>
     <IntlProvider locale="en">
       <Provider store={store}>
-        <MemoryRouter initialEntries={[`/profile/${params.username}`]}>
+        <MemoryRouter initialEntries={[initialEntry || `/profile/${params.username}`]}>
           <Routes>
             <Route
               path="/profile/:username"
@@ -96,17 +100,23 @@ const ProfilePageWrapper = ({
 ProfilePageWrapper.defaultProps = {
   // eslint-disable-next-line react/default-props-match-prop-types
   params: { username: 'staff' },
+  initialEntry: '',
 };
 
 ProfilePageWrapper.propTypes = {
   contextValue: PropTypes.shape({}).isRequired,
   store: PropTypes.shape({}).isRequired,
+  initialEntry: PropTypes.string,
   params: PropTypes.shape({
     username: PropTypes.string.isRequired,
   }).isRequired,
 };
 
 describe('<ProfilePage />', () => {
+  beforeEach(() => {
+    window.history.replaceState({}, '', '/profile/staff');
+  });
+
   describe('Renders correctly in various states', () => {
     it('app loading', () => {
       const contextValue = {
@@ -254,6 +264,272 @@ describe('<ProfilePage />', () => {
       );
 
       expect(navigate).toHaveBeenCalledWith('/notfound');
+    });
+
+    it('does not navigate to notfound on save error during admin target-user biodata view', () => {
+      window.history.replaceState({}, '', '/profile/trainee01?for_user=21');
+
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const navigate = jest.fn();
+      useNavigate.mockReturnValue(navigate);
+      const mockHttpClient = {
+        get: jest.fn().mockResolvedValue({ data: { id: 21, username: 'trainee01', trainee_profile: null } }),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore({
+            ...storeMocks.invalidUser,
+            profilePage: {
+              ...storeMocks.invalidUser.profilePage,
+              saveState: 'error',
+              account: {
+                ...storeMocks.invalidUser.profilePage.account,
+                username: '',
+              },
+            },
+          })}
+          params={{ username: 'trainee01' }}
+          initialEntry="/profile/trainee01?for_user=21"
+        />,
+      );
+
+      expect(navigate).not.toHaveBeenCalledWith('/notfound');
+    });
+  });
+
+  describe('admin biodata fallback', () => {
+    it('renders biodata sections when the admin FBR profile lookup fails', async () => {
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const mockHttpClient = {
+        get: jest.fn().mockRejectedValue(new Error('profile lookup failed')),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore(storeMocks.viewOwnProfile)}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(screen.getAllByText('Basic Information').length).toBeGreaterThan(0);
+      });
+    });
+
+    it('renders biodata sections for an admin target-user route with for_user', async () => {
+      window.history.replaceState({}, '', '/profile/trainee01?for_user=21');
+
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const mockHttpClient = {
+        get: jest.fn().mockResolvedValue({ data: { id: 21, username: 'trainee01', trainee_profile: null } }),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore(storeMocks.viewOwnProfile)}
+          params={{ username: 'trainee01' }}
+          initialEntry="/profile/trainee01?for_user=21"
+        />,
+      );
+
+      await waitFor(() => {
+        expect(screen.getAllByText('Basic Information').length).toBeGreaterThan(0);
+      });
+      expect(screen.getByText('trainee01')).toBeInTheDocument();
+    });
+
+    it('renders biodata sections even when admin lands on their own route with for_user', async () => {
+      window.history.replaceState({}, '', '/profile/staff?for_user=21');
+
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const mockHttpClient = {
+        get: jest.fn().mockResolvedValue({ data: { id: 21, username: 'trainee01', trainee_profile: null } }),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore(storeMocks.viewOwnProfile)}
+          initialEntry="/profile/staff?for_user=21"
+        />,
+      );
+
+      await waitFor(() => {
+        expect(screen.getAllByText('Basic Information').length).toBeGreaterThan(0);
+      });
+      expect(screen.getByText('trainee01')).toBeInTheDocument();
+    });
+
+    it('keeps biodata editable for admin target-user view after declaration submission', async () => {
+      window.history.replaceState({}, '', '/profile/trainee01?for_user=21');
+
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const mockHttpClient = {
+        get: jest.fn().mockResolvedValue({ data: { id: 21, username: 'trainee01', trainee_profile: null } }),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore({
+            ...storeMocks.viewOwnProfile,
+            profilePage: {
+              ...storeMocks.viewOwnProfile.profilePage,
+              account: {
+                ...storeMocks.viewOwnProfile.profilePage.account,
+                username: 'trainee01',
+                extendedProfile: [
+                  { fieldName: 'declaration_is_submitted', fieldValue: true },
+                ],
+              },
+              isAuthenticatedUserProfile: false,
+            },
+          })}
+          params={{ username: 'trainee01' }}
+          initialEntry="/profile/trainee01?for_user=21"
+        />,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Save and Next' })).toBeInTheDocument();
+      });
+    });
+
+    it('disables the declaration tab for admin target-user view', async () => {
+      window.history.replaceState({}, '', '/profile/trainee01?for_user=21');
+
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const mockHttpClient = {
+        get: jest.fn().mockResolvedValue({ data: { id: 21, username: 'trainee01', trainee_profile: null } }),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore(storeMocks.viewOwnProfile)}
+          params={{ username: 'trainee01' }}
+          initialEntry="/profile/trainee01?for_user=21"
+        />,
+      );
+
+      const declarationTab = await screen.findByLabelText('Declaration: Unavailable for admin');
+      expect(declarationTab).toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('lets admin jump to later tabs after the trainee has submitted the full form', async () => {
+      window.history.replaceState({}, '', '/profile/trainee01?for_user=21');
+
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const mockHttpClient = {
+        get: jest.fn().mockResolvedValue({ data: { id: 21, username: 'trainee01', trainee_profile: null } }),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore({
+            ...storeMocks.viewOwnProfile,
+            profilePage: {
+              ...storeMocks.viewOwnProfile.profilePage,
+              account: {
+                ...storeMocks.viewOwnProfile.profilePage.account,
+                username: 'trainee01',
+                extendedProfile: [
+                  { fieldName: 'declaration_is_submitted', fieldValue: true },
+                ],
+              },
+              isAuthenticatedUserProfile: false,
+            },
+          })}
+          params={{ username: 'trainee01' }}
+          initialEntry="/profile/trainee01?for_user=21"
+        />,
+      );
+
+      const contactTab = await screen.findByLabelText('Contact Information: Not started');
+      fireEvent.click(contactTab);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Contact Information: Current')).toBeInTheDocument();
+      });
+    });
+
+    it('shows a terminal save action on the last admin-visible biodata section', async () => {
+      window.history.replaceState({}, '', '/profile/trainee01?for_user=21');
+
+      const contextValue = {
+        authenticatedUser: { userId: 123, username: 'staff', administrator: true },
+        config: getConfig(),
+      };
+      const mockHttpClient = {
+        get: jest.fn().mockResolvedValue({ data: { id: 21, username: 'trainee01', trainee_profile: null } }),
+      };
+      getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
+
+      render(
+        <ProfilePageWrapper
+          contextValue={contextValue}
+          store={mockStore({
+            ...storeMocks.viewOwnProfile,
+            profilePage: {
+              ...storeMocks.viewOwnProfile.profilePage,
+              account: {
+                ...storeMocks.viewOwnProfile.profilePage.account,
+                username: 'trainee01',
+                extendedProfile: [
+                  { fieldName: 'declaration_is_submitted', fieldValue: true },
+                ],
+              },
+              isAuthenticatedUserProfile: false,
+            },
+          })}
+          params={{ username: 'trainee01' }}
+          initialEntry="/profile/trainee01?for_user=21"
+        />,
+      );
+
+      const finalAdminTab = await screen.findByLabelText(
+        'Close Relatives in Government Service: Not started',
+      );
+      fireEvent.click(finalAdminTab);
+
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText('Close Relatives in Government Service: Current'),
+        ).toBeInTheDocument();
+      });
+      expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
     });
   });
 });

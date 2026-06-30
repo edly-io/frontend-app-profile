@@ -45,8 +45,8 @@ const PROFICIENCY_OPTIONS = [
 
 export const CSS_COMPULSORY_SUBJECT_MARKS = [
   { subject: 'English Essay', total_marks: '100', marks_obtained: '' },
-  { subject: 'English Precise & Composition', total_marks: '100', marks_obtained: '' },
-  { subject: 'General Science & Ability', total_marks: '100', marks_obtained: '' },
+  { subject: 'English Precise and Composition', total_marks: '100', marks_obtained: '' },
+  { subject: 'General Science and Ability', total_marks: '100', marks_obtained: '' },
   { subject: 'Current Affairs', total_marks: '100', marks_obtained: '' },
   { subject: 'Pakistan Affairs', total_marks: '100', marks_obtained: '' },
   { subject: 'Islamic Studies', total_marks: '100', marks_obtained: '' },
@@ -398,7 +398,7 @@ export const BIODATA_SECTIONS = [
         fieldName: 'game_distinctions_awards', label: 'Game distinctions / awards', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter game distinctions or awards',
       },
       {
-        fieldName: 'hobbies', label: 'Hobbies', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter hobbies',
+        fieldName: 'hobbies', label: 'Hobbies', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter hobbies', rows: 5,
       },
     ],
   },
