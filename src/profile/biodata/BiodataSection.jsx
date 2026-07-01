@@ -44,6 +44,9 @@ import {
 const TODAY_DATE = new Date().toISOString().slice(0, 10);
 const DATE_FIELDS_WITH_MAX_TODAY = new Set([
   'last_annual_medical_checkup',
+  'date_joining_any_govt_service_before_csa',
+  'date_joining_civil_services_academy_lahore',
+  'date_joining_transfer_inland_revenue_service',
   'attended_from',
   'attended_to',
 ]);

@@ -301,7 +301,12 @@ export const BIODATA_SECTIONS = [
       {
         fieldName: 'intend_to_sit_for_forthcoming_css_exam', label: 'Intend to sit for forthcoming CSS exam', type: PROFILE_FIELD_TYPES.SELECT, options: YES_NO_OPTIONS,
       },
-      { fieldName: 'last_chance_date_year', label: 'Last chance date / year', placeholder: 'Enter last chance date or year' },
+      {
+        fieldName: 'last_chance_date_year',
+        label: 'Last chance year',
+        type: PROFILE_FIELD_TYPES.NUMBER,
+        placeholder: 'Enter last chance year',
+      },
     ],
     repeatables: [
       {

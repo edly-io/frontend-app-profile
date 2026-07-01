@@ -4,6 +4,7 @@ import {
 } from '@testing-library/react';
 
 import BiodataSection from './BiodataSection';
+import { BIODATA_SECTION_MAP } from './config';
 
 const repeatableSection = {
   id: 'closeRelativesInGovernmentService',
@@ -81,5 +82,34 @@ describe('<BiodataSection />', () => {
 
     fireEvent.click(screen.getByRole('checkbox', { name: 'N/A' }));
     expect(screen.getByDisplayValue('Kashif')).toBeInTheDocument();
+  });
+
+  it('renders only hobbies with a taller textarea', () => {
+    render(
+      <BiodataSection
+        section={BIODATA_SECTION_MAP.personalInterests}
+        extendedProfile={[]}
+        draftValue={{
+          games_played: 'Cricket',
+          game_distinctions_awards: 'Gold medal',
+          hobbies: 'Reading',
+        }}
+        errors={{}}
+        saveState={null}
+        isAuthenticatedUserProfile
+        isEditing
+        isLocked={false}
+        forceEditingWhenEmpty
+        showInlineTitle={false}
+        showCancelButton={false}
+        onClose={() => {}}
+        onSubmit={() => {}}
+        onDraftChange={() => {}}
+      />,
+    );
+
+    expect(screen.getByLabelText('Games played')).toHaveAttribute('rows', '3');
+    expect(screen.getByLabelText('Game distinctions / awards')).toHaveAttribute('rows', '3');
+    expect(screen.getByLabelText('Hobbies')).toHaveAttribute('rows', '5');
   });
 });

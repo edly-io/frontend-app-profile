@@ -17,6 +17,20 @@ const rows = [
   { rowId: 'row-2', subject: 'General Science and Ability' },
 ];
 
+const foreignVisitRepeatable = {
+  storageFieldName: 'foreign_visits',
+  itemLabel: 'Foreign visit',
+  addButtonLabel: 'Add foreign visit',
+  columns: [
+    { key: 'from', label: 'From', type: 'date' },
+    { key: 'to', label: 'To', type: 'date' },
+  ],
+};
+
+const foreignVisitRows = [
+  { rowId: 'visit-1', from: '2026-06-28', to: '2026-07-31' },
+];
+
 describe('RepeatableFieldGroup', () => {
   it('does not show a generic column error on every repeatable row', () => {
     render(
@@ -54,5 +68,22 @@ describe('RepeatableFieldGroup', () => {
     );
 
     expect(screen.getByText('Duplicate elective subjects are not allowed.')).toBeInTheDocument();
+  });
+
+  it('uses the selected from date as the lower bound for foreign visit to date and still caps it to today', () => {
+    render(
+      <RepeatableFieldGroup
+        repeatable={foreignVisitRepeatable}
+        rows={foreignVisitRows}
+        errors={{}}
+        onChange={jest.fn()}
+        onBlur={jest.fn()}
+        disabled={false}
+      />,
+    );
+
+    expect(screen.getByLabelText('From')).toHaveAttribute('max', '2026-07-01');
+    expect(screen.getByLabelText('To')).toHaveAttribute('min', '2026-06-28');
+    expect(screen.getByLabelText('To')).toHaveAttribute('max', '2026-07-01');
   });
 });

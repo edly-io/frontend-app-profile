@@ -30,6 +30,11 @@ const EDUCATION_RECORDS_FIELD_NAME = 'education_records';
 const FOREIGN_VISITS_SECTION_ID = 'foreignVisits';
 const FOREIGN_VISITS_FIELD_NAME = 'foreign_visits';
 const GOVERNMENT_SERVICE_DETAILS_SECTION_ID = 'governmentServiceDetails';
+const GOVERNMENT_SERVICE_DATE_FIELD_NAMES = [
+  'date_joining_any_govt_service_before_csa',
+  'date_joining_civil_services_academy_lahore',
+  'date_joining_transfer_inland_revenue_service',
+];
 const OTHER_INCOME_SOURCE_FIELD_NAME = 'other_income_source_besides_salary';
 const OTHER_INCOME_DETAILS_FIELD_NAME = 'other_income_details';
 const EDUCATION_ATTENDED_TO_DATE_MESSAGE = 'Attended To must be later than Attended From.';
@@ -81,10 +86,15 @@ const FIELD_NAMES_REQUIRING_VALID_YEAR = new Set([
 ]);
 const FLAT_DATE_FIELDS_WITH_NO_FUTURE_DATES = new Set([
   'last_annual_medical_checkup',
+  ...GOVERNMENT_SERVICE_DATE_FIELD_NAMES,
 ]);
 const REPEATABLE_DATE_FIELDS_WITH_NO_FUTURE_DATES = new Set([
   `${EDUCATION_RECORDS_FIELD_NAME}.attended_from`,
   `${EDUCATION_RECORDS_FIELD_NAME}.attended_to`,
+  `${EMPLOYMENT_RECORDS_FIELD_NAME}.from`,
+  `${EMPLOYMENT_RECORDS_FIELD_NAME}.to`,
+  `${FOREIGN_VISITS_FIELD_NAME}.from`,
+  `${FOREIGN_VISITS_FIELD_NAME}.to`,
 ]);
 const PAKISTAN_MOBILE_FIELD_NAMES = [
   'permanent_phone_number',

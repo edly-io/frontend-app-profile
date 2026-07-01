@@ -22,10 +22,45 @@ import {
 
 const TODAY_DATE = new Date().toISOString().slice(0, 10);
 const DATE_FIELDS_WITH_MAX_TODAY = new Set(['attended_from', 'attended_to']);
+const REPEATABLE_FROM_FIELD_NAMES = new Set(['from', 'attended_from']);
+const REPEATABLE_TO_FIELD_CONFIG = {
+  attended_to: {
+    relatedFromField: 'attended_from',
+    maxToday: true,
+  },
+  to: {
+    relatedFromField: 'from',
+    maxToday: true,
+  },
+};
 
-function getFieldInputAttributes(field) {
+function isValidDateValue(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || '').trim());
+}
+
+function getFieldInputAttributes(field, row) {
   if (field.type === PROFILE_FIELD_TYPES.DATE && DATE_FIELDS_WITH_MAX_TODAY.has(field.key)) {
     return { max: TODAY_DATE };
+  }
+
+  if (field.type === PROFILE_FIELD_TYPES.DATE && REPEATABLE_FROM_FIELD_NAMES.has(field.key)) {
+    return { max: TODAY_DATE };
+  }
+
+  if (field.type === PROFILE_FIELD_TYPES.DATE && REPEATABLE_TO_FIELD_CONFIG[field.key]) {
+    const { relatedFromField, maxToday } = REPEATABLE_TO_FIELD_CONFIG[field.key];
+    const nextAttributes = {};
+    const fromValue = row?.[relatedFromField];
+
+    if (isValidDateValue(fromValue)) {
+      nextAttributes.min = fromValue;
+    }
+
+    if (maxToday) {
+      nextAttributes.max = TODAY_DATE;
+    }
+
+    return nextAttributes;
   }
 
   if (FIELD_NAMES_REQUIRING_VALID_YEAR.has(field.key)) {
@@ -100,6 +135,7 @@ function normalizeFieldInputValue(field, value) {
 function renderControl(
   field,
   value,
+  row,
   onChange,
   onBlur,
   error,
@@ -158,7 +194,7 @@ function renderControl(
         value={value}
         isInvalid={Boolean(error)}
         disabled={disabled}
-        {...getFieldInputAttributes(field)}
+        {...getFieldInputAttributes(field, row)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
         onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
@@ -185,7 +221,7 @@ function renderControl(
         placeholder={field.placeholder}
         isInvalid={Boolean(error)}
         disabled={disabled}
-        {...getFieldInputAttributes(field)}
+        {...getFieldInputAttributes(field, row)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
         onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
@@ -204,7 +240,7 @@ function renderControl(
       placeholder={field.placeholder}
       isInvalid={Boolean(error)}
       disabled={disabled}
-      {...getFieldInputAttributes(field)}
+      {...getFieldInputAttributes(field, row)}
       onBlur={onBlur}
       onFocus={syncNativeValidationState}
       onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
@@ -289,7 +325,7 @@ const RepeatableFieldGroup = ({
                     <Form.Label>{column.label}</Form.Label>
                     {(() => {
                       const nativeValidationKey = `${row.rowId}.${column.key}`;
-                      return renderControl(controlField, row[column.key], (value) => onChange('updateCell', {
+                      return renderControl(controlField, row[column.key], row, (value) => onChange('updateCell', {
                         rowIndex,
                         columnKey: column.key,
                         value,
