@@ -146,6 +146,66 @@ describe('services', () => {
         expect.objectContaining({ fieldName: 'education_records', fieldValue: [] }),
       ]));
     });
+
+    it('should prefer saved repeatable rows over stale not_applicable metadata', async () => {
+      mockHttpClient.get.mockImplementation((url) => {
+        if (url.endsWith('/government-relatives/')) {
+          return Promise.resolve({
+            data: {
+              results: [
+                {
+                  id: 3,
+                  not_applicable: true,
+                  name: '',
+                  designation: '',
+                  relationship: '',
+                  address: '',
+                  is_submitted: true,
+                },
+                {
+                  id: 5,
+                  not_applicable: false,
+                  name: 'Kashif',
+                  designation: 'SHO',
+                  relationship: 'Brother',
+                  address: 'Lahore',
+                  is_submitted: true,
+                },
+              ],
+            },
+          });
+        }
+
+        return Promise.resolve({ data: {} });
+      });
+
+      const result = await getBiodataProfile();
+
+      expect(result).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          fieldName: 'close_relatives_in_government_service_not_applicable',
+          fieldValue: false,
+        }),
+        expect.objectContaining({
+          fieldName: 'close_relatives_in_government_service',
+          fieldValue: expect.arrayContaining([
+            expect.objectContaining({
+              name: 'Kashif',
+              designation: 'SHO',
+              relationship: 'Brother',
+              address: 'Lahore',
+              backendId: 5,
+            }),
+          ]),
+        }),
+      ]));
+
+      const relativesEntry = result.find(
+        entry => entry.fieldName === 'close_relatives_in_government_service',
+      );
+
+      expect(relativesEntry.fieldValue).toHaveLength(1);
+    });
   });
 
   describe('patchProfile', () => {
@@ -408,6 +468,202 @@ describe('services', () => {
       );
     });
 
+    it('should not delete an existing education row when a restored draft is missing backendId', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get.mockResolvedValue({ data: { results: [] } });
+
+      await saveBiodataSection(
+        'education',
+        {
+          education_records: [{
+            rowId: 'row-1',
+            educational_institute: 'University of Sargodha',
+            attended_from: '2015-09-23',
+            attended_to: '2019-09-12',
+            examination: 'xyz',
+            year_of_passing: '2019',
+            grade_division: 'First',
+            subjects_studied: 'Computer Science',
+            education_degree_attachment: 'degree.pdf',
+          }],
+        },
+        {
+          education_records: [{
+            rowId: 'row-committed',
+            backendId: 3,
+            educational_institute: 'University of Sargodha',
+            attended_from: '2015-09-23',
+            attended_to: '2019-09-12',
+            examination: 'xyz',
+            year_of_passing: '2019',
+            grade_division: 'First',
+            subjects_studied: 'Computer Science',
+            education_degree_attachment: 'degree.pdf',
+          }],
+        },
+      );
+
+      expect(mockHttpClient.patch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/3\/$/),
+        expect.objectContaining({
+          institute: 'University of Sargodha',
+          attended_from: '2015-09-23',
+          attended_to: '2019-09-12',
+          examination: 'xyz',
+          year_of_passing: '2019',
+          grade: 'First',
+          subjects: 'Computer Science',
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      expect(mockHttpClient.delete).not.toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/3\/$/),
+      );
+    });
+
+    it('should not issue delete requests for missing committed education rows', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get.mockResolvedValue({ data: { results: [] } });
+
+      await saveBiodataSection(
+        'education',
+        {
+          education_records: [{
+            rowId: 'row-1',
+            educational_institute: 'University of Sargodha',
+            attended_from: '2015-09-23',
+            attended_to: '2019-09-12',
+            examination: 'xyz',
+            year_of_passing: '2019',
+            grade_division: 'First',
+            subjects_studied: 'Computer Science',
+            education_degree_attachment: 'degree.pdf',
+          }],
+        },
+        {
+          education_records: [
+            {
+              rowId: 'row-committed-1',
+              backendId: 3,
+              educational_institute: 'University of Sargodha',
+              attended_from: '2015-09-23',
+              attended_to: '2019-09-12',
+              examination: 'xyz',
+              year_of_passing: '2019',
+              grade_division: 'First',
+              subjects_studied: 'Computer Science',
+              education_degree_attachment: 'degree.pdf',
+            },
+            {
+              rowId: 'row-committed-2',
+              backendId: 4,
+              educational_institute: 'Old Record',
+              attended_from: '2011-01-01',
+              attended_to: '2013-01-01',
+              examination: 'Old',
+              year_of_passing: '2013',
+              grade_division: 'Second',
+              subjects_studied: 'History',
+              education_degree_attachment: 'old.pdf',
+            },
+          ],
+        },
+      );
+
+      expect(mockHttpClient.patch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/3\/$/),
+        expect.any(Object),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+      expect(mockHttpClient.delete).not.toHaveBeenCalled();
+    });
+
+    it('should patch existing CSS service group preferences instead of reposting them', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get.mockResolvedValue({ data: {} });
+
+      await saveBiodataSection(
+        'cssExamDetails',
+        {
+          css_roll_number: '1234',
+          css_merit_position: '1',
+          css_chances_availed: '1',
+          applied_for_forthcoming_css_exam: 'Yes',
+          intend_to_sit_for_forthcoming_css_exam: 'Yes',
+          last_chance_date_year: '2026',
+          occupational_service_group_preferences: [
+            {
+              rowId: 'pref-1',
+              backendId: 4,
+              service_group: 'PAS',
+              priority: '1',
+            },
+            {
+              rowId: 'pref-2',
+              backendId: 5,
+              service_group: 'IRS',
+              priority: '2',
+            },
+          ],
+          css_subject_marks: [],
+        },
+        {
+          occupational_service_group_preferences: [
+            {
+              rowId: 'pref-1',
+              backendId: 4,
+              service_group: 'PAS',
+              priority: '1',
+            },
+            {
+              rowId: 'pref-2',
+              backendId: 5,
+              service_group: 'IRS',
+              priority: '2',
+            },
+          ],
+          css_subject_marks: [],
+        },
+      );
+
+      expect(mockHttpClient.patch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/service-group-preferences\/4\/$/),
+        expect.objectContaining({
+          service_group: 'PAS',
+          priority: '1',
+        }),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+      expect(mockHttpClient.patch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/service-group-preferences\/5\/$/),
+        expect.objectContaining({
+          service_group: 'IRS',
+          priority: '2',
+        }),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+      expect(mockHttpClient.post).not.toHaveBeenCalledWith(
+        expect.stringMatching(/\/service-group-preferences\/$/),
+        expect.anything(),
+        expect.anything(),
+      );
+      expect(mockHttpClient.delete).not.toHaveBeenCalled();
+    });
+
     it('should map repeatable backend validation errors to UI field names', async () => {
       const error = new Error('validation failed');
       error.response = {
@@ -440,6 +696,58 @@ describe('services', () => {
           },
         },
       });
+    });
+
+    it('should preserve a local false N/A toggle and local rows when refresh data is empty', async () => {
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.get.mockImplementation((url) => {
+        if (url.endsWith('/foreign-visits/')) {
+          return Promise.resolve({ data: [] });
+        }
+
+        if (url.endsWith('/declaration/')) {
+          return Promise.resolve({ data: {} });
+        }
+
+        return Promise.resolve({ data: {} });
+      });
+
+      const result = await saveBiodataSection(
+        'foreignVisits',
+        {
+          foreign_visits_not_applicable: false,
+          foreign_visits: [{
+            rowId: 'row-1',
+            country: 'Turkey',
+            purpose_of_visit: 'Training',
+            self_or_sponsored_visit: 'Self',
+            from: '2020-01-01',
+            to: '2020-01-10',
+          }],
+        },
+        {
+          foreign_visits_not_applicable: true,
+          foreign_visits: [],
+        },
+      );
+
+      const notApplicableEntry = result.extendedProfile.find(
+        entry => entry.fieldName === 'foreign_visits_not_applicable',
+      );
+      const visitsEntry = result.extendedProfile.find(
+        entry => entry.fieldName === 'foreign_visits',
+      );
+
+      expect(notApplicableEntry).toEqual(expect.objectContaining({
+        fieldName: 'foreign_visits_not_applicable',
+        fieldValue: 'false',
+      }));
+      expect(JSON.parse(visitsEntry.fieldValue)).toEqual([
+        expect.objectContaining({
+          country: 'Turkey',
+          purpose_of_visit: 'Training',
+        }),
+      ]);
     });
   });
 });

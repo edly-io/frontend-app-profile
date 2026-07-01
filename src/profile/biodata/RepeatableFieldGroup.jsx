@@ -6,13 +6,147 @@ import { PROFILE_FIELD_TYPES } from './config';
 import { BiodataFileActions, BiodataFilePreview } from './BiodataFilePreview';
 import {
   createFileUploadValue,
+  FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS,
+  fieldAllowsOnlyDigits,
+  fieldDisallowsDigits,
+  fieldDisallowsSpecialCharacters,
+  FIELD_NAMES_REQUIRING_VALID_YEAR,
   getRepeatableFieldErrorKey,
   isProtectedRepeatableColumn,
   isProtectedRepeatableRow,
+  removeDigitsFromValue,
+  removeNonDigitsFromValue,
+  removeSpecialCharactersFromValue,
   revokeFilePreviewUrl,
 } from './utils';
 
-function renderControl(field, value, onChange, onBlur, error, disabled = false) {
+const TODAY_DATE = new Date().toISOString().slice(0, 10);
+const DATE_FIELDS_WITH_MAX_TODAY = new Set(['attended_from', 'attended_to']);
+const REPEATABLE_FROM_FIELD_NAMES = new Set(['from', 'attended_from']);
+const REPEATABLE_TO_FIELD_CONFIG = {
+  attended_to: {
+    relatedFromField: 'attended_from',
+    maxToday: true,
+  },
+  to: {
+    relatedFromField: 'from',
+    maxToday: true,
+  },
+};
+
+function isValidDateValue(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || '').trim());
+}
+
+function getFieldInputAttributes(field, row) {
+  if (field.type === PROFILE_FIELD_TYPES.DATE && DATE_FIELDS_WITH_MAX_TODAY.has(field.key)) {
+    return { max: TODAY_DATE };
+  }
+
+  if (field.type === PROFILE_FIELD_TYPES.DATE && REPEATABLE_FROM_FIELD_NAMES.has(field.key)) {
+    return { max: TODAY_DATE };
+  }
+
+  if (field.type === PROFILE_FIELD_TYPES.DATE && REPEATABLE_TO_FIELD_CONFIG[field.key]) {
+    const { relatedFromField, maxToday } = REPEATABLE_TO_FIELD_CONFIG[field.key];
+    const nextAttributes = {};
+    const fromValue = row?.[relatedFromField];
+
+    if (isValidDateValue(fromValue)) {
+      nextAttributes.min = fromValue;
+    }
+
+    if (maxToday) {
+      nextAttributes.max = TODAY_DATE;
+    }
+
+    return nextAttributes;
+  }
+
+  if (FIELD_NAMES_REQUIRING_VALID_YEAR.has(field.key)) {
+    return {
+      inputMode: 'numeric',
+      pattern: '\\d{4}',
+      maxLength: 4,
+    };
+  }
+
+  if (
+    field.type === PROFILE_FIELD_TYPES.NUMBER
+    && FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS.has(field.key)
+  ) {
+    return {
+      min: 0,
+      inputMode: 'numeric',
+    };
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldAllowsOnlyDigits(field.key)
+  ) {
+    return { inputMode: 'tel' };
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldDisallowsDigits(field.key)
+  ) {
+    return { inputMode: 'text' };
+  }
+
+  return {};
+}
+
+function normalizeFieldInputValue(field, value) {
+  let nextValue = value;
+
+  if (
+    field.type === PROFILE_FIELD_TYPES.NUMBER
+    && FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS.has(field.key)
+  ) {
+    nextValue = removeNonDigitsFromValue(nextValue);
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldAllowsOnlyDigits(field.key)
+  ) {
+    nextValue = removeNonDigitsFromValue(nextValue);
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldDisallowsDigits(field.key)
+  ) {
+    nextValue = removeDigitsFromValue(nextValue);
+  }
+
+  if (
+    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
+    && fieldDisallowsSpecialCharacters(field.key)
+  ) {
+    nextValue = removeSpecialCharactersFromValue(nextValue);
+  }
+
+  return nextValue;
+}
+
+function renderControl(
+  field,
+  value,
+  row,
+  onChange,
+  onBlur,
+  error,
+  disabled = false,
+  onNativeValidationChange = () => {},
+) {
+  const syncNativeValidationState = (event) => {
+    const { currentTarget } = event;
+    onNativeValidationChange(currentTarget.validity.valid ? '' : currentTarget.validationMessage);
+  };
+
   if (field.type === PROFILE_FIELD_TYPES.FILE) {
     const inputId = field.inputId || field.key;
     return (
@@ -60,8 +194,14 @@ function renderControl(field, value, onChange, onBlur, error, disabled = false) 
         value={value}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        {...getFieldInputAttributes(field, row)}
         onBlur={onBlur}
-        onChange={(event) => onChange(event.target.value)}
+        onFocus={syncNativeValidationState}
+        onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
+        onChange={(event) => {
+          syncNativeValidationState(event);
+          onChange(normalizeFieldInputValue(field, event.target.value));
+        }}
       >
         {(field.options || []).map((option) => (
           <option key={`${field.key}-${option.value || 'blank'}`} value={option.value}>
@@ -81,8 +221,14 @@ function renderControl(field, value, onChange, onBlur, error, disabled = false) 
         placeholder={field.placeholder}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        {...getFieldInputAttributes(field, row)}
         onBlur={onBlur}
-        onChange={(event) => onChange(event.target.value)}
+        onFocus={syncNativeValidationState}
+        onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
+        onChange={(event) => {
+          syncNativeValidationState(event);
+          onChange(normalizeFieldInputValue(field, event.target.value));
+        }}
       />
     );
   }
@@ -94,8 +240,14 @@ function renderControl(field, value, onChange, onBlur, error, disabled = false) 
       placeholder={field.placeholder}
       isInvalid={Boolean(error)}
       disabled={disabled}
+      {...getFieldInputAttributes(field, row)}
       onBlur={onBlur}
-      onChange={(event) => onChange(event.target.value)}
+      onFocus={syncNativeValidationState}
+      onInvalid={(event) => onNativeValidationChange(event.currentTarget.validationMessage)}
+      onChange={(event) => {
+        syncNativeValidationState(event);
+        onChange(normalizeFieldInputValue(field, event.target.value));
+      }}
     />
   );
 }
@@ -109,6 +261,30 @@ const RepeatableFieldGroup = ({
   disabled,
 }) => {
   const groupError = errors[repeatable.storageFieldName];
+  const [nativeValidationErrors, setNativeValidationErrors] = React.useState({});
+
+  const handleNativeValidationChange = (fieldKey, validationMessage) => {
+    setNativeValidationErrors((previousErrors) => {
+      if (!validationMessage) {
+        if (!previousErrors[fieldKey]) {
+          return previousErrors;
+        }
+
+        const nextErrors = { ...previousErrors };
+        delete nextErrors[fieldKey];
+        return nextErrors;
+      }
+
+      if (previousErrors[fieldKey] === validationMessage) {
+        return previousErrors;
+      }
+
+      return {
+        ...previousErrors,
+        [fieldKey]: validationMessage,
+      };
+    });
+  };
 
   return (
     <div>
@@ -133,7 +309,7 @@ const RepeatableFieldGroup = ({
             </div>
             <div className="row">
               {repeatable.columns.map((column) => {
-                const error = errors[getRepeatableFieldErrorKey(repeatable, row, column.key)] || errors[column.key];
+                const error = errors[getRepeatableFieldErrorKey(repeatable, row, column.key)];
                 const controlField = {
                   ...column,
                   inputId: `${row.rowId}-${column.key}`,
@@ -147,12 +323,17 @@ const RepeatableFieldGroup = ({
                     className={column.type === PROFILE_FIELD_TYPES.TEXTAREA ? 'col-12 mb-3' : 'col-md-6 mb-3'}
                   >
                     <Form.Label>{column.label}</Form.Label>
-                    {renderControl(controlField, row[column.key], (value) => onChange('updateCell', {
-                      rowIndex,
-                      columnKey: column.key,
-                      value,
-                    }), () => onBlur(rowIndex, column.key), error, isControlDisabled)}
-                    {!isControlDisabled && error && error.userMessage && (
+                    {(() => {
+                      const nativeValidationKey = `${row.rowId}.${column.key}`;
+                      return renderControl(controlField, row[column.key], row, (value) => onChange('updateCell', {
+                        rowIndex,
+                        columnKey: column.key,
+                        value,
+                      }), () => onBlur(rowIndex, column.key), error, isControlDisabled, (validationMessage) => {
+                        handleNativeValidationChange(nativeValidationKey, validationMessage);
+                      });
+                    })()}
+                    {!isControlDisabled && error && error.userMessage && !nativeValidationErrors[`${row.rowId}.${column.key}`] && (
                     <Form.Control.Feedback hasIcon={false} className="d-block text-danger small mt-1">
                       {error.userMessage}
                     </Form.Control.Feedback>

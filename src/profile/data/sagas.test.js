@@ -30,6 +30,10 @@ jest.mock('@edx/frontend-platform/auth', () => ({
   getAuthenticatedUser: jest.fn(),
 }));
 
+jest.mock('../biodata/apiConfig', () => ({
+  getBiodataTargetUserId: jest.fn(),
+}));
+
 /* eslint-disable import/first */
 import profileSaga, {
   handleFetchProfile,
@@ -39,7 +43,13 @@ import profileSaga, {
   handleDeleteProfilePhoto,
 } from './sagas';
 import * as ProfileApiService from './services';
+import { getBiodataTargetUserId } from '../biodata/apiConfig';
 /* eslint-enable import/first */
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  getBiodataTargetUserId.mockReturnValue(null);
+});
 
 describe('RootSaga', () => {
   describe('profileSaga', () => {
@@ -113,17 +123,56 @@ describe('RootSaga', () => {
       const action = profileActions.fetchProfile('booyah');
       const gen = handleFetchProfile(action);
 
-      const result = [{}, [1, 2, 3], countriesCodesList];
+      const result = [countriesCodesList];
 
       expect(gen.next().value).toEqual(select(userAccountSelector));
       expect(gen.next(selectorData).value).toEqual(put(profileActions.fetchProfileBegin()));
       expect(gen.next().value).toEqual(all([
-        call(ProfileApiService.getAccount, 'booyah'),
-        call(ProfileApiService.getCourseCertificates, 'booyah'),
         call(ProfileApiService.getCountryList),
       ]));
       expect(gen.next(result).value)
-        .toEqual(put(profileActions.fetchProfileSuccess(result[0], {}, result[1], false, countriesCodesList)));
+        .toEqual(put(profileActions.fetchProfileSuccess({
+          ...selectorData,
+          username: 'booyah',
+        }, {}, [], false, countriesCodesList)));
+      expect(gen.next().value).toEqual(put(profileActions.fetchProfileReset()));
+      expect(gen.next().value).toBeUndefined();
+    });
+
+    it('should treat a for_user session as target-user biodata mode even on the authenticated user route', () => {
+      const userAccount = {
+        username: 'admin',
+        other: 'data',
+      };
+      const countriesCodesList = [{ code: 'PK' }];
+      const biodata = [{ fieldName: 'preferred_calling_name', fieldValue: 'Trainee One' }];
+      const profileCompletionStatus = { complete: false, required: true };
+
+      getAuthenticatedUser.mockReturnValue(userAccount);
+      getBiodataTargetUserId.mockReturnValue('21');
+
+      const selectorData = {
+        userAccount,
+      };
+
+      const action = profileActions.fetchProfile('admin');
+      const gen = handleFetchProfile(action);
+      const result = [countriesCodesList, biodata, profileCompletionStatus];
+
+      expect(gen.next().value).toEqual(select(userAccountSelector));
+      expect(gen.next(selectorData).value).toEqual(put(profileActions.fetchProfileBegin()));
+      expect(gen.next().value).toEqual(all([
+        call(ProfileApiService.getCountryList),
+        call(ProfileApiService.getBiodataProfile),
+        call(ProfileApiService.getProfileCompletionStatus, 'admin'),
+      ]));
+      expect(gen.next(result).value)
+        .toEqual(put(profileActions.fetchProfileSuccess({
+          ...selectorData,
+          username: 'admin',
+          extendedProfile: biodata,
+          profileCompletionStatus,
+        }, {}, [], false, countriesCodesList)));
       expect(gen.next().value).toEqual(put(profileActions.fetchProfileReset()));
       expect(gen.next().value).toBeUndefined();
     });

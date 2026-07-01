@@ -42,8 +42,12 @@ import { buildSectionDraftFromExtendedProfile } from '../biodata/apiTransforms';
 export function* handleFetchProfile(action) {
   const { username } = action.payload;
   const userAccount = yield select(userAccountSelector);
-  const isAuthenticatedUserProfile = username === getAuthenticatedUser().username;
-  const isAdminActingOnTargetUser = Boolean(getBiodataTargetUserId()) && !isAuthenticatedUserProfile;
+  const biodataTargetUserId = getBiodataTargetUserId();
+  const isAuthenticatedUserProfile = (
+    username === getAuthenticatedUser().username
+    && !biodataTargetUserId
+  );
+  const isAdminActingOnTargetUser = Boolean(biodataTargetUserId);
   let preferences = {};
   let account = userAccount;
   let courseCertificates = null;

@@ -10,6 +10,7 @@ import {
   BIODATA_VALIDATE_PATH,
   getBiodataEndpointUrl,
   getConfiguredBiodataSections,
+  getRepeatableUiToApiFieldMap,
   getSectionEndpointConfig,
   getSectionRepeatableConfigs,
 } from '../biodata/apiConfig';
@@ -142,7 +143,9 @@ async function getFlatBiodataSection(section) {
   }
 
   try {
-    const { data } = await getHttpClient().get(getBiodataEndpointUrl(sectionEndpointConfig.flat.path, { includeTargetUser: true }));
+    const { data } = await getHttpClient().get(
+      getBiodataEndpointUrl(sectionEndpointConfig.flat.path, { includeTargetUser: true }),
+    );
     return data && typeof data === 'object' ? snakeCaseObject(data) : {};
   } catch (error) {
     if (isMissingBiodataResponse(error)) {
@@ -198,6 +201,16 @@ function dedupeRepeatableRows(endpoint, rows = []) {
   ];
 }
 
+function rowHasMeaningfulData(row, repeatable, uiToApiFieldMap = {}) {
+  const values = snakeCaseObject(row || {});
+
+  return (repeatable.columns || []).some(({ key, type }) => (
+    type === 'file'
+      ? Boolean(values?.[uiToApiFieldMap[key] || key])
+      : String(values?.[uiToApiFieldMap[key] || key] || '').trim().length > 0
+  ));
+}
+
 async function getRepeatableBiodataSection(section, repeatable, endpoint, flatResponse = {}) {
   if (shouldSkipRepeatableEndpoint(endpoint, flatResponse)) {
     return {
@@ -210,14 +223,20 @@ async function getRepeatableBiodataSection(section, repeatable, endpoint, flatRe
   try {
     const { data } = await getHttpClient().get(getBiodataEndpointUrl(endpoint.path, { includeTargetUser: true }));
     const rows = dedupeRepeatableRows(endpoint, Array.isArray(data) ? data : data?.results || []);
+    const uiToApiFieldMap = getRepeatableUiToApiFieldMap(section.id, repeatable.storageFieldName);
+    const meaningfulRows = rows.filter(row => rowHasMeaningfulData(row, repeatable, uiToApiFieldMap));
+    const hasMeaningfulRowData = meaningfulRows.length > 0;
     const metadataSource = Array.isArray(data) ? rows[0] : data;
     const rowMetadataSource = !metadataSource?.not_applicable && !metadataSource?.is_submitted
       ? rows.find(row => row?.not_applicable !== undefined || row?.is_submitted !== undefined)
       : null;
     const responseMetadata = rowMetadataSource || metadataSource || {};
+    const resolvedNotApplicable = hasMeaningfulRowData
+      ? false
+      : responseMetadata.not_applicable;
     const fallbackFields = {
-      ...(endpoint.fallbackNaFieldName && responseMetadata.not_applicable !== undefined
-        ? { [endpoint.fallbackNaFieldName]: Boolean(responseMetadata.not_applicable) }
+      ...(endpoint.fallbackNaFieldName && resolvedNotApplicable !== undefined
+        ? { [endpoint.fallbackNaFieldName]: Boolean(resolvedNotApplicable) }
         : {}),
       ...(responseMetadata.is_submitted !== undefined
         ? { [getSectionSubmittedFieldName(section.id)]: Boolean(responseMetadata.is_submitted) }
@@ -226,7 +245,7 @@ async function getRepeatableBiodataSection(section, repeatable, endpoint, flatRe
 
     return {
       storageFieldName: repeatable.storageFieldName,
-      rows: rows.map(row => snakeCaseObject(row)),
+      rows: meaningfulRows.map(row => snakeCaseObject(row)),
       fallbackFields,
     };
   } catch (error) {
@@ -278,13 +297,29 @@ async function getBiodataSectionProfile(sectionId) {
 async function updateRepeatableRows(endpoint, committedRows, draftRows) {
   const endpointPath = endpoint.path;
   const shouldPostRows = endpoint.rowMethod === 'post';
+  const shouldDeleteMissingRows = endpoint.allowDelete !== false && !shouldPostRows;
+  const normalizedDraftRows = draftRows.map((row, index) => {
+    if (row.backendId != null) {
+      return row;
+    }
+
+    const committedRow = committedRows[index];
+    if (!committedRow || committedRow.backendId == null) {
+      return row;
+    }
+
+    return {
+      ...row,
+      backendId: committedRow.backendId,
+    };
+  });
 
   if (endpoint.batchRows) {
-    if (draftRows.length === 0) {
+    if (normalizedDraftRows.length === 0) {
       return;
     }
 
-    const rowValues = draftRows.map(row => row.values);
+    const rowValues = normalizedDraftRows.map(row => row.values);
     const payload = buildBiodataRequestPayload(
       endpoint.batchPayloadKey ? { [endpoint.batchPayloadKey]: rowValues } : rowValues,
     );
@@ -304,7 +339,7 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
     return accumulator;
   }, {});
 
-  const draftRowMap = draftRows.reduce((accumulator, row) => {
+  const draftRowMap = normalizedDraftRows.reduce((accumulator, row) => {
     if (row.backendId != null) {
       accumulator[String(row.backendId)] = row;
     }
@@ -313,7 +348,7 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
 
   const operations = [];
 
-  draftRows.forEach((row) => {
+  normalizedDraftRows.forEach((row) => {
     const payload = buildBiodataRequestPayload(row.values);
     if (row.backendId != null && !shouldPostRows) {
       const url = getBiodataEndpointUrl(`${endpointPath}${row.backendId}/`, { includeTargetUser: true });
@@ -328,7 +363,7 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
     }
   });
 
-  if (!shouldPostRows) {
+  if (shouldDeleteMissingRows) {
     Object.keys(committedRowMap).forEach((backendId) => {
       if (!draftRowMap[backendId]) {
         operations.push(getHttpClient().delete(getBiodataEndpointUrl(`${endpointPath}${backendId}/`, { includeTargetUser: true })));
@@ -516,7 +551,9 @@ export async function getProfileCompletionStatus() {
 
   if (declarationEndpoint) {
     try {
-      const { data } = await getHttpClient().get(getBiodataEndpointUrl(declarationEndpoint, { includeTargetUser: true }));
+      const { data } = await getHttpClient().get(
+        getBiodataEndpointUrl(declarationEndpoint, { includeTargetUser: true }),
+      );
       complete = Boolean(snakeCaseObject(data || {}).is_submitted);
     } catch (error) {
       if (!isMissingBiodataResponse(error)) {
@@ -531,6 +568,56 @@ export async function getProfileCompletionStatus() {
     formType: 'biodata',
     profileUrl: null,
   };
+}
+
+function hasEntryValue(entry) {
+  const value = entry?.fieldValue;
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.keys(value).length > 0;
+  }
+
+  return String(value || '').trim().length > 0;
+}
+
+function hasLocalFallbackValue(entry) {
+  return Boolean(entry) && Object.prototype.hasOwnProperty.call(entry, 'fieldValue');
+}
+
+function shouldPreferLocalBooleanValue(existingEntry, localEntry) {
+  return typeof existingEntry?.fieldValue === 'boolean'
+    && typeof localEntry?.fieldValue === 'boolean'
+    && existingEntry.fieldValue !== localEntry.fieldValue;
+}
+
+function mergeSavedSectionProfileWithLocalFallback(savedSectionProfile = [], localSectionPayload = []) {
+  const mergedEntriesByName = new Map(
+    (savedSectionProfile || []).map(entry => [entry.fieldName, entry]),
+  );
+
+  (localSectionPayload || []).forEach((entry) => {
+    const existingEntry = mergedEntriesByName.get(entry.fieldName);
+
+    if (
+      shouldPreferLocalBooleanValue(existingEntry, entry)
+      || !existingEntry
+      || !hasEntryValue(existingEntry)
+    ) {
+      if (hasLocalFallbackValue(entry)) {
+        mergedEntriesByName.set(entry.fieldName, entry);
+      }
+    }
+  });
+
+  return Array.from(mergedEntriesByName.values());
 }
 
 export async function saveOutsideHrmsInstructorProfile(sectionData, username = null) {
@@ -615,7 +702,10 @@ export async function saveBiodataSection(sectionId, sectionData, committedData, 
 
     const savedSectionProfile = sectionEndpointConfig.refreshAfterSave === false
       ? getSectionPayload(section, sectionData)
-      : await getBiodataSectionProfile(sectionId);
+      : mergeSavedSectionProfileWithLocalFallback(
+        await getBiodataSectionProfile(sectionId),
+        getSectionPayload(section, sectionData),
+      );
     const profileCompletionStatus = sectionId === DECLARATION_SECTION_ID
       && sectionData?.[DECLARATION_CONFIRMED_FIELD]
       ? await saveRequiredProfileCompletion()

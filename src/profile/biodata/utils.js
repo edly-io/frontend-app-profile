@@ -30,6 +30,11 @@ const EDUCATION_RECORDS_FIELD_NAME = 'education_records';
 const FOREIGN_VISITS_SECTION_ID = 'foreignVisits';
 const FOREIGN_VISITS_FIELD_NAME = 'foreign_visits';
 const GOVERNMENT_SERVICE_DETAILS_SECTION_ID = 'governmentServiceDetails';
+const GOVERNMENT_SERVICE_DATE_FIELD_NAMES = [
+  'date_joining_any_govt_service_before_csa',
+  'date_joining_civil_services_academy_lahore',
+  'date_joining_transfer_inland_revenue_service',
+];
 const OTHER_INCOME_SOURCE_FIELD_NAME = 'other_income_source_besides_salary';
 const OTHER_INCOME_DETAILS_FIELD_NAME = 'other_income_details';
 const EDUCATION_ATTENDED_TO_DATE_MESSAGE = 'Attended To must be later than Attended From.';
@@ -47,8 +52,50 @@ export const BIODATA_DATE_VALIDATION_MESSAGES = [
 const DATE_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CNIC_FORMAT = /^\d{13}$/;
+const YEAR_FORMAT = /^\d{4}$/;
+const NUMERIC_ONLY_FORMAT = /^\d+$/;
+const TEXT_WITH_BASIC_PUNCTUATION_FORMAT = /^[\p{L}\p{M}\p{N}\s.,'()/&-]+$/u;
+const LETTERS_AND_SPACES_FORMAT = /^[\p{L}\p{M}\s]+$/u;
 const PAKISTAN_MOBILE_FORMAT = /^(?:\+92|92|0)3[0-9]{9}$/;
-const PAKISTAN_MOBILE_VALIDATION_MESSAGE = 'Enter a valid Pakistan mobile number, e.g. +923001234567.';
+const PAKISTAN_MOBILE_VALIDATION_MESSAGE = 'Enter a valid Pakistani mobile number in the format +923XXXXXXXXX.';
+const NO_FUTURE_DATE_MESSAGE = 'Date cannot be in the future.';
+const NON_NEGATIVE_NUMBER_MESSAGE = 'Value cannot be negative.';
+const FIELD_NAMES_REQUIRING_BASIC_TEXT_CHARACTERS = new Set([
+  'district_of_domicile',
+  'province_of_domicile',
+  'religion',
+  'educational_institute',
+  'grade_division',
+  'subjects_studied',
+  'language_name',
+  'subject',
+  'first_employment_gap_details_after_education',
+  'hobbies',
+]);
+const FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS = new Set([
+  'css_chances_availed',
+  'last_chance_date_year',
+  'year',
+  'marks_obtained',
+  'total_marks',
+]);
+const FIELD_NAMES_REQUIRING_VALID_YEAR = new Set([
+  'year_of_passing',
+  'last_chance_date_year',
+  'year',
+]);
+const FLAT_DATE_FIELDS_WITH_NO_FUTURE_DATES = new Set([
+  'last_annual_medical_checkup',
+  ...GOVERNMENT_SERVICE_DATE_FIELD_NAMES,
+]);
+const REPEATABLE_DATE_FIELDS_WITH_NO_FUTURE_DATES = new Set([
+  `${EDUCATION_RECORDS_FIELD_NAME}.attended_from`,
+  `${EDUCATION_RECORDS_FIELD_NAME}.attended_to`,
+  `${EMPLOYMENT_RECORDS_FIELD_NAME}.from`,
+  `${EMPLOYMENT_RECORDS_FIELD_NAME}.to`,
+  `${FOREIGN_VISITS_FIELD_NAME}.from`,
+  `${FOREIGN_VISITS_FIELD_NAME}.to`,
+]);
 const PAKISTAN_MOBILE_FIELD_NAMES = [
   'permanent_phone_number',
   'present_phone_number',
@@ -58,9 +105,40 @@ const PAKISTAN_MOBILE_FIELD_NAMES = [
   'mother_phone_number',
   'spouse_phone',
 ];
+const FIELD_NAMES_ALLOWING_ONLY_DIGITS = new Set([
+  'year_of_passing',
+  'last_chance_date_year',
+  'year',
+  ...PAKISTAN_MOBILE_FIELD_NAMES,
+]);
+const TEXT_FIELDS_EXEMPT_FROM_STRICT_TEXT_RULES = new Set([
+  'contact_email',
+  'identity_card_number',
+  'year_of_passing',
+  'css_roll_number',
+  'css_merit_position',
+  'merit_position_if_qualified',
+  'last_chance_date_year',
+  ...PAKISTAN_MOBILE_FIELD_NAMES,
+]);
+const FLEXIBLE_TEXT_FIELD_NAMES = new Set([
+  'permanent_residential_address',
+  'present_residential_address',
+  'contact_address_lahore',
+  'father_address',
+  'mother_address',
+  'spouse_address',
+  'address',
+  'distinctions',
+  'scholarships',
+  'awards',
+  'game_distinctions_awards',
+]);
 const CONDITIONAL_FILE_FIELD_DEPENDENCIES = {
   domicile_file: 'district_of_domicile',
 };
+
+export { FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS, FIELD_NAMES_REQUIRING_VALID_YEAR };
 
 export function getSectionSubmittedFieldName(sectionId) {
   return `${sectionId}_is_submitted`;
@@ -264,7 +342,7 @@ function normalizeCnicValue(value) {
 }
 
 function compactPhoneValue(value) {
-  return String(value || '').trim();
+  return String(value || '').replace(/\D+/g, '');
 }
 
 export function isValidPakistanMobileNumber(value) {
@@ -275,10 +353,6 @@ export function normalizePakistanMobileValue(value) {
   const compactValue = compactPhoneValue(value);
 
   if (!isValidPakistanMobileNumber(compactValue)) {
-    return String(value || '').trim();
-  }
-
-  if (compactValue.startsWith('+92')) {
     return compactValue;
   }
 
@@ -683,12 +757,111 @@ function isValidDateValue(value) {
   return DATE_FORMAT.test(String(value ?? '').trim());
 }
 
+function getTodayDateString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function containsLetter(value) {
+  return /\p{L}/u.test(String(value || '').trim());
+}
+
+function containsDigit(value) {
+  return /\p{N}/u.test(String(value || '').trim());
+}
+
+export function fieldDisallowsDigits(fieldName) {
+  return !TEXT_FIELDS_EXEMPT_FROM_STRICT_TEXT_RULES.has(fieldName)
+    && !FLEXIBLE_TEXT_FIELD_NAMES.has(fieldName);
+}
+
+export function fieldDisallowsSpecialCharacters(fieldName) {
+  return !TEXT_FIELDS_EXEMPT_FROM_STRICT_TEXT_RULES.has(fieldName)
+    && !FLEXIBLE_TEXT_FIELD_NAMES.has(fieldName);
+}
+
+export function fieldAllowsOnlyDigits(fieldName) {
+  return FIELD_NAMES_ALLOWING_ONLY_DIGITS.has(fieldName);
+}
+
+export function removeDigitsFromValue(value) {
+  return String(value ?? '').replace(/\p{N}+/gu, '');
+}
+
+export function removeNonDigitsFromValue(value) {
+  return String(value ?? '').replace(/\D+/g, '');
+}
+
+export function removeSpecialCharactersFromValue(value) {
+  return String(value ?? '').replace(/[^\p{L}\p{M}\s]+/gu, '');
+}
+
+function isNumericOnlyValue(value) {
+  return NUMERIC_ONLY_FORMAT.test(String(value || '').trim());
+}
+
+function isFutureDateValue(value) {
+  const trimmedValue = String(value || '').trim();
+
+  if (!isValidDateValue(trimmedValue)) {
+    return false;
+  }
+
+  return trimmedValue > getTodayDateString();
+}
+
+function isValidYearValue(value) {
+  const trimmedValue = String(value || '').trim();
+
+  if (!YEAR_FORMAT.test(trimmedValue)) {
+    return false;
+  }
+
+  const numericYear = Number(trimmedValue);
+  const currentYear = Number(getTodayDateString().slice(0, 4));
+
+  return numericYear > 0 && numericYear <= currentYear;
+}
+
+function validateTextFieldValue(fieldName, label, value) {
+  const trimmedValue = String(value ?? '').trim();
+
+  if (!trimmedValue) {
+    return '';
+  }
+
+  if (fieldDisallowsDigits(fieldName) && (isNumericOnlyValue(trimmedValue) || !containsLetter(trimmedValue))) {
+    return `${label} cannot be numbers only.`;
+  }
+
+  if (fieldDisallowsDigits(fieldName) && containsDigit(trimmedValue)) {
+    return `${label} cannot contain numbers.`;
+  }
+
+  if (fieldDisallowsSpecialCharacters(fieldName) && !LETTERS_AND_SPACES_FORMAT.test(trimmedValue)) {
+    return `${label} can only contain letters and spaces.`;
+  }
+
+  if (
+    FIELD_NAMES_REQUIRING_BASIC_TEXT_CHARACTERS.has(fieldName)
+    && !TEXT_WITH_BASIC_PUNCTUATION_FORMAT.test(trimmedValue)
+  ) {
+    return `Enter a valid ${label.toLowerCase()}.`;
+  }
+
+  return '';
+}
+
 function getYearFromDateValue(value) {
   return String(value || '').slice(0, 4);
 }
 
 function validateFieldFormat(field, value) {
   const trimmedValue = String(value ?? '').trim();
+  const isTextLikeField = (
+    field.type === PROFILE_FIELD_TYPES.TEXT
+    || field.type === PROFILE_FIELD_TYPES.TEXTAREA
+    || !field.type
+  );
 
   if (!trimmedValue) {
     return '';
@@ -696,6 +869,14 @@ function validateFieldFormat(field, value) {
 
   if (field.type === PROFILE_FIELD_TYPES.DATE && !DATE_FORMAT.test(trimmedValue)) {
     return 'Enter a valid date in YYYY-MM-DD format.';
+  }
+
+  if (
+    field.type === PROFILE_FIELD_TYPES.DATE
+    && FLAT_DATE_FIELDS_WITH_NO_FUTURE_DATES.has(field.fieldName)
+    && isFutureDateValue(trimmedValue)
+  ) {
+    return NO_FUTURE_DATE_MESSAGE;
   }
 
   if (field.fieldName === 'identity_card_number' && !CNIC_FORMAT.test(trimmedValue)) {
@@ -712,6 +893,27 @@ function validateFieldFormat(field, value) {
 
   if (field.type === PROFILE_FIELD_TYPES.NUMBER && Number.isNaN(Number(trimmedValue))) {
     return `${field.label} must be a number.`;
+  }
+
+  if (isTextLikeField) {
+    const textFieldError = validateTextFieldValue(field.fieldName, field.label, trimmedValue);
+    if (textFieldError) {
+      return textFieldError;
+    }
+  }
+
+  if (
+    FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS.has(field.fieldName)
+    && Number(trimmedValue) < 0
+  ) {
+    return NON_NEGATIVE_NUMBER_MESSAGE;
+  }
+
+  if (
+    FIELD_NAMES_REQUIRING_VALID_YEAR.has(field.fieldName)
+    && !isValidYearValue(trimmedValue)
+  ) {
+    return `${field.label} must be a valid year and cannot be in the future.`;
   }
 
   return '';
@@ -751,6 +953,14 @@ export function getRepeatableFieldValidationError(repeatable, row, column) {
     return getRepeatableFieldError(repeatable, row, column.key, formatError);
   }
 
+  if (
+    column.type === PROFILE_FIELD_TYPES.DATE
+    && REPEATABLE_DATE_FIELDS_WITH_NO_FUTURE_DATES.has(`${repeatable.storageFieldName}.${column.key}`)
+    && isFutureDateValue(value)
+  ) {
+    return getRepeatableFieldError(repeatable, row, column.key, NO_FUTURE_DATE_MESSAGE);
+  }
+
   if (repeatable.storageFieldName === CSS_SUBJECT_MARKS_FIELD_NAME && column.key === 'total_marks') {
     const expectedTotalMarks = isCssVivaSubject(row) ? CSS_VIVA_TOTAL_MARKS : CSS_SUBJECT_TOTAL_MARKS;
 
@@ -787,7 +997,7 @@ function validateEducationRowDateRules(repeatable, row) {
 
   if (
     isValidDateValue(attendedTo)
-    && yearOfPassing
+    && isValidYearValue(yearOfPassing)
     && Number(yearOfPassing) < Number(getYearFromDateValue(attendedTo))
   ) {
     const error = getRepeatableFieldError(repeatable, row, 'year_of_passing', EDUCATION_YEAR_OF_PASSING_MESSAGE);
@@ -949,6 +1159,32 @@ export function validateSectionDraft(section, sectionData) {
           userMessage: `Subject total marks must add up to ${CSS_EXAM_TOTAL_MARKS}.`,
         };
       }
+
+      const duplicateSubjectRows = filledElectiveRows.reduce((accumulator, row) => {
+        const normalizedSubject = String(row.subject || '').trim().toLowerCase();
+
+        if (!normalizedSubject) {
+          return accumulator;
+        }
+
+        accumulator[normalizedSubject] = accumulator[normalizedSubject] || [];
+        accumulator[normalizedSubject].push(row);
+        return accumulator;
+      }, {});
+
+      Object.values(duplicateSubjectRows)
+        .filter(subjectRows => subjectRows.length > 1)
+        .forEach((subjectRows) => {
+          subjectRows.forEach((row) => {
+            const error = getRepeatableFieldError(
+              repeatable,
+              row,
+              'subject',
+              'Duplicate elective subjects are not allowed.',
+            );
+            validationErrors[error.fieldName] = { userMessage: error.userMessage };
+          });
+        });
     }
   });
 
