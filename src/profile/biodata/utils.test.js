@@ -1,5 +1,10 @@
 import { BIODATA_SECTION_MAP } from './config';
-import { sectionIsComplete, validateSectionDraft } from './utils';
+import {
+  getSectionErrorFields,
+  getSectionErrorSummary,
+  sectionIsComplete,
+  validateSectionDraft,
+} from './utils';
 
 describe('biodata utils', () => {
   describe('validateSectionDraft', () => {
@@ -77,6 +82,83 @@ describe('biodata utils', () => {
       expect(result['education_records.row-1.subjects_studied']).toEqual({
         userMessage: 'Subjects Studied cannot be numbers only.',
       });
+    });
+
+    it('rejects a symbol-only educational institute instead of silently accepting it', () => {
+      const result = validateSectionDraft(BIODATA_SECTION_MAP.education, {
+        education_records: [{
+          rowId: 'row-1',
+          educational_institute: '----',
+          attended_from: '2015-01-01',
+          attended_to: '2018-01-01',
+          examination: 'Bachelors',
+          year_of_passing: '2018',
+          grade_division: 'First Division',
+          subjects_studied: 'Computer Science',
+          education_degree_attachment: 'degree.pdf',
+        }],
+      });
+
+      expect(result['education_records.row-1.educational_institute']).toEqual({
+        userMessage: 'Educational Institute must contain at least one letter.',
+      });
+    });
+
+    it('rejects a symbol-only CSS roll number', () => {
+      const result = validateSectionDraft(BIODATA_SECTION_MAP.cssExamDetails, {
+        css_roll_number: '----',
+        css_merit_position: '1',
+        css_chances_availed: '1',
+        applied_for_forthcoming_css_exam: 'Yes',
+        intend_to_sit_for_forthcoming_css_exam: 'No',
+        last_chance_date_year: '2026',
+      });
+
+      expect(result.css_roll_number).toEqual({
+        userMessage: 'CSS Roll Number cannot be only symbols.',
+      });
+    });
+
+    it('rejects a symbol-only present residential address', () => {
+      const result = validateSectionDraft(BIODATA_SECTION_MAP.contactInformation, {
+        permanent_residential_address: 'Main Street',
+        permanent_phone_number: '03001234567',
+        present_residential_address: '-=--',
+        present_phone_number: '03001234567',
+        contact_address_lahore: 'Lahore',
+        lahore_phone_number: '03001234567',
+        mobile_number: '03001234567',
+        contact_email: 'valid@example.com',
+      });
+
+      expect(result.present_residential_address).toEqual({
+        userMessage: 'Present residential address must contain at least one letter.',
+      });
+    });
+
+    it('allows digits in employment gap details now that it needs real dates', () => {
+      const result = validateSectionDraft(BIODATA_SECTION_MAP.employment, {
+        is_first_job: 'Yes',
+        first_employment_gap_details_after_education: 'Prepared for CSS exam from 2019 to 2021',
+      });
+
+      expect(result.first_employment_gap_details_after_education).toBeUndefined();
+    });
+
+    it('does not apply free-text format rules to the purpose-of-visit select field', () => {
+      const result = validateSectionDraft(BIODATA_SECTION_MAP.foreignVisits, {
+        foreign_visits_not_applicable: false,
+        foreign_visits: [{
+          rowId: 'visit-1',
+          country: 'Turkey',
+          purpose_of_visit: 'training',
+          self_or_sponsored_visit: 'Self',
+          from: '2022-05-01',
+          to: '2022-05-10',
+        }],
+      });
+
+      expect(result['foreign_visits.visit-1.purpose_of_visit']).toBeUndefined();
     });
 
     it('rejects future education dates and future year of passing', () => {
@@ -411,6 +493,51 @@ describe('biodata utils', () => {
         competitive_examinations_not_applicable: true,
         competitiveExaminations_is_submitted: true,
       })).toBe(true);
+    });
+
+    it('does not treat a foreign visit row as complete when a required select is empty', () => {
+      expect(sectionIsComplete(BIODATA_SECTION_MAP.foreignVisits, {
+        foreign_visits_not_applicable: false,
+        foreign_visits: [{
+          rowId: 'visit-1',
+          country: 'U.A.E',
+          purpose_of_visit: 'self',
+          self_or_sponsored_visit: '',
+          from: '2023-02-08',
+          to: '2023-02-10',
+        }],
+      })).toBe(false);
+    });
+
+    it('treats a foreign visit row as complete once every required field is filled', () => {
+      expect(sectionIsComplete(BIODATA_SECTION_MAP.foreignVisits, {
+        foreign_visits_not_applicable: false,
+        foreign_visits: [{
+          rowId: 'visit-1',
+          country: 'U.A.E',
+          purpose_of_visit: 'self',
+          self_or_sponsored_visit: 'self',
+          from: '2023-02-08',
+          to: '2023-02-10',
+        }],
+      })).toBe(true);
+    });
+  });
+
+  describe('getSectionErrorSummary', () => {
+    it('shows the exact elective-subject-count message at the top instead of a generic field name', () => {
+      const errors = {
+        css_subject_marks: {
+          userMessage: 'Add exactly 6 elective subjects.',
+        },
+      };
+
+      expect(getSectionErrorSummary(BIODATA_SECTION_MAP.cssExamDetails, errors, {}))
+        .toBe('Add exactly 6 elective subjects.');
+      expect(getSectionErrorFields(BIODATA_SECTION_MAP.cssExamDetails, errors, {})).toContainEqual({
+        fieldName: 'css_subject_marks',
+        label: 'Elective subjects',
+      });
     });
   });
 });

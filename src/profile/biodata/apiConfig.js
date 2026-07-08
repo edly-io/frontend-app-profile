@@ -97,7 +97,6 @@ export const BIODATA_SECTION_ENDPOINTS = {
     repeatables: {
       education_records: {
         path: 'v1/education/',
-        allowDelete: false,
         submissionSupported: false,
         fieldMap: {
           institute: 'educational_institute',
@@ -206,7 +205,6 @@ export const BIODATA_SECTION_ENDPOINTS = {
     repeatables: {
       occupational_service_group_preferences: {
         path: 'v1/service-group-preferences/',
-        allowDelete: false,
         dedupeBy: 'service_group',
         submissionSupported: false,
         fieldMap: {
@@ -343,7 +341,6 @@ export const BIODATA_SECTION_ENDPOINTS = {
       submissionSupported: true,
       fieldMap: {
         confirmed: 'declaration_confirmed',
-        date: 'declaration_date_demo',
       },
     },
   },

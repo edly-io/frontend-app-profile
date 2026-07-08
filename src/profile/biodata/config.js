@@ -43,6 +43,12 @@ const PROFICIENCY_OPTIONS = [
   { value: 'native', label: 'Native' },
 ];
 
+const SELF_OR_SPONSORED_VISIT_OPTIONS = [
+  { value: '', label: 'Select self or sponsored' },
+  { value: 'self', label: 'Self' },
+  { value: 'sponsored', label: 'Sponsored' },
+];
+
 export const CSS_COMPULSORY_SUBJECT_MARKS = [
   { subject: 'English Essay', total_marks: '100', marks_obtained: '' },
   { subject: 'English Precise and Composition', total_marks: '100', marks_obtained: '' },
@@ -427,8 +433,12 @@ export const BIODATA_SECTIONS = [
         },
         columns: [
           { key: 'country', label: 'Country', placeholder: 'Enter country' },
-          { key: 'purpose_of_visit', label: 'Purpose of visit', placeholder: 'Enter purpose of visit' },
-          { key: 'self_or_sponsored_visit', label: 'Self or sponsored visit', placeholder: 'Enter self or sponsored' },
+          {
+            key: 'purpose_of_visit', label: 'Purpose of visit', type: PROFILE_FIELD_TYPES.TEXT,
+          },
+          {
+            key: 'self_or_sponsored_visit', label: 'Self or sponsored visit', type: PROFILE_FIELD_TYPES.SELECT, options: SELF_OR_SPONSORED_VISIT_OPTIONS,
+          },
           { key: 'from', label: 'From', type: PROFILE_FIELD_TYPES.DATE },
           { key: 'to', label: 'To', type: PROFILE_FIELD_TYPES.DATE },
         ],

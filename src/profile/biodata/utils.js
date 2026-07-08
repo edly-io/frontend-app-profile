@@ -69,8 +69,24 @@ const FIELD_NAMES_REQUIRING_BASIC_TEXT_CHARACTERS = new Set([
   'subjects_studied',
   'language_name',
   'subject',
-  'first_employment_gap_details_after_education',
   'hobbies',
+  'department_name',
+  'games_played',
+  'father_education',
+  'father_occupation',
+  'mother_education',
+  'mother_occupation',
+  'spouse_education',
+  'spouse_occupation',
+  'examination',
+  'organization_office',
+  'designation_place_of_posting',
+  'agency_holding_examination',
+  'service_group',
+  'country',
+  'education',
+  'occupation',
+  'relationship',
 ]);
 const FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS = new Set([
   'css_chances_availed',
@@ -121,6 +137,13 @@ const TEXT_FIELDS_EXEMPT_FROM_STRICT_TEXT_RULES = new Set([
   'last_chance_date_year',
   ...PAKISTAN_MOBILE_FIELD_NAMES,
 ]);
+// Exempt fields that are still free-form identifiers (not backed by their own format regex like
+// email/CNIC/phone/year), so they still need to reject symbol-only garbage such as "----".
+const EXEMPT_IDENTIFIER_FIELD_NAMES = new Set([
+  'css_roll_number',
+  'css_merit_position',
+  'merit_position_if_qualified',
+]);
 const FLEXIBLE_TEXT_FIELD_NAMES = new Set([
   'permanent_residential_address',
   'present_residential_address',
@@ -133,6 +156,11 @@ const FLEXIBLE_TEXT_FIELD_NAMES = new Set([
   'scholarships',
   'awards',
   'game_distinctions_awards',
+  'first_employment_gap_details_after_education',
+  'other_income_details',
+  'result_details',
+  'examination_name',
+  'designation',
 ]);
 const CONDITIONAL_FILE_FIELD_DEPENDENCIES = {
   domicile_file: 'district_of_domicile',
@@ -776,6 +804,7 @@ export function fieldDisallowsDigits(fieldName) {
 
 export function fieldDisallowsSpecialCharacters(fieldName) {
   return !TEXT_FIELDS_EXEMPT_FROM_STRICT_TEXT_RULES.has(fieldName)
+    && !FIELD_NAMES_REQUIRING_BASIC_TEXT_CHARACTERS.has(fieldName)
     && !FLEXIBLE_TEXT_FIELD_NAMES.has(fieldName);
 }
 
@@ -829,23 +858,43 @@ function validateTextFieldValue(fieldName, label, value) {
     return '';
   }
 
-  if (fieldDisallowsDigits(fieldName) && (isNumericOnlyValue(trimmedValue) || !containsLetter(trimmedValue))) {
+  // Exempt fields either have their own dedicated format check elsewhere (email, CNIC, phone,
+  // year) or are free-form identifiers (roll number, merit position) that still shouldn't accept
+  // symbol-only garbage like "----".
+  if (TEXT_FIELDS_EXEMPT_FROM_STRICT_TEXT_RULES.has(fieldName)) {
+    if (
+      EXEMPT_IDENTIFIER_FIELD_NAMES.has(fieldName)
+      && !containsLetter(trimmedValue)
+      && !containsDigit(trimmedValue)
+    ) {
+      return `${label} cannot be only symbols.`;
+    }
+    return '';
+  }
+
+  if (FLEXIBLE_TEXT_FIELD_NAMES.has(fieldName)) {
+    return containsLetter(trimmedValue) ? '' : `${label} must contain at least one letter.`;
+  }
+
+  // Every remaining tier (strict default, and basic) disallows digits entirely.
+  if (isNumericOnlyValue(trimmedValue)) {
     return `${label} cannot be numbers only.`;
   }
 
-  if (fieldDisallowsDigits(fieldName) && containsDigit(trimmedValue)) {
+  if (containsDigit(trimmedValue)) {
     return `${label} cannot contain numbers.`;
   }
 
-  if (fieldDisallowsSpecialCharacters(fieldName) && !LETTERS_AND_SPACES_FORMAT.test(trimmedValue)) {
-    return `${label} can only contain letters and spaces.`;
-  }
+  const isBasicTextField = FIELD_NAMES_REQUIRING_BASIC_TEXT_CHARACTERS.has(fieldName);
+  const allowedFormat = isBasicTextField ? TEXT_WITH_BASIC_PUNCTUATION_FORMAT : LETTERS_AND_SPACES_FORMAT;
 
-  if (
-    FIELD_NAMES_REQUIRING_BASIC_TEXT_CHARACTERS.has(fieldName)
-    && !TEXT_WITH_BASIC_PUNCTUATION_FORMAT.test(trimmedValue)
-  ) {
-    return `Enter a valid ${label.toLowerCase()}.`;
+  if (!allowedFormat.test(trimmedValue)) {
+    return isBasicTextField
+      ? `${label} can only contain letters, numbers, and spaces.`
+      : `${label} can only contain letters and spaces.`;
+  }
+  if (isBasicTextField && !containsLetter(trimmedValue)) {
+    return `${label} must contain at least one letter.`;
   }
 
   return '';
@@ -1490,6 +1539,11 @@ export function sectionIsComplete(section, sectionData) {
     locallyComplete = employmentHasRequiredValues(section, sectionData);
   }
 
+  if (locallyComplete) {
+    const sanitizedData = getSanitizedSectionData(section, sectionData);
+    locallyComplete = Object.keys(validateSectionDraft(section, sanitizedData)).length === 0;
+  }
+
   const submittedFieldName = getSectionSubmittedFieldName(section.id);
 
   if (Object.prototype.hasOwnProperty.call(sectionData || {}, submittedFieldName)) {
@@ -1595,7 +1649,10 @@ export function getSectionErrorFields(section, errors = {}, sectionData = null) 
     ...(visibleRepeatables.flatMap((repeatable) => [
       {
         fieldName: repeatable.storageFieldName,
-        label: repeatable.itemLabel,
+        label: (
+          section.id === CSS_EXAM_DETAILS_SECTION_ID
+          && repeatable.storageFieldName === CSS_SUBJECT_MARKS_FIELD_NAME
+        ) ? 'Elective subjects' : repeatable.itemLabel,
       },
       ...repeatable.columns.map(({ key, label }) => ({
         fieldName: key,
@@ -1613,6 +1670,14 @@ export function getSectionErrorFields(section, errors = {}, sectionData = null) 
 }
 
 export function getSectionErrorSummary(section, errors = {}, sectionData = null) {
+  const repeatableGroupError = (section.repeatables || []).find(
+    (repeatable) => errors[repeatable.storageFieldName]?.userMessage,
+  );
+
+  if (repeatableGroupError) {
+    return errors[repeatableGroupError.storageFieldName].userMessage;
+  }
+
   const errorFields = getSectionErrorFields(section, errors, sectionData);
 
   if (errorFields.length === 0 && getSectionError(section, errors)) {
