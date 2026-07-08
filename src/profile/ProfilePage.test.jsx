@@ -133,7 +133,7 @@ describe('<ProfilePage />', () => {
   });
 
   describe('Renders correctly in various states', () => {
-    it('app loading', () => {
+    it('app loading', async () => {
       const contextValue = {
         authenticatedUser: { userId: null, username: null, administrator: false },
         config: baseTestConfig,
@@ -145,10 +145,15 @@ describe('<ProfilePage />', () => {
         />
       );
       const { container: tree } = render(component);
+
+      await waitFor(() => {
+        expect(screen.getByText('Profile loading...')).toBeInTheDocument();
+      });
+
       expect(tree).toMatchSnapshot();
     });
 
-    it('viewing own profile', () => {
+    it('viewing own profile', async () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
         config: baseTestConfig,
@@ -160,10 +165,15 @@ describe('<ProfilePage />', () => {
         />
       );
       const { container: tree } = render(component);
+
+      await waitFor(() => {
+        expect(screen.getAllByText('Basic Information').length).toBeGreaterThan(0);
+      });
+
       expect(tree).toMatchSnapshot();
     });
 
-    it('viewing other profile with all fields', () => {
+    it('viewing other profile with all fields', async () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
         config: baseTestConfig,
@@ -200,10 +210,15 @@ describe('<ProfilePage />', () => {
         />
       );
       const { container: tree } = render(component);
+
+      await waitFor(() => {
+        expect(screen.getByText('verified')).toBeInTheDocument();
+      });
+
       expect(tree).toMatchSnapshot();
     });
 
-    it('without credentials service', () => {
+    it('without credentials service', async () => {
       const config = { ...baseTestConfig, CREDENTIALS_BASE_URL: '' };
 
       const contextValue = {
@@ -217,10 +232,15 @@ describe('<ProfilePage />', () => {
         />
       );
       const { container: tree } = render(component);
+
+      await waitFor(() => {
+        expect(screen.getAllByText('Basic Information').length).toBeGreaterThan(0);
+      });
+
       expect(tree).toMatchSnapshot();
     });
 
-    it('successfully redirected to not found page', () => {
+    it('successfully redirected to not found page', async () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
         config: baseTestConfig,
@@ -235,8 +255,12 @@ describe('<ProfilePage />', () => {
         />
       );
       const { container: tree } = render(component);
+
+      await waitFor(() => {
+        expect(navigate).toHaveBeenCalledWith('/notfound');
+      });
+
       expect(tree).toMatchSnapshot();
-      expect(navigate).toHaveBeenCalledWith('/notfound');
     });
   });
 
