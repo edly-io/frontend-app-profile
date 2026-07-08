@@ -1,4 +1,4 @@
-import { getConfig } from '@edx/frontend-platform';
+import { getConfig, setConfig } from '@edx/frontend-platform';
 import * as analytics from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppContext } from '@edx/frontend-platform/react';
@@ -43,9 +43,17 @@ const requiredProfilePageProps = {
   params: { username: 'staff' },
 };
 
+const baseTestConfig = {
+  ...getConfig(),
+  CREDENTIALS_BASE_URL: 'http://localhost:18150',
+  LMS_BASE_URL: 'http://localhost:18000',
+  ACCOUNT_SETTINGS_URL: 'http://localhost:18000/account/settings',
+  LANGUAGE_PREFERENCE_COOKIE_NAME: 'yum',
+};
+
 Object.defineProperty(global.document, 'cookie', {
   writable: true,
-  value: `${getConfig().LANGUAGE_PREFERENCE_COOKIE_NAME}=en`,
+  value: `${baseTestConfig.LANGUAGE_PREFERENCE_COOKIE_NAME}=en`,
 });
 
 jest.mock('@edx/frontend-platform/auth', () => ({
@@ -67,12 +75,13 @@ configureI18n({
   loggingService: { logError: jest.fn() },
   config: {
     ENVIRONMENT: 'production',
-    LANGUAGE_PREFERENCE_COOKIE_NAME: 'yum',
+    LANGUAGE_PREFERENCE_COOKIE_NAME: baseTestConfig.LANGUAGE_PREFERENCE_COOKIE_NAME,
   },
   messages,
 });
 
 beforeEach(() => {
+  setConfig(baseTestConfig);
   analytics.sendTrackingLogEvent.mockReset();
   useNavigate.mockReset();
   getAuthenticatedHttpClient.mockReset();
@@ -121,7 +130,7 @@ describe('<ProfilePage />', () => {
     it('app loading', () => {
       const contextValue = {
         authenticatedUser: { userId: null, username: null, administrator: false },
-        config: getConfig(),
+        config: baseTestConfig,
       };
       const component = (
         <ProfilePageWrapper
@@ -136,7 +145,7 @@ describe('<ProfilePage />', () => {
     it('viewing own profile', () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
-        config: getConfig(),
+        config: baseTestConfig,
       };
       const component = (
         <ProfilePageWrapper
@@ -151,7 +160,7 @@ describe('<ProfilePage />', () => {
     it('viewing other profile with all fields', () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
-        config: getConfig(),
+        config: baseTestConfig,
       };
       const component = (
         <ProfilePageWrapper
@@ -189,12 +198,11 @@ describe('<ProfilePage />', () => {
     });
 
     it('without credentials service', () => {
-      const config = getConfig();
-      config.CREDENTIALS_BASE_URL = '';
+      const config = { ...baseTestConfig, CREDENTIALS_BASE_URL: '' };
 
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
-        config: getConfig(),
+        config,
       };
       const component = (
         <ProfilePageWrapper
@@ -209,7 +217,7 @@ describe('<ProfilePage />', () => {
     it('successfully redirected to not found page', () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
-        config: getConfig(),
+        config: baseTestConfig,
       };
       const navigate = jest.fn();
       useNavigate.mockReturnValue(navigate);
@@ -230,7 +238,7 @@ describe('<ProfilePage />', () => {
     it('calls sendTrackingLogEvent when mounting', () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
-        config: getConfig(),
+        config: baseTestConfig,
       };
       render(
         <ProfilePageWrapper
@@ -251,7 +259,7 @@ describe('<ProfilePage />', () => {
     it('navigates to notfound on save error with no username', () => {
       const contextValue = {
         authenticatedUser: { userId: 123, username: 'staff', administrator: true },
-        config: getConfig(),
+        config: baseTestConfig,
       };
       const navigate = jest.fn();
       useNavigate.mockReturnValue(navigate);

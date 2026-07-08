@@ -30,10 +30,18 @@ const provider = new PactV3({
   provider: 'edx-platform',
 });
 
+let baseConfig = {};
+
 describe('getAccount for one username', () => {
   beforeAll(async () => {
     initializeMockApp();
+    baseConfig = JSON.parse(JSON.stringify(getConfig()));
   });
+
+  afterEach(() => {
+    setConfig(baseConfig);
+  });
+
   it('returns a HTTP 200 and user information', async () => {
     const username200 = 'staff';
     await provider.addInteraction({
