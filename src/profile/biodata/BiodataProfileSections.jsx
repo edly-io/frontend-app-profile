@@ -351,12 +351,14 @@ const BiodataProfileSections = () => {
         [pendingSaveStepId]: true,
       }));
       setActiveStepId(pendingSaveStepId);
-      setPendingScrollSectionId(pendingSaveStepId);
+      if (activeStepId !== pendingSaveStepId) {
+        setPendingScrollSectionId(pendingSaveStepId);
+      }
       setPendingSaveStepId(null);
     }
   }, [
     accountUsername, dispatch, drafts, errors, extendedProfile,
-    pendingReturnSectionId, pendingSaveStepId, saveState, interactiveSections, isDeclarationAvailable,
+    pendingReturnSectionId, pendingSaveStepId, saveState, interactiveSections, isDeclarationAvailable, activeStepId,
   ]);
 
   const activeSectionSavedData = getSectionInitialData(activeSection, extendedProfile);
@@ -412,9 +414,11 @@ const BiodataProfileSections = () => {
     }));
   };
 
-  const moveToSection = (sectionId) => {
+  const moveToSection = (sectionId, { shouldScroll = true } = {}) => {
     setActiveStepId(sectionId);
-    setPendingScrollSectionId(sectionId);
+    if (shouldScroll) {
+      setPendingScrollSectionId(sectionId);
+    }
   };
 
   const handleStepClick = (sectionId) => {
@@ -533,7 +537,7 @@ const BiodataProfileSections = () => {
         ...previousStateById,
         [section.id]: true,
       }));
-      moveToSection(section.id);
+      moveToSection(section.id, { shouldScroll: false });
       return;
     }
 
