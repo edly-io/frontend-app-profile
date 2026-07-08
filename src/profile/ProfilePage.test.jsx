@@ -49,6 +49,12 @@ const baseTestConfig = {
   LMS_BASE_URL: 'http://localhost:18000',
   ACCOUNT_SETTINGS_URL: 'http://localhost:18000/account/settings',
   LANGUAGE_PREFERENCE_COOKIE_NAME: 'yum',
+  DISCOVERY_API_BASE_URL: 'http://localhost:18381',
+  PUBLISHER_BASE_URL: 'http://localhost:18110',
+  IGNORED_ERROR_REGEX: '^IgnoredError',
+  LEARNING_BASE_URL: 'http://localhost:18010',
+  STUDIO_BASE_URL: 'http://localhost:18001',
+  SUPPORT_URL: 'http://localhost:18000/support',
 };
 
 Object.defineProperty(global.document, 'cookie', {
