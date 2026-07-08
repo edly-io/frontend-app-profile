@@ -19,6 +19,7 @@ jest.mock('./services', () => ({
   getPreferences: jest.fn(),
   getAccount: jest.fn(),
   getBiodataProfile: jest.fn(),
+  getBiodataSectionProfile: jest.fn(),
   saveBiodataSection: jest.fn(),
   validateBiodataSection: jest.fn(),
   getCourseCertificates: jest.fn(),
@@ -232,6 +233,10 @@ describe('RootSaga', () => {
       expect(gen.next().value).toEqual(select(handleSaveProfileSelector));
       expect(gen.next(selectorPayload).value).toEqual(put(profileActions.saveProfileBegin()));
       expect(gen.next().value).toEqual(call(
+        ProfileApiService.getBiodataSectionProfile,
+        'basicInformation',
+      ));
+      expect(gen.next([]).value).toEqual(call(
         ProfileApiService.saveBiodataSection,
         'basicInformation',
         selectorPayload.drafts.basicInformation,

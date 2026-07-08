@@ -170,9 +170,16 @@ export function* handleSaveProfile(action) {
     if (biodataSection) {
       const sectionDraft = drafts[action.payload.formId]
         || buildSectionDraftFromExtendedProfile(action.payload.formId, account.extendedProfile || []);
+      // Diff against what the server actually has right now, not the redux-cached
+      // extendedProfile snapshot — a row created earlier in this same session may not be
+      // reflected there yet, which previously caused its delete to be silently skipped.
+      const liveExtendedProfile = yield call(
+        ProfileApiService.getBiodataSectionProfile,
+        action.payload.formId,
+      );
       const committedSectionData = buildSectionDraftFromExtendedProfile(
         action.payload.formId,
-        account.extendedProfile || [],
+        liveExtendedProfile,
       );
 
       accountDrafts = yield call(
@@ -236,9 +243,13 @@ export function* handleSaveDraftSection(action) {
       return;
     }
 
+    const liveExtendedProfile = yield call(
+      ProfileApiService.getBiodataSectionProfile,
+      action.payload.formId,
+    );
     const committedSectionData = buildSectionDraftFromExtendedProfile(
       action.payload.formId,
-      account.extendedProfile || [],
+      liveExtendedProfile,
     );
 
     const result = yield call(
