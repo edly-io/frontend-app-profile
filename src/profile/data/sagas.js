@@ -39,6 +39,8 @@ import { getBiodataTargetUserId } from '../biodata/apiConfig';
 import { getSectionById } from '../biodata/utils';
 import { buildSectionDraftFromExtendedProfile } from '../biodata/apiTransforms';
 
+const getBiodataDraftStorageKey = (username, sectionId) => `fbr.biodata.draft:${username}:${sectionId}`;
+
 export function* handleFetchProfile(action) {
   const { username } = action.payload;
   const userAccount = yield select(userAccountSelector);
@@ -259,6 +261,12 @@ export function* handleSaveDraftSection(action) {
       committedSectionData,
       account.extendedProfile || [],
     );
+
+    if (typeof window !== 'undefined' && window.localStorage && action.payload.username) {
+      window.localStorage.removeItem(
+        getBiodataDraftStorageKey(action.payload.username, action.payload.formId),
+      );
+    }
 
     yield put(saveDraftSectionSuccess(result));
   } catch (e) {

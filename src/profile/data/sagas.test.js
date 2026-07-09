@@ -294,6 +294,54 @@ describe('RootSaga', () => {
     });
   });
 
+  describe('handleSaveDraftSection', () => {
+    const selectorData = {
+      drafts: {
+        basicInformation: {
+          preferred_calling_name: 'Trainee One',
+        },
+      },
+      account: {
+        extendedProfile: [],
+      },
+    };
+
+    it('should remove the matching local draft after a successful background save', () => {
+      const removeItem = jest.fn();
+      const originalLocalStorage = window.localStorage;
+      Object.defineProperty(window, 'localStorage', {
+        configurable: true,
+        value: { removeItem },
+      });
+
+      const action = profileActions.saveDraftSection('basicInformation', 'trainee01');
+      const gen = handleSaveDraftSection(action);
+      const savedAccount = {
+        extendedProfile: [{ fieldName: 'preferred_calling_name', fieldValue: 'Trainee One' }],
+      };
+
+      expect(gen.next().value).toEqual(select(handleSaveProfileSelector));
+      expect(gen.next(selectorData).value).toEqual(call(
+        ProfileApiService.getBiodataSectionProfile,
+        'basicInformation',
+      ));
+      const saveCall = gen.next([]).value;
+      expect(saveCall?.type).toBe('CALL');
+      expect(saveCall?.payload?.fn).toBe(ProfileApiService.saveBiodataSection);
+      expect(saveCall?.payload?.args?.[0]).toBe('basicInformation');
+      expect(saveCall?.payload?.args?.[1]).toEqual(selectorData.drafts.basicInformation);
+      expect(saveCall?.payload?.args?.[3]).toEqual([]);
+      expect(gen.next(savedAccount).value).toEqual(put(profileActions.saveDraftSectionSuccess(savedAccount)));
+      expect(removeItem).toHaveBeenCalledWith('fbr.biodata.draft:trainee01:basicInformation');
+      expect(gen.next().value).toBeUndefined();
+
+      Object.defineProperty(window, 'localStorage', {
+        configurable: true,
+        value: originalLocalStorage,
+      });
+    });
+  });
+
   describe('handleSaveProfilePhoto', () => {
     it('should save profile photo successfully', () => {
       const action = profileActions.saveProfilePhoto('user1', { some: 'formdata' });

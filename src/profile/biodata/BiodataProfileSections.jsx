@@ -139,6 +139,14 @@ const getSectionLiveData = (section, drafts, extendedProfile) => getSanitizedSec
   drafts[section.id] || getSectionInitialData(section, extendedProfile),
 );
 
+const shouldRestoreStoredDraft = (section, extendedProfile) => {
+  const savedSectionData = getSectionInitialData(section, extendedProfile);
+
+  // Do not let a stale browser draft override a section that is already fully
+  // saved on the server. This keeps self-profile rendering aligned with the API.
+  return !sectionIsComplete(section, savedSectionData);
+};
+
 const getResumeSectionId = (sections, extendedProfile) => {
   const firstIncompleteSection = sections.find(section => !sectionIsComplete(
     section,
@@ -242,15 +250,20 @@ const BiodataProfileSections = () => {
     hasDraftRestoreRef.current = true;
     interactiveSections.forEach((section) => {
       try {
-        const stored = localStorage.getItem(getBiodataDraftStorageKey(accountUsername, section.id));
+        const storageKey = getBiodataDraftStorageKey(accountUsername, section.id);
+        const stored = localStorage.getItem(storageKey);
         if (stored) {
+          if (!shouldRestoreStoredDraft(section, extendedProfile)) {
+            localStorage.removeItem(storageKey);
+            return;
+          }
           dispatch(updateDraft(section.id, JSON.parse(stored)));
         }
       } catch (e) {
         // ignore parse/storage errors
       }
     });
-  }, [accountUsername, dispatch, interactiveSections]);
+  }, [accountUsername, dispatch, extendedProfile, interactiveSections]);
 
   useEffect(() => {
     if (!accountUsername || hasResolvedInitialStep.current || interactiveSections.length === 0) {
