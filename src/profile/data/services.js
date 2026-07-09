@@ -178,6 +178,21 @@ function getLatestRepeatableRow(candidateRow = null, existingRow = null) {
   return Number(candidateRow?.id || 0) > Number(existingRow?.id || 0) ? candidateRow : existingRow;
 }
 
+function buildRepeatableRowMatchKey(values = {}) {
+  return JSON.stringify(
+    Object.keys(values || {})
+      .sort()
+      .reduce((accumulator, key) => {
+        accumulator[key] = values[key] ?? '';
+        return accumulator;
+      }, {}),
+  );
+}
+
+function extractRepeatableServerRows(data) {
+  return Array.isArray(data) ? data : data?.results || [];
+}
+
 function dedupeRepeatableRows(endpoint, rows = []) {
   if (!endpoint.dedupeBy) {
     return rows;
@@ -261,7 +276,7 @@ async function getRepeatableBiodataSection(section, repeatable, endpoint, flatRe
   }
 }
 
-async function getBiodataSectionProfile(sectionId) {
+export async function getBiodataSectionProfile(sectionId) {
   const section = getSectionById(sectionId);
 
   if (!section) {
@@ -298,16 +313,48 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
   const endpointPath = endpoint.path;
   const shouldPostRows = endpoint.rowMethod === 'post';
   const shouldDeleteMissingRows = endpoint.allowDelete !== false && !shouldPostRows;
+  const matchedCommittedRowIndexes = new Set();
+  const committedRowsByMatchKey = committedRows.reduce((accumulator, row, index) => {
+    if (row?.backendId == null) {
+      return accumulator;
+    }
+
+    const matchKey = buildRepeatableRowMatchKey(row.values);
+    if (!accumulator[matchKey]) {
+      accumulator[matchKey] = [];
+    }
+    accumulator[matchKey].push(index);
+    return accumulator;
+  }, {});
   const normalizedDraftRows = draftRows.map((row, index) => {
     if (row.backendId != null) {
       return row;
     }
 
+    const matchKey = buildRepeatableRowMatchKey(row.values);
+    const matchingCommittedRowIndexes = committedRowsByMatchKey[matchKey] || [];
+    const matchedCommittedRowIndex = matchingCommittedRowIndexes.find(
+      committedRowIndex => !matchedCommittedRowIndexes.has(committedRowIndex),
+    );
+
+    if (matchedCommittedRowIndex != null) {
+      matchedCommittedRowIndexes.add(matchedCommittedRowIndex);
+      return {
+        ...row,
+        backendId: committedRows[matchedCommittedRowIndex].backendId,
+      };
+    }
+
     const committedRow = committedRows[index];
-    if (!committedRow || committedRow.backendId == null) {
+    if (
+      !committedRow
+      || committedRow.backendId == null
+      || matchedCommittedRowIndexes.has(index)
+    ) {
       return row;
     }
 
+    matchedCommittedRowIndexes.add(index);
     return {
       ...row,
       backendId: committedRow.backendId,
@@ -346,32 +393,63 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
     return accumulator;
   }, {});
 
-  const operations = [];
+  const rowOperations = [];
 
   normalizedDraftRows.forEach((row) => {
     const payload = buildBiodataRequestPayload(row.values);
     if (row.backendId != null && !shouldPostRows) {
       const url = getBiodataEndpointUrl(`${endpointPath}${row.backendId}/`, { includeTargetUser: true });
-      operations.push(payload.headers
+      rowOperations.push(payload.headers
         ? getHttpClient().patch(url, payload.data, { headers: payload.headers })
         : getHttpClient().patch(url, payload.data));
     } else {
       const url = getBiodataEndpointUrl(endpointPath, { includeTargetUser: true });
-      operations.push(payload.headers
+      rowOperations.push(payload.headers
         ? getHttpClient().post(url, payload.data, { headers: payload.headers })
         : getHttpClient().post(url, payload.data));
     }
   });
 
+  const deleteOperations = [];
   if (shouldDeleteMissingRows) {
     Object.keys(committedRowMap).forEach((backendId) => {
       if (!draftRowMap[backendId]) {
-        operations.push(getHttpClient().delete(getBiodataEndpointUrl(`${endpointPath}${backendId}/`, { includeTargetUser: true })));
+        deleteOperations.push(getHttpClient().delete(getBiodataEndpointUrl(`${endpointPath}${backendId}/`, { includeTargetUser: true })));
       }
     });
   }
 
-  await Promise.all(operations);
+  const rowResponses = await Promise.all(rowOperations);
+  await Promise.all(deleteOperations);
+
+  if (shouldDeleteMissingRows) {
+    const { data } = await getHttpClient().get(
+      getBiodataEndpointUrl(endpointPath, { includeTargetUser: true }),
+    );
+    const serverRows = extractRepeatableServerRows(data);
+    const matchedServerIds = new Set(
+      rowResponses
+        .map(response => response?.data?.id)
+        .filter(id => id != null)
+        .map(id => String(id)),
+    );
+
+    normalizedDraftRows.forEach((row) => {
+      if (row.backendId != null) {
+        matchedServerIds.add(String(row.backendId));
+      }
+    });
+
+    const cleanupDeletes = serverRows
+      .filter(serverRow => serverRow?.id != null && !matchedServerIds.has(String(serverRow.id)))
+      .map(serverRow => getHttpClient().delete(
+        getBiodataEndpointUrl(`${endpointPath}${serverRow.id}/`, { includeTargetUser: true }),
+      ));
+
+    if (cleanupDeletes.length > 0) {
+      await Promise.all(cleanupDeletes);
+    }
+  }
 }
 
 export async function getAccount(username) {

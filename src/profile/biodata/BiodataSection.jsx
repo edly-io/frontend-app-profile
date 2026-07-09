@@ -18,7 +18,6 @@ import {
   FIELD_NAMES_REQUIRING_VALID_YEAR,
   fieldAllowsOnlyDigits,
   fieldDisallowsDigits,
-  fieldDisallowsSpecialCharacters,
   getRepeatableFieldErrorKey,
   getRepeatableFieldValidationError,
   getSectionError,
@@ -32,9 +31,7 @@ import {
   isProtectedRepeatableColumn,
   isProtectedRepeatableRow,
   normalizeRepeatableRows,
-  removeDigitsFromValue,
   removeNonDigitsFromValue,
-  removeSpecialCharactersFromValue,
   revokeFilePreviewUrl,
   sectionHasValue,
   shouldShowSpouseInformation,
@@ -115,27 +112,6 @@ function normalizeFieldInputValue(field, value) {
     && FIELD_NAMES_REQUIRING_NON_NEGATIVE_NUMBERS.has(field.fieldName)
   ) {
     nextValue = removeNonDigitsFromValue(nextValue);
-  }
-
-  if (
-    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
-    && fieldAllowsOnlyDigits(field.fieldName)
-  ) {
-    nextValue = removeNonDigitsFromValue(nextValue);
-  }
-
-  if (
-    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
-    && fieldDisallowsDigits(field.fieldName)
-  ) {
-    nextValue = removeDigitsFromValue(nextValue);
-  }
-
-  if (
-    (field.type === PROFILE_FIELD_TYPES.TEXT || field.type === PROFILE_FIELD_TYPES.TEXTAREA || !field.type)
-    && fieldDisallowsSpecialCharacters(field.fieldName)
-  ) {
-    nextValue = removeSpecialCharactersFromValue(nextValue);
   }
 
   return nextValue;

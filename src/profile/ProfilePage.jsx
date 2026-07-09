@@ -257,6 +257,7 @@ const ProfilePage = ({ params }) => {
         <FbrProfileTabs
           profile={fbrProfile}
           showStpBiodataForm={isStpTrainee}
+          requiresStpBiodataCompletion={shouldBlockNavigation}
           onProfileUpdated={setFbrProfile}
           onStpBiodataComplete={() => {
             setCompletionOverride(true);

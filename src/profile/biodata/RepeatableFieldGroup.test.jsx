@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import RepeatableFieldGroup from './RepeatableFieldGroup';
 
@@ -32,6 +32,8 @@ const foreignVisitRows = [
 ];
 
 describe('RepeatableFieldGroup', () => {
+  const today = new Date().toISOString().slice(0, 10);
+
   it('does not show a generic column error on every repeatable row', () => {
     render(
       <RepeatableFieldGroup
@@ -82,8 +84,33 @@ describe('RepeatableFieldGroup', () => {
       />,
     );
 
-    expect(screen.getByLabelText('From')).toHaveAttribute('max', '2026-07-01');
+    expect(screen.getByLabelText('From')).toHaveAttribute('max', today);
     expect(screen.getByLabelText('To')).toHaveAttribute('min', '2026-06-28');
-    expect(screen.getByLabelText('To')).toHaveAttribute('max', '2026-07-01');
+    expect(screen.getByLabelText('To')).toHaveAttribute('max', today);
+  });
+
+  it('preserves allowed subject punctuation while editing CSS subject names', () => {
+    const onChange = jest.fn();
+
+    render(
+      <RepeatableFieldGroup
+        repeatable={repeatable}
+        rows={[{ rowId: 'row-1', subject: '' }]}
+        errors={{}}
+        onChange={onChange}
+        onBlur={jest.fn()}
+        disabled={false}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('Subject'), {
+      target: { value: 'CS & IT' },
+    });
+
+    expect(onChange).toHaveBeenCalledWith('updateCell', {
+      rowIndex: 0,
+      columnKey: 'subject',
+      value: 'CS & IT',
+    });
   });
 });

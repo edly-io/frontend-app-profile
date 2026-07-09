@@ -525,11 +525,91 @@ describe('services', () => {
       );
     });
 
-    it('should not issue delete requests for missing committed education rows', async () => {
+    it('should delete removed education rows', async () => {
       mockHttpClient.patch.mockResolvedValue({});
       mockHttpClient.post.mockResolvedValue({});
       mockHttpClient.delete.mockResolvedValue({});
-      mockHttpClient.get.mockResolvedValue({ data: { results: [] } });
+      mockHttpClient.get
+        .mockResolvedValueOnce({
+          data: [{
+            id: 3,
+            institute: 'University of Sargodha',
+            attended_from: '2015-09-23',
+            attended_to: '2019-09-12',
+            examination: 'xyz',
+            year_of_passing: '2019',
+            grade: 'First',
+            subjects: 'Computer Science',
+          }],
+        })
+        .mockResolvedValueOnce({ data: {} });
+
+      await saveBiodataSection(
+        'education',
+        {
+          education_records: [{
+            rowId: 'row-1',
+            backendId: 3,
+            educational_institute: 'University of Sargodha',
+            attended_from: '2015-09-23',
+            attended_to: '2019-09-12',
+            examination: 'xyz',
+            year_of_passing: '2019',
+            grade_division: 'First',
+            subjects_studied: 'Computer Science',
+          }],
+        },
+        {
+          education_records: [
+            {
+              rowId: 'row-1',
+              backendId: 3,
+              educational_institute: 'University of Sargodha',
+              attended_from: '2015-09-23',
+              attended_to: '2019-09-12',
+              examination: 'xyz',
+              year_of_passing: '2019',
+              grade_division: 'First',
+              subjects_studied: 'Computer Science',
+            },
+            {
+              rowId: 'row-2',
+              backendId: 4,
+              educational_institute: 'Old Record',
+              attended_from: '2011-01-01',
+              attended_to: '2013-01-01',
+              examination: 'Old',
+              year_of_passing: '2013',
+              grade_division: 'Second',
+              subjects_studied: 'History',
+            },
+          ],
+        },
+      );
+
+      expect(mockHttpClient.delete).toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/4\/$/),
+      );
+    });
+
+    it('should delete missing committed education rows', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get
+        .mockResolvedValueOnce({
+          data: [{
+            id: 3,
+            institute: 'University of Sargodha',
+            attended_from: '2015-09-23',
+            attended_to: '2019-09-12',
+            examination: 'xyz',
+            year_of_passing: '2019',
+            grade: 'First',
+            subjects: 'Computer Science',
+          }],
+        })
+        .mockResolvedValueOnce({ data: {} });
 
       await saveBiodataSection(
         'education',
@@ -583,7 +663,279 @@ describe('services', () => {
           headers: { 'Content-Type': 'application/json' },
         }),
       );
-      expect(mockHttpClient.delete).not.toHaveBeenCalled();
+      expect(mockHttpClient.delete).toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/4\/$/),
+      );
+    });
+
+    it('should keep a newly added education row after save and cleanup refresh', async () => {
+      mockHttpClient.patch.mockResolvedValue({ data: { id: 3 } });
+      mockHttpClient.post.mockResolvedValue({
+        data: {
+          id: 8,
+          institute: 'NDU',
+          attended_from: '2020-01-01',
+          attended_to: '2022-01-01',
+          examination: 'Masters',
+          year_of_passing: '2022',
+          grade: 'A',
+          subjects: 'Policy',
+          degree_file: '/media/ndu.pdf',
+        },
+      });
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get
+        .mockResolvedValueOnce({
+          data: [
+            {
+              id: 3,
+              institute: 'University of Sargodha',
+              attended_from: '2015-09-23',
+              attended_to: '2019-09-12',
+              examination: 'xyz',
+              year_of_passing: '2019',
+              grade: 'First',
+              subjects: 'Computer Science',
+              degree_file: '/media/uos.pdf',
+            },
+            {
+              id: 8,
+              institute: 'NDU',
+              attended_from: '2020-01-01',
+              attended_to: '2022-01-01',
+              examination: 'Masters',
+              year_of_passing: '2022',
+              grade: 'A',
+              subjects: 'Policy',
+              degree_file: '/media/ndu.pdf',
+            },
+          ],
+        })
+        .mockResolvedValueOnce({ data: {} });
+
+      await saveBiodataSection(
+        'education',
+        {
+          education_records: [
+            {
+              rowId: 'row-1',
+              backendId: 3,
+              educational_institute: 'University of Sargodha',
+              attended_from: '2015-09-23',
+              attended_to: '2019-09-12',
+              examination: 'xyz',
+              year_of_passing: '2019',
+              grade_division: 'First',
+              subjects_studied: 'Computer Science',
+            },
+            {
+              rowId: 'row-2',
+              educational_institute: 'NDU',
+              attended_from: '2020-01-01',
+              attended_to: '2022-01-01',
+              examination: 'Masters',
+              year_of_passing: '2022',
+              grade_division: 'A',
+              subjects_studied: 'Policy',
+            },
+          ],
+        },
+        {
+          education_records: [
+            {
+              rowId: 'row-1',
+              backendId: 3,
+              educational_institute: 'University of Sargodha',
+              attended_from: '2015-09-23',
+              attended_to: '2019-09-12',
+              examination: 'xyz',
+              year_of_passing: '2019',
+              grade_division: 'First',
+              subjects_studied: 'Computer Science',
+            },
+          ],
+        },
+      );
+
+      expect(mockHttpClient.post).toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/$/),
+        expect.objectContaining({
+          institute: 'NDU',
+          attended_from: '2020-01-01',
+          attended_to: '2022-01-01',
+          examination: 'Masters',
+          year_of_passing: '2022',
+          grade: 'A',
+          subjects: 'Policy',
+        }),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+      expect(mockHttpClient.delete).not.toHaveBeenCalledWith(
+        expect.stringMatching(/\/education\/8\/$/),
+      );
+    });
+
+    it('should match language rows by content before index when a deleted earlier row shifts positions', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get.mockImplementation((url) => {
+        if (url.endsWith('/languages/')) {
+          return Promise.resolve({
+            data: [{
+              id: 7,
+              language: 'Urdu',
+              speaking: 'basic',
+              reading: 'intermediate',
+              writing: 'intermediate',
+              is_submitted: true,
+            }],
+          });
+        }
+
+        if (url.endsWith('/declaration/')) {
+          return Promise.resolve({ data: {} });
+        }
+
+        return Promise.resolve({ data: {} });
+      });
+
+      await saveBiodataSection(
+        'languages',
+        {
+          language_proficiencies: [{
+            rowId: 'row-1',
+            language_name: 'Urdu',
+            speaking_proficiency: 'basic',
+            reading_proficiency: 'intermediate',
+            writing_proficiency: 'intermediate',
+          }],
+        },
+        {
+          language_proficiencies: [
+            {
+              rowId: 'row-english',
+              backendId: 6,
+              language_name: 'English',
+              speaking_proficiency: 'basic',
+              reading_proficiency: 'intermediate',
+              writing_proficiency: 'advanced',
+            },
+            {
+              rowId: 'row-urdu',
+              backendId: 7,
+              language_name: 'Urdu',
+              speaking_proficiency: 'basic',
+              reading_proficiency: 'intermediate',
+              writing_proficiency: 'intermediate',
+            },
+          ],
+        },
+      );
+
+      expect(mockHttpClient.patch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/languages\/7\/$/),
+        expect.objectContaining({
+          language: 'Urdu',
+          speaking: 'basic',
+          reading: 'intermediate',
+          writing: 'intermediate',
+        }),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+      expect(mockHttpClient.delete).toHaveBeenCalledWith(
+        expect.stringMatching(/\/languages\/6\/$/),
+      );
+      expect(mockHttpClient.patch).not.toHaveBeenCalledWith(
+        expect.stringMatching(/\/languages\/6\/$/),
+        expect.anything(),
+        expect.anything(),
+      );
+      expect(mockHttpClient.delete).not.toHaveBeenCalledWith(
+        expect.stringMatching(/\/languages\/7\/$/),
+      );
+    });
+
+    it('should delete extra language rows still returned by a follow-up GET after patching', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get
+        .mockResolvedValueOnce({
+          data: [
+            {
+              id: 6,
+              language: 'English',
+              speaking: 'basic',
+              reading: 'intermediate',
+              writing: 'advanced',
+              is_submitted: true,
+            },
+            {
+              id: 7,
+              language: 'Urdu',
+              speaking: 'basic',
+              reading: 'intermediate',
+              writing: 'intermediate',
+              is_submitted: true,
+            },
+          ],
+        })
+        .mockResolvedValueOnce({
+          data: [{
+            id: 6,
+            language: 'English',
+            speaking: 'basic',
+            reading: 'intermediate',
+            writing: 'advanced',
+            is_submitted: true,
+          }],
+        })
+        .mockResolvedValueOnce({ data: {} });
+
+      await saveBiodataSection(
+        'languages',
+        {
+          language_proficiencies: [{
+            rowId: 'row-1',
+            backendId: 6,
+            language_name: 'English',
+            speaking_proficiency: 'basic',
+            reading_proficiency: 'intermediate',
+            writing_proficiency: 'advanced',
+          }],
+        },
+        {
+          language_proficiencies: [{
+            rowId: 'row-1',
+            backendId: 6,
+            language_name: 'English',
+            speaking_proficiency: 'basic',
+            reading_proficiency: 'intermediate',
+            writing_proficiency: 'advanced',
+          }],
+        },
+      );
+
+      expect(mockHttpClient.patch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/languages\/6\/$/),
+        expect.objectContaining({
+          language: 'English',
+          speaking: 'basic',
+          reading: 'intermediate',
+          writing: 'advanced',
+        }),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+      expect(mockHttpClient.delete).toHaveBeenCalledWith(
+        expect.stringMatching(/\/languages\/7\/$/),
+      );
     });
 
     it('should patch existing CSS service group preferences instead of reposting them', async () => {
@@ -662,6 +1014,60 @@ describe('services', () => {
         expect.anything(),
       );
       expect(mockHttpClient.delete).not.toHaveBeenCalled();
+    });
+
+    it('should delete removed CSS service group preferences', async () => {
+      mockHttpClient.patch.mockResolvedValue({});
+      mockHttpClient.post.mockResolvedValue({});
+      mockHttpClient.delete.mockResolvedValue({});
+      mockHttpClient.get
+        .mockResolvedValueOnce({ data: {} })
+        .mockResolvedValueOnce({
+          data: [
+            {
+              id: 4,
+              service_group: 'PAS',
+              priority: '1',
+            },
+          ],
+        })
+        .mockResolvedValueOnce({ data: {} });
+
+      await saveBiodataSection(
+        'cssExamDetails',
+        {
+          occupational_service_group_preferences: [
+            {
+              rowId: 'pref-1',
+              backendId: 4,
+              service_group: 'PAS',
+              priority: '1',
+            },
+          ],
+          css_subject_marks: [],
+        },
+        {
+          occupational_service_group_preferences: [
+            {
+              rowId: 'pref-1',
+              backendId: 4,
+              service_group: 'PAS',
+              priority: '1',
+            },
+            {
+              rowId: 'pref-2',
+              backendId: 5,
+              service_group: 'IRS',
+              priority: '2',
+            },
+          ],
+          css_subject_marks: [],
+        },
+      );
+
+      expect(mockHttpClient.delete).toHaveBeenCalledWith(
+        expect.stringMatching(/\/service-group-preferences\/5\/$/),
+      );
     });
 
     it('should map repeatable backend validation errors to UI field names', async () => {

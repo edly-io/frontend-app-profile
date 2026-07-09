@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
@@ -703,7 +705,9 @@ const EditRequestPanel = () => {
   );
 };
 
-const FbrProfileTabs = ({ profile, showStpBiodataForm, onProfileUpdated }) => {
+const FbrProfileTabs = ({
+  profile, showStpBiodataForm, requiresStpBiodataCompletion, onProfileUpdated,
+}) => {
   const [batches, setBatches] = useState([]);
 
   useEffect(() => {
@@ -741,6 +745,18 @@ const FbrProfileTabs = ({ profile, showStpBiodataForm, onProfileUpdated }) => {
 
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || 'profile');
   const safeActiveTab = tabs.some(tab => tab.id === activeTab) ? activeTab : tabs[0]?.id;
+
+  const hasAutoSelectedStpTabRef = useRef(false);
+  useEffect(() => {
+    if (
+      showStpBiodataForm
+      && requiresStpBiodataCompletion
+      && !hasAutoSelectedStpTabRef.current
+    ) {
+      hasAutoSelectedStpTabRef.current = true;
+      setActiveTab('stp-biodata');
+    }
+  }, [showStpBiodataForm, requiresStpBiodataCompletion]);
 
   if (!profile) {
     return null;
@@ -785,12 +801,14 @@ const FbrProfileTabs = ({ profile, showStpBiodataForm, onProfileUpdated }) => {
 FbrProfileTabs.propTypes = {
   profile: profileShape,
   showStpBiodataForm: PropTypes.bool,
+  requiresStpBiodataCompletion: PropTypes.bool,
   onProfileUpdated: PropTypes.func,
 };
 
 FbrProfileTabs.defaultProps = {
   profile: null,
   showStpBiodataForm: false,
+  requiresStpBiodataCompletion: false,
   onProfileUpdated: () => {},
 };
 
