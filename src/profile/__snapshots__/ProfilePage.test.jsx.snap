@@ -2967,7 +2967,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       class="mb-0 small"
                     >
                       Completed on 
-                      3/5/2019
+                      3/4/2019
                     </p>
                   </div>
                   <div
@@ -4179,7 +4179,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       class="mb-0 small"
                     >
                       Completed on 
-                      3/5/2019
+                      3/4/2019
                     </p>
                   </div>
                   <div
