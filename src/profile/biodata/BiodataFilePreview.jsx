@@ -9,20 +9,6 @@ import {
 
 import { getFilePreview } from './utils';
 
-function openPreview(previewUrl) {
-  if (!previewUrl || typeof window === 'undefined') {
-    return;
-  }
-
-  const openedWindow = window.open(previewUrl, '_blank', 'noopener,noreferrer');
-  if (openedWindow) {
-    openedWindow.opener = null;
-    return;
-  }
-
-  window.location.assign(previewUrl);
-}
-
 function renderTooltip(label, id) {
   return (
     <Tooltip variant="light" id={id}>
@@ -37,19 +23,27 @@ const FileIconButton = ({
   variant,
   disabled,
   onClick,
+  href,
 }) => (
   <OverlayTrigger
     placement="top"
     overlay={renderTooltip(label, `biodata-file-action-${label.toLowerCase().replace(/\s+/g, '-')}`)}
   >
     <Button
-      type="button"
+      {...(href ? {
+        as: 'a',
+        href,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      } : {
+        type: 'button',
+        onClick,
+      })}
       size="sm"
       variant={variant}
       className="d-inline-flex align-items-center justify-content-center mr-2 mb-2 p-2"
       disabled={disabled}
       aria-label={label}
-      onClick={onClick}
       style={{ width: '2.25rem', height: '2.25rem' }}
     >
       <IconComponent aria-hidden focusable="false" />
@@ -74,7 +68,7 @@ const BiodataFileActions = ({
           icon={Preview}
           variant="outline-primary"
           disabled={false}
-          onClick={() => openPreview(preview.url)}
+          href={preview.url}
         />
       )}
       <FileIconButton
@@ -137,11 +131,14 @@ FileIconButton.propTypes = {
   icon: PropTypes.elementType.isRequired,
   variant: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
+  href: PropTypes.string,
 };
 
 FileIconButton.defaultProps = {
   disabled: false,
+  onClick: undefined,
+  href: undefined,
 };
 
 BiodataFileActions.propTypes = {
