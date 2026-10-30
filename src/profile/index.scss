@@ -30,6 +30,10 @@
 }
 
 .profile-page {
+  textarea.form-control {
+    min-height: 85px;
+  }
+
   .edit-section-header {
     font-size: var(--pgn-typography-font-size-h4-base);
     display: block;
@@ -260,7 +264,48 @@
   overflow-wrap: break-word;
 }
 
+.biodata-section-card {
+  @media (min-width: 992px) {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+}
+
 .biodata-stepper {
+  .nav-link.btn {
+    justify-content: flex-start;
+    padding: var(--pgn-spacing-nav-link-padding-y) var(--pgn-spacing-nav-link-padding-x);
+    border: 0;
+    border-radius: var(--pgn-size-nav-pills-border-radius);
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--pgn-color-nav-link-text-base);
+    font-size: inherit;
+    font-weight: var(--pgn-typography-nav-link-font-weight);
+    line-height: inherit;
+    text-decoration: none;
+    white-space: normal;
+
+    &:hover:not(.active),
+    &:focus:not(.active) {
+      background-color: transparent;
+      color: var(--pgn-color-nav-link-text-base);
+    }
+
+    &.active {
+      background-color: var(--pgn-color-nav-pills-base-link-active-bg);
+      color: var(--pgn-color-nav-pills-base-link-active-text);
+    }
+
+    &:disabled,
+    &.disabled {
+      opacity: 1;
+      color: var(--pgn-color-nav-link-text-disabled);
+    }
+  }
+
   .biodata-stepper__connector {
     position: absolute;
     left: 50%;

@@ -78,7 +78,7 @@ const getApiErrorMessage = (error, fallback) => {
   return fallback;
 };
 
-const readOnlyFieldStyle = { backgroundColor: '#f7f7f7', cursor: 'not-allowed' };
+const readOnlyFieldStyle = { backgroundColor: '#f7f7f7' };
 const cityShape = PropTypes.shape({
   name: PropTypes.string,
 });
@@ -196,6 +196,7 @@ const EditableCard = ({
           ) : (
             <Button variant="outline-primary" onClick={onEdit}>Edit</Button>
           )}
+          <span className="sr-only" role="status">{isSaving ? 'Saving...' : ''}</span>
         </div>
       </div>
       {error && (
@@ -235,7 +236,6 @@ const TextInput = ({
       type={inputKind === 'pakistan-mobile' ? 'text' : type}
       value={inputKind === 'pakistan-mobile' ? formatPakistanMobileValue(value) : value || ''}
       readOnly={readOnly}
-      disabled={readOnly}
       style={readOnly ? readOnlyFieldStyle : undefined}
       rows={as === 'textarea' ? 3 : undefined}
       inputMode={inputKind === 'pakistan-mobile' ? 'numeric' : undefined}
@@ -648,7 +648,7 @@ const EditRequestPanel = () => {
         )}
         {(() => {
           if (isLoading) {
-            return <div className="text-muted">Loading request...</div>;
+            return <div className="text-muted" role="status">Loading request...</div>;
           }
 
           if (latestRequest) {
@@ -695,6 +695,7 @@ const EditRequestPanel = () => {
             <Button variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Submitting...' : 'Submit Request'}
             </Button>
+            <span className="sr-only" role="status">{isSubmitting ? 'Submitting...' : ''}</span>
           </Form>
         )}
       </Card.Section>
@@ -764,7 +765,11 @@ const FbrProfileTabs = ({
       <Nav variant="tabs" className="mb-4">
         {tabs.map(tab => (
           <Nav.Item key={tab.id}>
-            <Nav.Link active={safeActiveTab === tab.id} onClick={() => setActiveTab(tab.id)}>
+            <Nav.Link
+              active={safeActiveTab === tab.id}
+              aria-current={safeActiveTab === tab.id ? 'true' : undefined}
+              onClick={() => setActiveTab(tab.id)}
+            >
               {tab.label}
             </Nav.Link>
           </Nav.Item>

@@ -59,13 +59,13 @@ const CertificateCard = ({
                 messages['profile.certificates.types.unknown'],
               ))}
             </p>
-            <p className={classNames([
+            <h3 className={classNames([
               'm-0 color-black',
               isMobileView ? 'h5' : 'h4',
             ])}
             >
               {courseDisplayName}
-            </p>
+            </h3>
             <p className={classNames([
               'mb-0',
               isMobileView ? 'x-small' : 'small',
@@ -76,7 +76,7 @@ const CertificateCard = ({
                 defaultMessage="From"
               />
             </p>
-            <h5 className="mb-0 color-black">{courseOrganization}</h5>
+            <p className="h5 mb-0 color-black">{courseOrganization}</p>
             <p className={classNames([
               'mb-0',
               isMobileView ? 'x-small' : 'small',

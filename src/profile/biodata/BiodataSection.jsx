@@ -138,6 +138,8 @@ function renderFieldControl(
         onChange={(event) => onChange(event.target.checked)}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        aria-invalid={Boolean(error) || undefined}
+        aria-required={!disabled || undefined}
       >
         {field.label}
       </Form.Checkbox>
@@ -151,6 +153,8 @@ function renderFieldControl(
         value={value}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        aria-invalid={Boolean(error) || undefined}
+        aria-required={!disabled || undefined}
         {...getFieldInputAttributes(field)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
@@ -178,6 +182,8 @@ function renderFieldControl(
         placeholder={field.placeholder}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        aria-invalid={Boolean(error) || undefined}
+        aria-required={!disabled || undefined}
         {...getFieldInputAttributes(field)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
@@ -197,6 +203,8 @@ function renderFieldControl(
       placeholder={field.placeholder}
       isInvalid={Boolean(error)}
       disabled={disabled}
+      aria-invalid={Boolean(error) || undefined}
+      aria-required={!disabled || undefined}
       {...getFieldInputAttributes(field)}
       onBlur={onBlur}
       onFocus={syncNativeValidationState}
@@ -213,7 +221,7 @@ function renderReadonlyFile(field, fileValue) {
   if (!fileValue) {
     return (
       <div className="border rounded p-3 mb-3 bg-light-200">
-        <p className="h6 font-weight-bold mb-2">{field.label}</p>
+        <h3 className="h6 font-weight-bold mb-2">{field.label}</h3>
         <p className="small text-muted mb-0">No file uploaded</p>
       </div>
     );
@@ -221,7 +229,7 @@ function renderReadonlyFile(field, fileValue) {
 
   return (
     <div className="border rounded p-3 mb-3 bg-light-200">
-      <p className="h6 font-weight-bold mb-2">{field.label}</p>
+      <h3 className="h6 font-weight-bold mb-2">{field.label}</h3>
       <BiodataFileActions
         field={field}
         fileValue={fileValue}
@@ -576,7 +584,7 @@ const BiodataSection = ({
               </Form.Checkbox>
             </Form.Group>
           )}
-          <p className="h6 font-weight-bold mb-2">{repeatable.itemLabel}s</p>
+          <h3 className="h6 font-weight-bold mb-2">{repeatable.itemLabel}s</h3>
           {!(repeatable.naFieldName && formData[repeatable.naFieldName]) && (
             <RepeatableFieldGroup
               repeatable={repeatable}
@@ -601,7 +609,7 @@ const BiodataSection = ({
             key={field.fieldName}
             className={`border rounded p-3 mb-3 bg-light-200${error ? ' border-danger' : ''}`}
           >
-            <p className="h6 font-weight-bold mb-2">{field.label}</p>
+            <h3 className="h6 font-weight-bold mb-2">{field.label}</h3>
             <BiodataFileActions
               field={field}
               fileValue={fileValue}
@@ -617,6 +625,7 @@ const BiodataSection = ({
             <input
               id={`${section.id}-${field.fieldName}`}
               type="file"
+              aria-label={`Upload ${field.label}`}
               accept={field.accept}
               className="d-none"
               disabled={disabled || isSectionDisabled}
@@ -646,7 +655,7 @@ const BiodataSection = ({
       expression={editMode}
       cases={{
         editing: (
-          <div role="dialog" aria-labelledby={`${section.id}-label`}>
+          <div role="group" aria-labelledby={`${section.id}-label`}>
             <form onSubmit={(event) => {
               event.preventDefault();
               onSubmit(section.id);
@@ -654,9 +663,9 @@ const BiodataSection = ({
             >
               {showInlineTitle && (
                 <div className="row m-0 pb-1.5 align-items-center">
-                  <p id={`${section.id}-label`} className="h5 font-weight-bold m-0">
+                  <h2 id={`${section.id}-label`} className="h5 font-weight-bold m-0">
                     {section.title}
-                  </p>
+                  </h2>
                 </div>
               )}
               {showInlineTitle && section.helperText && (
@@ -677,6 +686,7 @@ const BiodataSection = ({
                   )}
                 </Alert>
               )}
+              <p className="small text-muted mb-3">All fields are required.</p>
               {renderFormFields()}
               <div className="d-flex flex-row-reverse flex-wrap justify-content-end align-items-center">
                 <div className="row form-group flex-shrink-0 flex-grow-1 m-0 p-0">

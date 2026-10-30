@@ -107,9 +107,12 @@ const ProfilePage = ({ params }) => {
   }, [username, saveState, navigate, isTargetUserBiodataView]);
 
   const isOwnProfileView = params.username === authenticatedUserName && !isTargetUserBiodataView;
-  const profileHeaderUsername = isTargetUserBiodataView
-    ? fbrProfile?.username || params.username
+  const profileHeaderName = isTargetUserBiodataView
+    ? fbrProfile?.full_name || fbrProfile?.username || fbrProfile?.email || params.username
     : params.username;
+  const profileHeaderEmail = isTargetUserBiodataView && fbrProfile?.email !== profileHeaderName
+    ? fbrProfile?.email
+    : null;
 
   const handleSaveProfilePhoto = useCallback((formData) => {
     dispatch(saveProfilePhoto(authenticatedUserName, formData));
@@ -356,9 +359,12 @@ const ProfilePage = ({ params }) => {
                         : 'justify-content-start align-items-start',
                     ])}
                   >
-                    <p className="row m-0 font-weight-bold text-truncate text-primary-500 h3">
-                      {profileHeaderUsername}
-                    </p>
+                    <h1 className="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3">
+                      {profileHeaderName}
+                    </h1>
+                    {profileHeaderEmail && (
+                      <p className="row m-0 pt-1 overflowWrap-breakWord text-gray-700">{profileHeaderEmail}</p>
+                    )}
                     <div className={classNames(
                       'row pt-2 m-0',
                       isMobileView

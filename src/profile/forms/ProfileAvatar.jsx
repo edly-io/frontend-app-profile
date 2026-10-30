@@ -83,6 +83,7 @@ const ProfileAvatar = ({
               isActive
               id="dropdown-toggle-with-iconbutton"
               as={IconButton}
+              alt={intl.formatMessage(messages[isDefault ? 'profile.profileavatar.tooltip.upload' : 'profile.profileavatar.tooltip.edit'])}
               src={PhotoCamera}
               iconAs={Icon}
               variant="primary"
@@ -132,21 +133,24 @@ const ProfileAvatar = ({
         {renderAvatar()}
       </div>
       {renderEditButton()}
-      <form
-        ref={form}
-        onSubmit={onSubmit}
-        encType="multipart/form-data"
-      >
-        <input
-          className="d-none form-control-file"
-          ref={fileInput}
-          type="file"
-          name="file"
-          id="photo-file"
-          onChange={onChangeInput}
-          accept=".jpg, .jpeg, .png"
-        />
-      </form>
+      {isEditable && (
+        <form
+          ref={form}
+          onSubmit={onSubmit}
+          encType="multipart/form-data"
+        >
+          <input
+            className="d-none form-control-file"
+            ref={fileInput}
+            type="file"
+            name="file"
+            id="photo-file"
+            aria-label={intl.formatMessage(messages['profile.profileavatar.tooltip.upload'])}
+            onChange={onChangeInput}
+            accept=".jpg, .jpeg, .png"
+          />
+        </form>
+      )}
     </div>
   );
 };

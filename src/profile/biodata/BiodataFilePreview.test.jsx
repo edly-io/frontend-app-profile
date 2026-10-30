@@ -15,7 +15,7 @@ it('renders an uploaded attachment preview as one new-tab link', () => {
     />,
   );
 
-  const previewLink = screen.getByRole('link', { name: 'Preview CSS marksheet' });
+  const previewLink = screen.getByRole('link', { name: 'Preview CSS marksheet (opens in new tab)' });
   expect(previewLink).toHaveAttribute('href', previewUrl);
   expect(previewLink).toHaveAttribute('target', '_blank');
   expect(previewLink).toHaveAttribute('rel', 'noopener noreferrer');

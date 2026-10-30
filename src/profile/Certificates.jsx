@@ -15,13 +15,13 @@ const Certificates = ({ certificates }) => {
     <div>
       <div className="col justify-content-start align-items-start g-5rem p-0">
         <div className="col align-self-stretch height-42px justify-content-start align-items-start p-0">
-          <p className="font-weight-bold text-primary-500 m-0 h2">
+          <h2 className="font-weight-bold text-primary-500 m-0 h2">
             <FormattedMessage
               id="profile.your.certificates"
               defaultMessage="Your certificates"
               description="heading for the certificates section"
             />
-          </p>
+          </h2>
         </div>
         <div className="col justify-content-start align-items-start pt-2 p-0">
           <p className="font-weight-normal text-gray-800 m-0 p-0 p">
