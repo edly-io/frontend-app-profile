@@ -2,7 +2,7 @@ import React, {
   useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Card, Nav } from '@openedx/paragon';
+import { Button, Card, Nav } from '@openedx/paragon';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
@@ -290,20 +290,23 @@ const BiodataProfileSections = () => {
 
     const timeoutId = window.setTimeout(() => {
       const target = document.getElementById(`biodata-section-${pendingScrollSectionId}`);
-      const sidebarLink = document.querySelector(`[data-biodata-nav="${pendingScrollSectionId}"]`);
 
-      if (!target || !sidebarLink) {
+      if (!target) {
         setPendingScrollSectionId(null);
         return;
       }
 
+      target.scrollTop = 0;
       const targetTop = target.getBoundingClientRect().top;
-      const sidebarTop = sidebarLink.getBoundingClientRect().top;
+      const isTargetTopVisible = targetTop >= 0 && targetTop < window.innerHeight * 0.5;
 
-      window.scrollTo({
-        top: Math.max(window.scrollY + targetTop - sidebarTop, 0),
-        behavior: 'smooth',
-      });
+      if (!isTargetTopVisible) {
+        window.scrollTo({
+          top: Math.max(window.scrollY + targetTop - 16, 0),
+          behavior: 'smooth',
+        });
+      }
+      document.getElementById(`${pendingScrollSectionId}-label`)?.focus({ preventScroll: true });
       setPendingScrollSectionId(null);
     }, 50);
 
@@ -452,11 +455,7 @@ const BiodataProfileSections = () => {
       if (incompleteSection) {
         markSectionNeedsAttention(incompleteSection);
         setPendingReturnSectionId(sectionId === 'declaration' ? sectionId : null);
-        setActiveStepId(incompleteSection.id);
-        window.setTimeout(() => {
-          document.getElementById(`biodata-section-${incompleteSection.id}`)
-            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 50);
+        moveToSection(incompleteSection.id);
         return;
       }
     }
@@ -562,7 +561,7 @@ const BiodataProfileSections = () => {
   return (
     <div className="row">
       <div className="col-lg-3 mb-4 mb-lg-0">
-        <Card className="position-lg-sticky" style={{ top: '0' }}>
+        <Card>
           <Card.Section>
             <Nav variant="pills" className="flex-column biodata-stepper">
               {renderableSections.map((section, index) => {
@@ -575,12 +574,16 @@ const BiodataProfileSections = () => {
                 return (
                   <Nav.Item key={section.id}>
                     <Nav.Link
+                      as={Button}
+                      variant="link"
+                      type="button"
                       active={isActive}
+                      aria-current={isActive ? 'step' : undefined}
                       disabled={isDisabled}
                       data-biodata-nav={section.id}
                       aria-label={`${section.title}: ${isDisabled ? 'Unavailable for admin' : statusLabel}`}
                       aria-disabled={isDisabled}
-                      className="mb-2 d-flex align-items-stretch text-left position-relative"
+                      className="mb-2 w-100 d-flex align-items-stretch text-left position-relative"
                       onClick={() => handleStepClick(section.id)}
                     >
                       <span className="d-flex flex-column align-items-center flex-shrink-0 mr-2 position-relative" aria-hidden="true">
@@ -616,10 +619,10 @@ const BiodataProfileSections = () => {
         </Card>
       </div>
       <div className="col-lg-9">
-        <Card id={`biodata-section-${activeSection.id}`} className="shadow-sm">
+        <Card id={`biodata-section-${activeSection.id}`} className="biodata-section-card shadow-sm">
           <Card.Section>
             <div className="mb-3">
-              <div className="font-weight-bold text-gray-900 h3 mb-1">{activeSection.title}</div>
+              <h2 id={`${activeSection.id}-label`} tabIndex={-1} className="font-weight-bold text-gray-900 h3 mb-1">{activeSection.title}</h2>
               {activeSection.helperText && (
                 <div className="small text-muted">{activeSection.helperText}</div>
               )}

@@ -1,21 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const EmptyContent = ({ children = null, onClick = null, showPlusIcon = true }) => (
   <div className="p-0 m-0">
     {onClick ? (
-      <button
+      <Button
         type="button"
-        className="p-0 text-left btn btn-link lh-36px"
+        variant="link"
+        className="p-0 text-left lh-36px"
         onClick={onClick}
-        onKeyDown={(e) => { if (e.key === 'Enter') { onClick(); } }}
-        tabIndex={0}
       >
         {showPlusIcon ? <FontAwesomeIcon size="xs" className="mr-1" icon={faPlus} /> : null}
         {children}
-      </button>
+      </Button>
     ) : children}
   </div>
 );

@@ -43,7 +43,7 @@ const FileIconButton = ({
       variant={variant}
       className="d-inline-flex align-items-center justify-content-center mr-2 mb-2 p-2"
       disabled={disabled}
-      aria-label={label}
+      aria-label={href ? `${label} (opens in new tab)` : label}
       style={{ width: '2.25rem', height: '2.25rem' }}
     >
       <IconComponent aria-hidden focusable="false" />

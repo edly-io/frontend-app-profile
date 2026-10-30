@@ -145,6 +145,7 @@ function renderControl(
         <input
           id={inputId}
           type="file"
+          aria-label={`Upload ${field.label}`}
           accept={field.accept}
           className="d-none"
           disabled={disabled}
@@ -170,6 +171,8 @@ function renderControl(
         value={value}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        aria-invalid={Boolean(error) || undefined}
+        aria-required={!disabled || undefined}
         {...getFieldInputAttributes(field, row)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
@@ -197,6 +200,8 @@ function renderControl(
         placeholder={field.placeholder}
         isInvalid={Boolean(error)}
         disabled={disabled}
+        aria-invalid={Boolean(error) || undefined}
+        aria-required={!disabled || undefined}
         {...getFieldInputAttributes(field, row)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
@@ -216,6 +221,8 @@ function renderControl(
       placeholder={field.placeholder}
       isInvalid={Boolean(error)}
       disabled={disabled}
+      aria-invalid={Boolean(error) || undefined}
+      aria-required={!disabled || undefined}
       {...getFieldInputAttributes(field, row)}
       onBlur={onBlur}
       onFocus={syncNativeValidationState}
@@ -266,17 +273,17 @@ const RepeatableFieldGroup = ({
     <div>
       {rows.map((row, rowIndex) => {
         const isProtectedRow = isProtectedRepeatableRow(row, repeatable);
+        const rowTitle = `${repeatable.itemLabel}${repeatable.showRowNumber === false ? '' : ` ${rowIndex + 1}`}`;
 
         return (
           <div key={row.rowId} className="border rounded p-3 mb-3">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <p className="h6 font-weight-bold mb-0">
-                {repeatable.itemLabel}{repeatable.showRowNumber === false ? '' : ` ${rowIndex + 1}`}
-              </p>
+              <h4 className="h6 font-weight-bold mb-0">{rowTitle}</h4>
               <Button
                 variant="link"
                 className="p-0 text-danger"
                 type="button"
+                aria-label={`Remove ${rowTitle}`}
                 onClick={() => onChange('removeRow', { rowIndex })}
                 disabled={disabled || rows.length === 1 || isProtectedRow}
               >
@@ -296,6 +303,7 @@ const RepeatableFieldGroup = ({
                 return (
                   <Form.Group
                     key={`${row.rowId}-${column.key}`}
+                    controlId={column.type === PROFILE_FIELD_TYPES.FILE ? controlField.inputId : undefined}
                     className={column.type === PROFILE_FIELD_TYPES.TEXTAREA ? 'col-12 mb-3' : 'col-md-6 mb-3'}
                   >
                     <Form.Label>{column.label}</Form.Label>

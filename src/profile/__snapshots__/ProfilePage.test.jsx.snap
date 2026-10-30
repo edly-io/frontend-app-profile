@@ -57,26 +57,15 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                   viewbox="0 0 24 24"
                 />
               </div>
-              <form
-                enctype="multipart/form-data"
-              >
-                <input
-                  accept=".jpg, .jpeg, .png"
-                  class="d-none form-control-file"
-                  id="photo-file"
-                  name="file"
-                  type="file"
-                />
-              </form>
             </div>
             <div
               class="col h-100 w-100 m-0 p-0 justify-content-start align-items-start"
             >
-              <p
-                class="row m-0 font-weight-bold text-truncate text-primary-500 h3"
+              <h1
+                class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
                 staffTest
-              </p>
+              </h1>
               <div
                 class="row pt-2 m-0 g-1rem"
               />
@@ -104,8 +93,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
             class="col-lg-3 mb-4 mb-lg-0"
           >
             <div
-              class="position-lg-sticky pgn__card pgn__card-light card"
-              style="top: 0px;"
+              class="pgn__card pgn__card-light card"
               tabindex="-1"
             >
               <div
@@ -117,13 +105,13 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
+                      aria-current="step"
                       aria-disabled="false"
                       aria-label="Basic Information: Current"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link active btn btn-link"
                       data-biodata-nav="basicInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -147,18 +135,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Basic Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Physical / Medical Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="physicalMedicalInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -182,18 +169,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Physical / Medical Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Contact Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="contactInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -217,18 +203,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Contact Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Education: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="education"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -252,18 +237,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Education
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Achievements: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="achievements"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -287,18 +271,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Achievements
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Languages: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="languages"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -322,18 +305,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Languages
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Employment: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="employment"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -357,18 +339,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Employment
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Competitive Examinations: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="competitiveExaminations"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -392,18 +373,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Competitive Examinations
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="CSS Exam Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="cssExamDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -427,18 +407,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         CSS Exam Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Government Service Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="governmentServiceDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -462,18 +441,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Government Service Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Personal Interests: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="personalInterests"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -497,18 +475,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Personal Interests
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Foreign Visits: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="foreignVisits"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -532,18 +509,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Foreign Visits
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Family Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="familyInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -567,18 +543,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Family Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Siblings: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="siblings"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -602,18 +577,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Siblings
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Close Relatives in Government Service: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -637,18 +611,17 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Close Relatives in Government Service
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Declaration: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="declaration"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -669,7 +642,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                       >
                         Declaration
                       </span>
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -679,7 +652,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
             class="col-lg-9"
           >
             <div
-              class="shadow-sm pgn__card pgn__card-light card"
+              class="biodata-section-card shadow-sm pgn__card pgn__card-light card"
               id="biodata-section-basicInformation"
               tabindex="-1"
             >
@@ -689,11 +662,13 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                 <div
                   class="mb-3"
                 >
-                  <div
+                  <h2
                     class="font-weight-bold text-gray-900 h3 mb-1"
+                    id="basicInformation-label"
+                    tabindex="-1"
                   >
                     Basic Information
-                  </div>
+                  </h2>
                   <div
                     class="small text-muted"
                   >
@@ -708,9 +683,14 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                   >
                     <div
                       aria-labelledby="basicInformation-label"
-                      role="dialog"
+                      role="group"
                     >
                       <form>
+                        <p
+                          class="small text-muted mb-3"
+                        >
+                          All fields are required.
+                        </p>
                         <div
                           class="row"
                         >
@@ -727,6 +707,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                               class="pgn__form-control-decorator-group"
                             >
                               <select
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field29"
                               >
@@ -771,6 +752,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field30"
                                 inputmode="text"
@@ -793,6 +775,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field31"
                                 inputmode="text"
@@ -815,6 +798,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field32"
                                 inputmode="text"
@@ -837,6 +821,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field33"
                                 inputmode="text"
@@ -859,6 +844,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field34"
                                 inputmode="text"
@@ -881,6 +867,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                               class="pgn__form-control-decorator-group"
                             >
                               <select
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field35"
                               >
@@ -916,11 +903,11 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             CNIC Front
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -948,6 +935,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload CNIC Front"
                             class="d-none"
                             id="basicInformation-cnic_front"
                             type="file"
@@ -956,11 +944,11 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             CNIC Back
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -988,6 +976,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload CNIC Back"
                             class="d-none"
                             id="basicInformation-cnic_back"
                             type="file"
@@ -996,11 +985,11 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             Domicile Attachment
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -1028,6 +1017,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload Domicile Attachment"
                             class="d-none"
                             id="basicInformation-domicile_file"
                             type="file"
@@ -1108,26 +1098,15 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                   viewbox="0 0 24 24"
                 />
               </div>
-              <form
-                enctype="multipart/form-data"
-              >
-                <input
-                  accept=".jpg, .jpeg, .png"
-                  class="d-none form-control-file"
-                  id="photo-file"
-                  name="file"
-                  type="file"
-                />
-              </form>
             </div>
             <div
               class="col h-100 w-100 m-0 p-0 justify-content-start align-items-start"
             >
-              <p
-                class="row m-0 font-weight-bold text-truncate text-primary-500 h3"
+              <h1
+                class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
                 verified
-              </p>
+              </h1>
               <div
                 class="row pt-2 m-0 g-1rem"
               >
@@ -1168,8 +1147,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
             class="col-lg-3 mb-4 mb-lg-0"
           >
             <div
-              class="position-lg-sticky pgn__card pgn__card-light card"
-              style="top: 0px;"
+              class="pgn__card pgn__card-light card"
               tabindex="-1"
             >
               <div
@@ -1181,13 +1159,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
+                      aria-current="step"
                       aria-disabled="false"
                       aria-label="Basic Information: Current"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link active btn btn-link"
                       data-biodata-nav="basicInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1211,18 +1189,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Basic Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Physical / Medical Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="physicalMedicalInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1246,18 +1223,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Physical / Medical Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Contact Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="contactInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1281,18 +1257,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Contact Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Education: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="education"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1316,18 +1291,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Education
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Achievements: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="achievements"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1351,18 +1325,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Achievements
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Languages: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="languages"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1386,18 +1359,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Languages
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Employment: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="employment"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1421,18 +1393,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Employment
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Competitive Examinations: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="competitiveExaminations"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1456,18 +1427,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Competitive Examinations
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="CSS Exam Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="cssExamDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1491,18 +1461,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         CSS Exam Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Government Service Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="governmentServiceDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1526,18 +1495,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Government Service Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Personal Interests: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="personalInterests"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1561,18 +1529,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Personal Interests
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Foreign Visits: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="foreignVisits"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1596,18 +1563,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Foreign Visits
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Family Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="familyInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1631,18 +1597,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Family Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Siblings: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="siblings"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1666,18 +1631,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Siblings
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Close Relatives in Government Service: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1701,18 +1665,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Close Relatives in Government Service
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Declaration: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="declaration"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1733,7 +1696,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                       >
                         Declaration
                       </span>
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1743,7 +1706,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
             class="col-lg-9"
           >
             <div
-              class="shadow-sm pgn__card pgn__card-light card"
+              class="biodata-section-card shadow-sm pgn__card pgn__card-light card"
               id="biodata-section-basicInformation"
               tabindex="-1"
             >
@@ -1753,11 +1716,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
                 <div
                   class="mb-3"
                 >
-                  <div
+                  <h2
                     class="font-weight-bold text-gray-900 h3 mb-1"
+                    id="basicInformation-label"
+                    tabindex="-1"
                   >
                     Basic Information
-                  </div>
+                  </h2>
                   <div
                     class="small text-muted"
                   >
@@ -1817,6 +1782,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                   <button
                     aria-expanded="false"
                     aria-haspopup="true"
+                    aria-label="Edit photo"
                     class="btn-icon btn-icon-inverse-primary btn-icon-md btn-icon-inverse-primary-active shadow-sm pgn__dropdown-toggle-iconbutton"
                     id="dropdown-toggle-with-iconbutton"
                     type="button"
@@ -1856,6 +1822,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
               >
                 <input
                   accept=".jpg, .jpeg, .png"
+                  aria-label="Upload photo"
                   class="d-none form-control-file"
                   id="photo-file"
                   name="file"
@@ -1866,11 +1833,11 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
             <div
               class="col h-100 w-100 m-0 p-0 justify-content-start align-items-start"
             >
-              <p
-                class="row m-0 font-weight-bold text-truncate text-primary-500 h3"
+              <h1
+                class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
                 staff
-              </p>
+              </h1>
               <div
                 class="row pt-2 m-0 g-1rem"
               >
@@ -1930,8 +1897,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
             class="col-lg-3 mb-4 mb-lg-0"
           >
             <div
-              class="position-lg-sticky pgn__card pgn__card-light card"
-              style="top: 0px;"
+              class="pgn__card pgn__card-light card"
               tabindex="-1"
             >
               <div
@@ -1943,13 +1909,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
+                      aria-current="step"
                       aria-disabled="false"
                       aria-label="Basic Information: Current"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link active btn btn-link"
                       data-biodata-nav="basicInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -1973,18 +1939,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Basic Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Physical / Medical Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="physicalMedicalInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2008,18 +1973,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Physical / Medical Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Contact Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="contactInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2043,18 +2007,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Contact Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Education: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="education"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2078,18 +2041,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Education
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Achievements: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="achievements"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2113,18 +2075,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Achievements
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Languages: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="languages"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2148,18 +2109,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Languages
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Employment: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="employment"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2183,18 +2143,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Employment
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Competitive Examinations: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="competitiveExaminations"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2218,18 +2177,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Competitive Examinations
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="CSS Exam Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="cssExamDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2253,18 +2211,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         CSS Exam Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Government Service Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="governmentServiceDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2288,18 +2245,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Government Service Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Personal Interests: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="personalInterests"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2323,18 +2279,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Personal Interests
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Foreign Visits: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="foreignVisits"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2358,18 +2313,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Foreign Visits
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Family Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="familyInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2393,18 +2347,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Family Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Siblings: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="siblings"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2428,18 +2381,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Siblings
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Close Relatives in Government Service: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2463,18 +2415,17 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Close Relatives in Government Service
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Declaration: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="declaration"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -2495,7 +2446,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                       >
                         Declaration
                       </span>
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -2505,7 +2456,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
             class="col-lg-9"
           >
             <div
-              class="shadow-sm pgn__card pgn__card-light card"
+              class="biodata-section-card shadow-sm pgn__card pgn__card-light card"
               id="biodata-section-basicInformation"
               tabindex="-1"
             >
@@ -2515,11 +2466,13 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                 <div
                   class="mb-3"
                 >
-                  <div
+                  <h2
                     class="font-weight-bold text-gray-900 h3 mb-1"
+                    id="basicInformation-label"
+                    tabindex="-1"
                   >
                     Basic Information
-                  </div>
+                  </h2>
                   <div
                     class="small text-muted"
                   >
@@ -2534,9 +2487,14 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                   >
                     <div
                       aria-labelledby="basicInformation-label"
-                      role="dialog"
+                      role="group"
                     >
                       <form>
+                        <p
+                          class="small text-muted mb-3"
+                        >
+                          All fields are required.
+                        </p>
                         <div
                           class="row"
                         >
@@ -2553,6 +2511,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               class="pgn__form-control-decorator-group"
                             >
                               <select
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field1"
                               >
@@ -2597,6 +2556,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field2"
                                 inputmode="text"
@@ -2619,6 +2579,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field3"
                                 inputmode="text"
@@ -2641,6 +2602,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field4"
                                 inputmode="text"
@@ -2663,6 +2625,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field5"
                                 inputmode="text"
@@ -2685,6 +2648,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field6"
                                 inputmode="text"
@@ -2707,6 +2671,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                               class="pgn__form-control-decorator-group"
                             >
                               <select
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field7"
                               >
@@ -2742,11 +2707,11 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             CNIC Front
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -2774,6 +2739,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload CNIC Front"
                             class="d-none"
                             id="basicInformation-cnic_front"
                             type="file"
@@ -2782,11 +2748,11 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             CNIC Back
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -2814,6 +2780,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload CNIC Back"
                             class="d-none"
                             id="basicInformation-cnic_back"
                             type="file"
@@ -2822,11 +2789,11 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             Domicile Attachment
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -2854,6 +2821,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload Domicile Attachment"
                             class="d-none"
                             id="basicInformation-domicile_file"
                             type="file"
@@ -2905,11 +2873,11 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
           <div
             class="col align-self-stretch height-42px justify-content-start align-items-start p-0"
           >
-            <p
+            <h2
               class="font-weight-bold text-primary-500 m-0 h2"
             >
               Your certificates
-            </p>
+            </h2>
           </div>
           <div
             class="col justify-content-start align-items-start pt-2 p-0"
@@ -2948,21 +2916,21 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                     >
                       Verified Certificate
                     </p>
-                    <p
+                    <h3
                       class="m-0 color-black h4"
                     >
                       edX Demonstration Course
-                    </p>
+                    </h3>
                     <p
                       class="mb-0 small"
                     >
                       From
                     </p>
-                    <h5
-                      class="mb-0 color-black"
+                    <p
+                      class="h5 mb-0 color-black"
                     >
                       edX
-                    </h5>
+                    </p>
                     <p
                       class="mb-0 small"
                     >
@@ -3038,6 +3006,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                   <button
                     aria-expanded="false"
                     aria-haspopup="true"
+                    aria-label="Edit photo"
                     class="btn-icon btn-icon-inverse-primary btn-icon-md btn-icon-inverse-primary-active shadow-sm pgn__dropdown-toggle-iconbutton"
                     id="dropdown-toggle-with-iconbutton"
                     type="button"
@@ -3077,6 +3046,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
               >
                 <input
                   accept=".jpg, .jpeg, .png"
+                  aria-label="Upload photo"
                   class="d-none form-control-file"
                   id="photo-file"
                   name="file"
@@ -3087,11 +3057,11 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
             <div
               class="col h-100 w-100 m-0 p-0 justify-content-start align-items-start"
             >
-              <p
-                class="row m-0 font-weight-bold text-truncate text-primary-500 h3"
+              <h1
+                class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
                 staff
-              </p>
+              </h1>
               <div
                 class="row pt-2 m-0 g-1rem"
               >
@@ -3142,8 +3112,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
             class="col-lg-3 mb-4 mb-lg-0"
           >
             <div
-              class="position-lg-sticky pgn__card pgn__card-light card"
-              style="top: 0px;"
+              class="pgn__card pgn__card-light card"
               tabindex="-1"
             >
               <div
@@ -3155,13 +3124,13 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
+                      aria-current="step"
                       aria-disabled="false"
                       aria-label="Basic Information: Current"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link active"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link active btn btn-link"
                       data-biodata-nav="basicInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3185,18 +3154,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Basic Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Physical / Medical Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="physicalMedicalInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3220,18 +3188,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Physical / Medical Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Contact Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="contactInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3255,18 +3222,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Contact Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Education: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="education"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3290,18 +3256,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Education
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Achievements: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="achievements"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3325,18 +3290,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Achievements
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Languages: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="languages"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3360,18 +3324,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Languages
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Employment: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="employment"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3395,18 +3358,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Employment
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Competitive Examinations: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="competitiveExaminations"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3430,18 +3392,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Competitive Examinations
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="CSS Exam Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="cssExamDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3465,18 +3426,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         CSS Exam Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Government Service Details: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="governmentServiceDetails"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3500,18 +3460,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Government Service Details
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Personal Interests: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="personalInterests"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3535,18 +3494,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Personal Interests
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Foreign Visits: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="foreignVisits"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3570,18 +3528,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Foreign Visits
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Family Information: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="familyInformation"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3605,18 +3562,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Family Information
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Siblings: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="siblings"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3640,18 +3596,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Siblings
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Close Relatives in Government Service: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="closeRelativesInGovernmentService"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3675,18 +3630,17 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Close Relatives in Government Service
                       </span>
-                    </a>
+                    </button>
                   </div>
                   <div
                     class="nav-item"
                   >
-                    <a
+                    <button
                       aria-disabled="false"
                       aria-label="Declaration: Not started"
-                      class="mb-2 d-flex align-items-stretch text-left position-relative nav-link"
+                      class="mb-2 w-100 d-flex align-items-stretch text-left position-relative nav-link btn btn-link"
                       data-biodata-nav="declaration"
-                      href="#"
-                      role="button"
+                      type="button"
                     >
                       <span
                         aria-hidden="true"
@@ -3707,7 +3661,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                       >
                         Declaration
                       </span>
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -3717,7 +3671,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
             class="col-lg-9"
           >
             <div
-              class="shadow-sm pgn__card pgn__card-light card"
+              class="biodata-section-card shadow-sm pgn__card pgn__card-light card"
               id="biodata-section-basicInformation"
               tabindex="-1"
             >
@@ -3727,11 +3681,13 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                 <div
                   class="mb-3"
                 >
-                  <div
+                  <h2
                     class="font-weight-bold text-gray-900 h3 mb-1"
+                    id="basicInformation-label"
+                    tabindex="-1"
                   >
                     Basic Information
-                  </div>
+                  </h2>
                   <div
                     class="small text-muted"
                   >
@@ -3746,9 +3702,14 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                   >
                     <div
                       aria-labelledby="basicInformation-label"
-                      role="dialog"
+                      role="group"
                     >
                       <form>
+                        <p
+                          class="small text-muted mb-3"
+                        >
+                          All fields are required.
+                        </p>
                         <div
                           class="row"
                         >
@@ -3765,6 +3726,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               class="pgn__form-control-decorator-group"
                             >
                               <select
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field15"
                               >
@@ -3809,6 +3771,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field16"
                                 inputmode="text"
@@ -3831,6 +3794,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field17"
                                 inputmode="text"
@@ -3853,6 +3817,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field18"
                                 inputmode="text"
@@ -3875,6 +3840,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field19"
                                 inputmode="text"
@@ -3897,6 +3863,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               class="pgn__form-control-decorator-group"
                             >
                               <input
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field20"
                                 inputmode="text"
@@ -3919,6 +3886,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                               class="pgn__form-control-decorator-group"
                             >
                               <select
+                                aria-required="true"
                                 class="form-control"
                                 id="form-field21"
                               >
@@ -3954,11 +3922,11 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             CNIC Front
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -3986,6 +3954,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload CNIC Front"
                             class="d-none"
                             id="basicInformation-cnic_front"
                             type="file"
@@ -3994,11 +3963,11 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             CNIC Back
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -4026,6 +3995,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload CNIC Back"
                             class="d-none"
                             id="basicInformation-cnic_back"
                             type="file"
@@ -4034,11 +4004,11 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                         <div
                           class="border rounded p-3 mb-3 bg-light-200"
                         >
-                          <p
+                          <h3
                             class="h6 font-weight-bold mb-2"
                           >
                             Domicile Attachment
-                          </p>
+                          </h3>
                           <div
                             class="d-flex flex-wrap align-items-center"
                           >
@@ -4066,6 +4036,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                           </div>
                           <input
                             accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            aria-label="Upload Domicile Attachment"
                             class="d-none"
                             id="basicInformation-domicile_file"
                             type="file"
@@ -4117,11 +4088,11 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
           <div
             class="col align-self-stretch height-42px justify-content-start align-items-start p-0"
           >
-            <p
+            <h2
               class="font-weight-bold text-primary-500 m-0 h2"
             >
               Your certificates
-            </p>
+            </h2>
           </div>
           <div
             class="col justify-content-start align-items-start pt-2 p-0"
@@ -4160,21 +4131,21 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                     >
                       Verified Certificate
                     </p>
-                    <p
+                    <h3
                       class="m-0 color-black h4"
                     >
                       edX Demonstration Course
-                    </p>
+                    </h3>
                     <p
                       class="mb-0 small"
                     >
                       From
                     </p>
-                    <h5
-                      class="mb-0 color-black"
+                    <p
+                      class="h5 mb-0 color-black"
                     >
                       edX
-                    </h5>
+                    </p>
                     <p
                       class="mb-0 small"
                     >
