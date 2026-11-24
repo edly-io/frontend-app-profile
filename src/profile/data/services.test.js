@@ -1155,5 +1155,38 @@ describe('services', () => {
         }),
       ]);
     });
+
+    [
+      ['competitiveExaminations', 'competitive_examinations_not_applicable', '/competitive-examinations/'],
+      ['foreignVisits', 'foreign_visits_not_applicable', '/foreign-visits/'],
+      ['siblings', 'siblings_not_applicable', '/siblings/'],
+      ['closeRelativesInGovernmentService', 'close_relatives_in_government_service_not_applicable', '/government-relatives/'],
+    ].forEach(([sectionId, naFieldName, endpointPath]) => {
+      it(`should keep the N/A row it just created for ${sectionId}`, async () => {
+        let serverRows = [];
+        mockHttpClient.post.mockImplementation((url, payload) => {
+          const row = { id: 1, is_submitted: true, ...payload };
+          serverRows = [row];
+          return Promise.resolve({ data: row });
+        });
+        mockHttpClient.get.mockImplementation((url) => Promise.resolve({
+          data: url.endsWith(endpointPath) ? serverRows : {},
+        }));
+        mockHttpClient.delete.mockImplementation((url) => {
+          serverRows = serverRows.filter(row => !url.endsWith(`${endpointPath}${row.id}/`));
+          return Promise.resolve({});
+        });
+
+        await saveBiodataSection(sectionId, { [naFieldName]: true }, {});
+
+        expect(mockHttpClient.post).toHaveBeenCalledWith(
+          expect.stringMatching(new RegExp(`${endpointPath}$`)),
+          { not_applicable: true },
+          { headers: { 'Content-Type': 'application/json' } },
+        );
+        expect(mockHttpClient.delete).not.toHaveBeenCalled();
+        expect(serverRows).toEqual([expect.objectContaining({ id: 1, not_applicable: true })]);
+      });
+    });
   });
 });

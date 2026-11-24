@@ -309,7 +309,7 @@ export async function getBiodataSectionProfile(sectionId) {
   }, repeatableResponsesByKey);
 }
 
-async function updateRepeatableRows(endpoint, committedRows, draftRows) {
+async function updateRepeatableRows(endpoint, committedRows, draftRows, keptServerIds = []) {
   const endpointPath = endpoint.path;
   const shouldPostRows = endpoint.rowMethod === 'post';
   const shouldDeleteMissingRows = endpoint.allowDelete !== false && !shouldPostRows;
@@ -439,6 +439,7 @@ async function updateRepeatableRows(endpoint, committedRows, draftRows) {
         matchedServerIds.add(String(row.backendId));
       }
     });
+    keptServerIds.forEach(id => matchedServerIds.add(String(id)));
 
     const cleanupDeletes = serverRows
       .filter(serverRow => serverRow?.id != null && !matchedServerIds.has(String(serverRow.id)))
@@ -756,14 +757,18 @@ export async function saveBiodataSection(sectionId, sectionData, committedData, 
         ? payload.endpoint.path
         : sectionEndpointConfig.flat?.path;
 
+      const keptServerIds = [];
       if (Object.keys(payload.extraFields).length > 0 && extraFieldsEndpointPath) {
         const extraPayload = buildBiodataRequestPayload(payload.extraFields);
         const url = getBiodataEndpointUrl(extraFieldsEndpointPath, { includeTargetUser: true });
         const requestMethod = payload.endpoint.extraFieldsMethod === 'post' ? 'post' : 'patch';
-        if (extraPayload.headers) {
-          await getHttpClient()[requestMethod](url, extraPayload.data, { headers: extraPayload.headers });
-        } else {
-          await getHttpClient()[requestMethod](url, extraPayload.data);
+        const extraResponse = extraPayload.headers
+          ? await getHttpClient()[requestMethod](url, extraPayload.data, { headers: extraPayload.headers })
+          : await getHttpClient()[requestMethod](url, extraPayload.data);
+        // The N/A flag is saved as its own row on the repeatable endpoint; keep that
+        // row out of the cleanup in updateRepeatableRows, which would otherwise delete it.
+        if (extraFieldsEndpointPath === payload.endpoint.path && extraResponse?.data?.id != null) {
+          keptServerIds.push(extraResponse.data.id);
         }
       }
 
@@ -775,6 +780,7 @@ export async function saveBiodataSection(sectionId, sectionData, committedData, 
         payload.endpoint,
         committedRepeatable?.rows || [],
         payload.rows,
+        keptServerIds,
       );
     }));
 
