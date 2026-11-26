@@ -78,6 +78,40 @@ const getApiErrorMessage = (error, fallback) => {
   return fallback;
 };
 
+const FIELD_ERRORS_SUMMARY = 'Some fields need attention. Check the messages below.';
+
+const getFieldErrors = (error) => {
+  const data = error?.response?.data;
+  const fieldErrors = {};
+  const collect = (source) => {
+    Object.entries(source).forEach(([field, value]) => {
+      if (field === 'detail' || field === 'non_field_errors') {
+        return;
+      }
+      if (Array.isArray(value)) {
+        const message = value.find(item => typeof item === 'string');
+        if (message) {
+          fieldErrors[field] = message;
+        }
+      } else if (typeof value === 'string') {
+        fieldErrors[field] = value;
+      } else if (value && typeof value === 'object') {
+        collect(value);
+      }
+    });
+  };
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    collect(data);
+  }
+  return fieldErrors;
+};
+
+const fieldControlId = name => `fbr-profile-${name}`;
+
+const focusField = (name) => {
+  setTimeout(() => document.getElementById(fieldControlId(name))?.focus());
+};
+
 const readOnlyFieldStyle = { backgroundColor: '#f7f7f7' };
 const cityShape = PropTypes.shape({
   name: PropTypes.string,
@@ -227,12 +261,19 @@ EditableCard.defaultProps = {
 };
 
 const TextInput = ({
-  label, value, onChange, type, readOnly, as, inputKind,
+  label, value, onChange, type, readOnly, as, inputKind, name, error, autoComplete,
 }) => (
-  <Form.Group className="col-md-6 col-lg-4 mb-4">
+  <Form.Group
+    className="col-md-6 col-lg-4 mb-4"
+    controlId={name ? fieldControlId(name) : undefined}
+    isInvalid={!!error}
+  >
     <Form.Label>{label}</Form.Label>
     <Form.Control
       as={as}
+      name={name || undefined}
+      autoComplete={autoComplete || undefined}
+      aria-invalid={!!error}
       type={inputKind === 'pakistan-mobile' ? 'text' : type}
       value={inputKind === 'pakistan-mobile' ? formatPakistanMobileValue(value) : value || ''}
       readOnly={readOnly}
@@ -242,6 +283,7 @@ const TextInput = ({
       maxLength={inputKind === 'pakistan-mobile' ? 13 : undefined}
       onChange={event => onChange(inputKind === 'pakistan-mobile' ? formatPakistanMobileValue(event.target.value) : event.target.value)}
     />
+    {error && <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>}
   </Form.Group>
 );
 
@@ -253,6 +295,9 @@ TextInput.propTypes = {
   readOnly: PropTypes.bool,
   as: PropTypes.string,
   inputKind: PropTypes.string,
+  name: PropTypes.string,
+  error: PropTypes.string,
+  autoComplete: PropTypes.string,
 };
 
 TextInput.defaultProps = {
@@ -262,6 +307,9 @@ TextInput.defaultProps = {
   readOnly: false,
   as: undefined,
   inputKind: '',
+  name: '',
+  error: '',
+  autoComplete: '',
 };
 
 const BaseProfilePanel = ({
@@ -271,6 +319,7 @@ const BaseProfilePanel = ({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [formValue, setFormValue] = useState(() => toBaseForm(profile));
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     setFormValue(toBaseForm(profile));
@@ -279,26 +328,38 @@ const BaseProfilePanel = ({
   const setField = (field, value) => {
     setFormValue(previous => ({ ...previous, [field]: value }));
     setError('');
+    setFieldErrors(previous => ({ ...previous, [field]: '' }));
+  };
+
+  const showFieldErrors = (errors) => {
+    setFieldErrors(errors);
+    setError(FIELD_ERRORS_SUMMARY);
+    focusField(Object.keys(errors)[0]);
   };
 
   const handleCancel = () => {
     setFormValue(toBaseForm(profile));
     setIsEditing(false);
     setError('');
+    setFieldErrors({});
   };
 
   const handleSave = async () => {
+    const validationErrors = {};
     if (!isValidOptionalPakistanMobile(formValue.mobile)) {
-      setError('Mobile must start with 3 and contain 10 digits after +92.');
-      return;
+      validationErrors.mobile = 'Mobile must start with 3 and contain 10 digits after +92.';
     }
     if (!isValidOptionalPakistanMobile(formValue.emergency_contact_phone)) {
-      setError('Emergency phone must start with 3 and contain 10 digits after +92.');
+      validationErrors.emergency_contact_phone = 'Emergency phone must start with 3 and contain 10 digits after +92.';
+    }
+    if (Object.keys(validationErrors).length) {
+      showFieldErrors(validationErrors);
       return;
     }
 
     setIsSaving(true);
     setError('');
+    setFieldErrors({});
     try {
       const payload = {
         full_name: normalizeValue(formValue.full_name),
@@ -314,7 +375,12 @@ const BaseProfilePanel = ({
       onProfileUpdated(data);
       setIsEditing(false);
     } catch (saveError) {
-      setError(saveError?.response?.data?.detail || 'Unable to update your profile.');
+      const apiFieldErrors = getFieldErrors(saveError);
+      if (Object.keys(apiFieldErrors).length) {
+        showFieldErrors(apiFieldErrors);
+      } else {
+        setError(getApiErrorMessage(saveError, 'Unable to update your profile. Please try again.'));
+      }
     } finally {
       setIsSaving(false);
     }
@@ -333,16 +399,16 @@ const BaseProfilePanel = ({
     >
       {isEditing ? (
         <div className="row">
-          <TextInput label="Full Name" value={formValue.full_name} onChange={value => setField('full_name', value)} />
-          <TextInput label="Email" value={formValue.email} readOnly />
-          <TextInput label="Mobile" value={formValue.mobile} inputKind="pakistan-mobile" onChange={value => setField('mobile', value)} />
+          <TextInput label="Full Name" name="full_name" error={fieldErrors.full_name} autoComplete="name" value={formValue.full_name} onChange={value => setField('full_name', value)} />
+          <TextInput label="Email" value={formValue.email} autoComplete="email" readOnly />
+          <TextInput label="Mobile" name="mobile" error={fieldErrors.mobile} autoComplete="tel" value={formValue.mobile} inputKind="pakistan-mobile" onChange={value => setField('mobile', value)} />
           <TextInput label="CNIC" value={formValue.cnic} readOnly />
-          <TextInput label="Field Organisation" value={formValue.field_organisation} onChange={value => setField('field_organisation', value)} />
-          <TextInput label="Emergency Contact" value={formValue.emergency_contact_name} onChange={value => setField('emergency_contact_name', value)} />
-          <TextInput label="Emergency Phone" value={formValue.emergency_contact_phone} inputKind="pakistan-mobile" onChange={value => setField('emergency_contact_phone', value)} />
-          <TextInput label="Education Degree" value={formValue.education_degree} onChange={value => setField('education_degree', value)} />
-          <TextInput label="Education Institute" value={formValue.education_institute} onChange={value => setField('education_institute', value)} />
-          <TextInput label="Education Year" type="number" value={formValue.education_year} onChange={value => setField('education_year', value)} />
+          <TextInput label="Field Organisation" name="field_organisation" error={fieldErrors.field_organisation} autoComplete="organization" value={formValue.field_organisation} onChange={value => setField('field_organisation', value)} />
+          <TextInput label="Emergency Contact" name="emergency_contact_name" error={fieldErrors.emergency_contact_name} value={formValue.emergency_contact_name} onChange={value => setField('emergency_contact_name', value)} />
+          <TextInput label="Emergency Phone" name="emergency_contact_phone" error={fieldErrors.emergency_contact_phone} value={formValue.emergency_contact_phone} inputKind="pakistan-mobile" onChange={value => setField('emergency_contact_phone', value)} />
+          <TextInput label="Education Degree" name="education_degree" error={fieldErrors.education_degree} value={formValue.education_degree} onChange={value => setField('education_degree', value)} />
+          <TextInput label="Education Institute" name="education_institute" error={fieldErrors.education_institute} value={formValue.education_institute} onChange={value => setField('education_institute', value)} />
+          <TextInput label="Education Year" name="education_year" error={fieldErrors.education_year} type="number" value={formValue.education_year} onChange={value => setField('education_year', value)} />
         </div>
       ) : (
         <div className="row">
@@ -378,6 +444,7 @@ const TraineeProfilePanel = ({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [formValue, setFormValue] = useState(() => toTraineeForm(traineeProfile));
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     setFormValue(toTraineeForm(traineeProfile));
@@ -386,17 +453,26 @@ const TraineeProfilePanel = ({
   const setField = (field, value) => {
     setFormValue(previous => ({ ...previous, [field]: value }));
     setError('');
+    setFieldErrors(previous => ({ ...previous, [field]: '' }));
+  };
+
+  const showFieldErrors = (errors) => {
+    setFieldErrors(errors);
+    setError(FIELD_ERRORS_SUMMARY);
+    focusField(Object.keys(errors)[0]);
   };
 
   const handleCancel = () => {
     setFormValue(toTraineeForm(traineeProfile));
     setIsEditing(false);
     setError('');
+    setFieldErrors({});
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     setError('');
+    setFieldErrors({});
     try {
       const payload = {
         trainee_profile: {
@@ -413,7 +489,12 @@ const TraineeProfilePanel = ({
       onProfileUpdated(data);
       setIsEditing(false);
     } catch (saveError) {
-      setError(saveError?.response?.data?.detail || 'Unable to update your trainee profile.');
+      const apiFieldErrors = getFieldErrors(saveError);
+      if (Object.keys(apiFieldErrors).length) {
+        showFieldErrors(apiFieldErrors);
+      } else {
+        setError(getApiErrorMessage(saveError, 'Unable to update your trainee profile. Please try again.'));
+      }
     } finally {
       setIsSaving(false);
     }
@@ -446,12 +527,12 @@ const TraineeProfilePanel = ({
               </Form.Control>
             </Form.Group>
           )}
-          <TextInput label="Date of Birth" type="date" value={formValue.date_of_birth} onChange={value => setField('date_of_birth', value)} />
-          <TextInput label="Designation" value={formValue.designation} onChange={value => setField('designation', value)} />
-          <TextInput label="BPS Grade" type="number" value={formValue.bps_grade} onChange={value => setField('bps_grade', value)} />
-          <TextInput label="Hostel Preference" value={formValue.hostel_preference} onChange={value => setField('hostel_preference', value)} />
-          <TextInput label="Service History" as="textarea" value={formValue.service_history} onChange={value => setField('service_history', value)} />
-          <TextInput label="Languages, Awards, Publications" as="textarea" value={formValue.languages_awards_publications} onChange={value => setField('languages_awards_publications', value)} />
+          <TextInput label="Date of Birth" name="date_of_birth" error={fieldErrors.date_of_birth} autoComplete="bday" type="date" value={formValue.date_of_birth} onChange={value => setField('date_of_birth', value)} />
+          <TextInput label="Designation" name="designation" error={fieldErrors.designation} autoComplete="organization-title" value={formValue.designation} onChange={value => setField('designation', value)} />
+          <TextInput label="BPS Grade" name="bps_grade" error={fieldErrors.bps_grade} type="number" value={formValue.bps_grade} onChange={value => setField('bps_grade', value)} />
+          <TextInput label="Hostel Preference" name="hostel_preference" error={fieldErrors.hostel_preference} value={formValue.hostel_preference} onChange={value => setField('hostel_preference', value)} />
+          <TextInput label="Service History" name="service_history" error={fieldErrors.service_history} as="textarea" value={formValue.service_history} onChange={value => setField('service_history', value)} />
+          <TextInput label="Languages, Awards, Publications" name="languages_awards_publications" error={fieldErrors.languages_awards_publications} as="textarea" value={formValue.languages_awards_publications} onChange={value => setField('languages_awards_publications', value)} />
         </div>
       ) : (
         <div className="row">
@@ -483,6 +564,7 @@ const InstructorProfilePanel = ({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [formValue, setFormValue] = useState(() => toInstructorForm(instructorProfile));
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     setFormValue(toInstructorForm(instructorProfile));
@@ -491,17 +573,26 @@ const InstructorProfilePanel = ({
   const setField = (field, value) => {
     setFormValue(previous => ({ ...previous, [field]: value }));
     setError('');
+    setFieldErrors(previous => ({ ...previous, [field]: '' }));
+  };
+
+  const showFieldErrors = (errors) => {
+    setFieldErrors(errors);
+    setError(FIELD_ERRORS_SUMMARY);
+    focusField(Object.keys(errors)[0]);
   };
 
   const handleCancel = () => {
     setFormValue(toInstructorForm(instructorProfile));
     setIsEditing(false);
     setError('');
+    setFieldErrors({});
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     setError('');
+    setFieldErrors({});
     try {
       const payload = {
         instructor_profile: {
@@ -513,7 +604,12 @@ const InstructorProfilePanel = ({
       onProfileUpdated(data);
       setIsEditing(false);
     } catch (saveError) {
-      setError(saveError?.response?.data?.detail || 'Unable to update your instructor profile.');
+      const apiFieldErrors = getFieldErrors(saveError);
+      if (Object.keys(apiFieldErrors).length) {
+        showFieldErrors(apiFieldErrors);
+      } else {
+        setError(getApiErrorMessage(saveError, 'Unable to update your instructor profile. Please try again.'));
+      }
     } finally {
       setIsSaving(false);
     }
@@ -532,8 +628,8 @@ const InstructorProfilePanel = ({
     >
       {isEditing ? (
         <div className="row">
-          <TextInput label="Field of Expertise" value={formValue.field_of_expertise} onChange={value => setField('field_of_expertise', value)} />
-          <TextInput label="Languages, Awards, Publications" as="textarea" value={formValue.languages_awards_publications} onChange={value => setField('languages_awards_publications', value)} />
+          <TextInput label="Field of Expertise" name="field_of_expertise" error={fieldErrors.field_of_expertise} value={formValue.field_of_expertise} onChange={value => setField('field_of_expertise', value)} />
+          <TextInput label="Languages, Awards, Publications" name="languages_awards_publications" error={fieldErrors.languages_awards_publications} as="textarea" value={formValue.languages_awards_publications} onChange={value => setField('languages_awards_publications', value)} />
         </div>
       ) : (
         <div className="row">

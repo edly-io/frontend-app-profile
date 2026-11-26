@@ -155,6 +155,7 @@ function renderFieldControl(
         disabled={disabled}
         aria-invalid={Boolean(error) || undefined}
         aria-required={!disabled || undefined}
+        autoComplete={field.autoComplete}
         {...getFieldInputAttributes(field)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
@@ -184,6 +185,7 @@ function renderFieldControl(
         disabled={disabled}
         aria-invalid={Boolean(error) || undefined}
         aria-required={!disabled || undefined}
+        autoComplete={field.autoComplete}
         {...getFieldInputAttributes(field)}
         onBlur={onBlur}
         onFocus={syncNativeValidationState}
@@ -205,6 +207,7 @@ function renderFieldControl(
       disabled={disabled}
       aria-invalid={Boolean(error) || undefined}
       aria-required={!disabled || undefined}
+      autoComplete={field.autoComplete}
       {...getFieldInputAttributes(field)}
       onBlur={onBlur}
       onFocus={syncNativeValidationState}
