@@ -68,7 +68,9 @@ export const BIODATA_SECTIONS = [
       {
         fieldName: 'profile_title', label: 'Title', type: PROFILE_FIELD_TYPES.SELECT, options: TITLE_OPTIONS,
       },
-      { fieldName: 'preferred_calling_name', label: 'Preferred / calling name', placeholder: 'Enter preferred name' },
+      {
+        fieldName: 'preferred_calling_name', autoComplete: 'nickname', label: 'Preferred / calling name', placeholder: 'Enter preferred name',
+      },
       { fieldName: 'place_of_birth', label: 'Place of Birth', placeholder: 'Enter place of birth' },
       { fieldName: 'district_of_domicile', label: 'District of Domicile', placeholder: 'Enter district of domicile' },
       { fieldName: 'province_of_domicile', label: 'Province of Domicile', placeholder: 'Enter province of domicile' },
@@ -135,8 +137,12 @@ export const BIODATA_SECTIONS = [
         fieldName: 'contact_address_lahore', label: 'Contact address at Lahore', type: PROFILE_FIELD_TYPES.TEXTAREA, placeholder: 'Enter Lahore contact address',
       },
       { fieldName: 'lahore_phone_number', label: 'Lahore phone number', placeholder: 'Enter Lahore phone number' },
-      { fieldName: 'mobile_number', label: 'Mobile number', placeholder: 'Enter mobile number' },
-      { fieldName: 'contact_email', label: 'Email', placeholder: 'Enter email address' },
+      {
+        fieldName: 'mobile_number', autoComplete: 'tel', label: 'Mobile number', placeholder: 'Enter mobile number',
+      },
+      {
+        fieldName: 'contact_email', autoComplete: 'email', label: 'Email', placeholder: 'Enter email address',
+      },
     ],
   },
   {

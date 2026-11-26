@@ -753,6 +753,7 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
                             >
                               <input
                                 aria-required="true"
+                                autocomplete="nickname"
                                 class="form-control"
                                 id="form-field30"
                                 inputmode="text"
@@ -2557,6 +2558,7 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
                             >
                               <input
                                 aria-required="true"
+                                autocomplete="nickname"
                                 class="form-control"
                                 id="form-field2"
                                 inputmode="text"
@@ -3772,6 +3774,7 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
                             >
                               <input
                                 aria-required="true"
+                                autocomplete="nickname"
                                 class="form-control"
                                 id="form-field16"
                                 inputmode="text"
