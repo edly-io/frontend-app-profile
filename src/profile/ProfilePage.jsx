@@ -360,6 +360,7 @@ const ProfilePage = ({ params }) => {
                     ])}
                   >
                     <h1 className="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3">
+                      <span className="sr-only">{intl.formatMessage(messages['profile.heading.prefix'])} </span>
                       {profileHeaderName}
                     </h1>
                     {profileHeaderEmail && (

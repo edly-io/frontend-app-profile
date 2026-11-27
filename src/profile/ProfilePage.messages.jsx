@@ -1,6 +1,11 @@
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
+  'profile.heading.prefix': {
+    id: 'profile.heading.prefix',
+    defaultMessage: 'Profile:',
+    description: 'Visually hidden prefix on the profile page heading, read by screen readers before the person\'s name.',
+  },
   'profile.viewMyRecords': {
     id: 'profile.viewMyRecords',
     defaultMessage: 'View My Records',
