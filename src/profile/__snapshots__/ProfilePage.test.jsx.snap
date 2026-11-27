@@ -64,6 +64,12 @@ exports[`<ProfilePage /> Renders correctly in various states successfully redire
               <h1
                 class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
+                <span
+                  class="sr-only"
+                >
+                  Profile:
+                   
+                </span>
                 staffTest
               </h1>
               <div
@@ -1106,6 +1112,12 @@ exports[`<ProfilePage /> Renders correctly in various states viewing other profi
               <h1
                 class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
+                <span
+                  class="sr-only"
+                >
+                  Profile:
+                   
+                </span>
                 verified
               </h1>
               <div
@@ -1837,6 +1849,12 @@ exports[`<ProfilePage /> Renders correctly in various states viewing own profile
               <h1
                 class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
+                <span
+                  class="sr-only"
+                >
+                  Profile:
+                   
+                </span>
                 staff
               </h1>
               <div
@@ -3062,6 +3080,12 @@ exports[`<ProfilePage /> Renders correctly in various states without credentials
               <h1
                 class="row m-0 font-weight-bold overflowWrap-breakWord text-primary-500 h3"
               >
+                <span
+                  class="sr-only"
+                >
+                  Profile:
+                   
+                </span>
                 staff
               </h1>
               <div
